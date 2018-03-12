@@ -39,18 +39,6 @@
     Never again will you forget which movies to watch.
     Because now, there is intray.
 
-  <h2 .ui .header> How to use intray
-  <p>
-    As a first step, you can register on intray.cs-syd.eu.
-    Once you have an account and you are logged in, you will see a menu which allows you to access four pages.
-    The first page is the home page.
-    This is where we explain why to use intray, and what its features are.
-    It also includes an FAQ section.
-    The second page is called "add item", and it is where you can go to write down new thoughts.
-    At "process", you can process your items one by one.
-    Simply click 'done' to delete the item and look at the next one.
-    Finally, the "account" page shows your username and the time you created your account.
-
   <h2 .ui .header> Extremely minimal
   <p>
     <div .ui .list>
@@ -67,6 +55,12 @@
         <div .content>
           Delete the shown intray item
 
+  <h2 .ui .header> Open-source
+  <p>
+    Intray is entirely open-source.
+    <a href="https://github.com/NorfairKing/intray">
+      The source can be found on Github.
+
   <h2 .ui .header> API-First
   <p>
     Every interaction with Intray is available via
@@ -77,10 +71,13 @@
     to automated item generation upon receiving emails
     from certain people, everything is possible.
 
+
   <h2 .ui .header> CLI-Second
   <p>
-    Intray will be available via a command-line client soon.
-    The local and server-side item storage can easily be synced.
+    Intray is available via 
+    <a href="https://github.com/NorfairKing/intray/tree/master/intray-cli">the official Intray command-line client
+    .
+    In addition to the features on the web interface, the command-line client works offline with easy synchronisation.
 
 <div .ui .huge .padded .segment>
   <h2 .ui .header> FAQ
@@ -92,9 +89,8 @@
           Why can I not modify items?
         <div .description>
           Items represent thoughts you have and want to get out of your head.
-          The purpose is to not think about the ideas anymore once you write them down,
-          until the moment you process them. During processing, you take them out of the intray
-          and think about what you want to do with the idea.
+          The purpose is to not think about the ideas anymore between when you write them down and when you process them. 
+          During processing, you take the items out of the intray and think about what you want to do with each idea.
           After that, you delete the item from the intray.
           Allowing to modify items would only allow you to make yourself less efficient.
 
