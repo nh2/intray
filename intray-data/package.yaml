@@ -1,0 +1,41 @@
+name: intray-data
+version: '0.0.0.0'
+synopsis: Intray Data
+category: Intray
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/intray
+default-extensions:
+- NoImplicitPrelude
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Intray.Data
+  - Intray.Data.HashedPassword
+  - Intray.Data.ItemType
+  - Intray.Data.ItemUUID
+  - Intray.Data.UUID
+  - Intray.Data.UserUUID
+  - Intray.Data.Username
+
+  dependencies:
+  - aeson
+  - base >=4.7 && <5
+  - bcrypt
+  - bytestring
+  - hashable
+  - persistent
+  - persistent-template
+  - text
+  - time
+  - typed-uuid
+  - uuid
+  - validity
+  - validity-bytestring
+  - validity-text
+  - validity-time
+  - validity-uuid

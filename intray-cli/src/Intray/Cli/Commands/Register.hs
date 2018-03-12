@@ -1,0 +1,27 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+
+module Intray.Cli.Commands.Register
+    ( register
+    ) where
+
+import Import
+
+import Servant.Auth.Server.SetCookieOrphan ()
+
+import Intray.API hiding (register)
+import Intray.Client
+
+import Intray.Cli.Client
+import Intray.Cli.OptParse
+import Intray.Cli.Prompt
+
+register :: RegisterSettings -> CliM ()
+register RegisterSettings {..} = do
+    registration <-
+        Registration <$> promptUsername registerSetUsername <*>
+        promptPassword registerSetPassword
+    void $ runSingleClientOrErr $ clientRegister registration

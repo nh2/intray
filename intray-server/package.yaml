@@ -1,0 +1,68 @@
+name: intray-server
+version: '0.0.0.0'
+synopsis: Intray Server
+description: Please see README.md
+category: Intray
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2016-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/intray-server
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  default-extensions:
+  - NoImplicitPrelude
+  exposed-modules:
+  - IntrayServer
+  - Intray.Server
+  - Intray.Server.Handler.Sync
+  - Intray.Server.Handler.Utils
+  - Intray.Server.Types
+  - Intray.Server.OptParse
+  - Intray.Server.OptParse.Types
+
+  dependencies:
+  - aeson
+  - aeson-pretty
+  - base >=4.7 && <5
+  - bytestring
+  - file-embed
+  - intray-api
+  - intray-data
+  - jose
+  - monad-logger
+  - mtl >=2.2 && <2.3
+  - optparse-applicative >=0.13 && <0.14
+  - pandoc
+  - path
+  - path-io
+  - persistent >=2.7 && <2.8
+  - persistent-sqlite
+  - pretty-show
+  - resourcet
+  - servant
+  - servant-auth-server
+  - servant-docs
+  - servant-generic
+  - servant-server
+  - text
+  - time
+  - typed-uuid
+  - wai
+  - wai-cors
+  - warp >=3.2 && <3.3
+
+executables:
+  intray-server:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - intray-server

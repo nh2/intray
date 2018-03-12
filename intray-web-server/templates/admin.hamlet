@@ -1,0 +1,13 @@
+<div .ui .segment>
+  <div class="ui two huge statistics">
+    <div class="statistic">
+      <div class="value">
+        #{adminStatsNbUsers}
+      <div class="label">
+        Members
+
+    <div class="statistic">
+      <div class="value">
+        #{adminStatsNbItems}
+      <div class="label">
+        Items

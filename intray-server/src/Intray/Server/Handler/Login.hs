@@ -1,0 +1,51 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds #-}
+
+module Intray.Server.Handler.Login
+    ( serveLogin
+    ) where
+
+import Import
+
+import Control.Monad.Except
+import qualified Data.Text.Encoding as TE
+import Database.Persist
+
+import Servant hiding (BadPassword, NoSuchUser)
+import Servant.Auth.Server as Auth
+import Servant.Auth.Server.SetCookieOrphan ()
+
+import Intray.API
+import Intray.Data
+
+import Intray.Server.Types
+
+import Intray.Server.Handler.Utils
+
+serveLogin ::
+       LoginForm
+    -> IntrayHandler (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
+serveLogin LoginForm {..} = do
+    me <- runDb $ getBy $ UniqueUsername loginFormUsername
+    case me of
+        Nothing -> throwError err401
+        Just (Entity _ user) ->
+            if validatePassword
+                   (userHashedPassword user)
+                   (TE.encodeUtf8 loginFormPassword)
+                then do
+                    let cookie =
+                            AuthCookie
+                            {authCookieUserUuid = userIdentifier user}
+                    IntrayServerEnv {..} <- ask
+                    mApplyCookies <-
+                        liftIO $
+                        acceptLogin envCookieSettings envJWTSettings cookie
+                    case mApplyCookies of
+                        Nothing -> throwError err401
+                        Just applyCookies -> return $ applyCookies NoContent
+                else throwError err401

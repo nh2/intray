@@ -1,0 +1,147 @@
+<div .ui .very .padded .segment>
+  <div .hidden .divider>
+  <h1 class="ui center aligned icon header">
+    <i class="inbox icon"></i>
+    <div class="content">
+      Intray
+      <div .sub .header>
+        Are you having a hard time getting things off your mind? Try intray!
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header> Just write it down
+  <p>
+    Have you heard that all you need to do to get things of your mind,
+    is to systematically write them down? Try it out with intray!
+  <p>
+    Intray offers a no-nonsense web interface to write down your
+    thoughts and ideas anywhere you go, and easily process them.
+    It is faster, cleaner and leaner than any of its alternatives,
+    while exposing an elegant API and including a CLI.
+
+  <h2 .ui .header> Anywhere, anytime
+  <p>
+    Has one of the following scenarios ever happened to you?
+    <div .ui .list>
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          A friend tells you about a movie you just have to watch
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          In the middle of a party, you suddenly get a great idea
+      <div .item>
+        <div .header>
+          <i .minus .icon>
+          During dinner with your parents, you remember you really need to send someone an email.
+    Never again will you have to drop everything and send the email.
+    Never again will you have to put your thought in your calendar, where it does not belong.
+    Never again will you forget which movies to watch.
+    Because now, there is intray.
+
+  <h2 .ui .header> How to use intray
+  <p>
+    As a first step, you can register on intray.cs-syd.eu.
+    Once you have an account and you are logged in, you will see a menu which allows you to access four pages.
+    The first page is the home page.
+    This is where we explain why to use intray, and what its features are.
+    It also includes an FAQ section.
+    The second page is called "add item", and it is where you can go to write down new thoughts.
+    At "process", you can process your items one by one.
+    Simply click 'done' to delete the item and look at the next one.
+    Finally, the "account" page shows your username and the time you created your account.
+
+  <h2 .ui .header> Extremely minimal
+  <p>
+    <div .ui .list>
+      <div .item>
+        <i .idea .icon>
+        <div .content>
+          Add an intray item
+      <div .item>
+        <i .search .icon>
+        <div .content>
+          Show one intray item
+      <div .item>
+        <i .check .icon>
+        <div .content>
+          Delete the shown intray item
+
+  <h2 .ui .header> API-First
+  <p>
+    Every interaction with Intray is available via
+    <a href=@{APIDocsR}>the intray API.
+    The API allows to integrate intray seamlessly with complex systems to optimise your workflow.
+    From a "Getting things done"-style tickler system
+    which drops items into your intray whenever you want
+    to automated item generation upon receiving emails
+    from certain people, everything is possible.
+
+  <h2 .ui .header> CLI-Second
+  <p>
+    Intray will be available via a command-line client soon.
+    The local and server-side item storage can easily be synced.
+
+<div .ui .huge .padded .segment>
+  <h2 .ui .header> FAQ
+  <div .ui .list>
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          Why can I not modify items?
+        <div .description>
+          Items represent thoughts you have and want to get out of your head.
+          The purpose is to not think about the ideas anymore once you write them down,
+          until the moment you process them. During processing, you take them out of the intray
+          and think about what you want to do with the idea.
+          After that, you delete the item from the intray.
+          Allowing to modify items would only allow you to make yourself less efficient.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          Why can I not list all my items?
+        <div .description>
+          Only being able to view one item at a time forces you to process items one by one without skipping any.
+          This is a proven improvement to your processing speed.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          Will Intray ever get more features?
+        <div .description>
+          No. Intray is feature-complete.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          So it's a todo list?
+        <div .description>
+          No. It is like a box which contains random thoughts you want to get out of your head.
+          These thoughts still require processing, as opposed to todo items.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          How is it better than google keep, remember the milk, todoist..?
+        <div .description>
+          Intray has been designed with your ease of mind and efficiency in mind.
+          For example, the processing does not allow you to see more than one item at a time,
+          which is a proven strategy to improve your processing efficiency.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          How is it better than org-mode?
+        <div .description>
+          <div .item> Intray allows for more efficient processing.
+          <div .item> Intray allows you to use a web interface, e.g. through your phone,
+                      as well as a command line interface. This combination makes intray
+                      more efficient to use.
+

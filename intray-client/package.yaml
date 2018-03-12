@@ -1,0 +1,38 @@
+name: intray-client
+version: '0.0.0.0'
+synopsis: Intray Client
+category: Intray
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2016-2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/intray
+default-extensions:
+- NoImplicitPrelude
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Intray.Client
+  - Intray.Client.Store
+
+  dependencies:
+  - base >=4.7 && <5
+  - aeson
+  - bytestring >=0.10 && <0.11
+  - containers
+  - intray-api
+  - intray-data
+  - servant
+  - servant-auth-client
+  - servant-auth-server
+  - servant-client
+  - text
+  - time
+  - typed-uuid
+  - validity >=0.4 && <0.5
+  - validity-bytestring >=0.2 && <0.3
+  - validity-containers >=0.2 && <0.3
+  - validity-text >=0.2 && <0.3
+  - validity-time >=0.1 && <0.2
+  - validity-uuid >=0.0 && <0.1

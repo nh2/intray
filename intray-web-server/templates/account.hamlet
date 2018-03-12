@@ -1,0 +1,12 @@
+<div .ui .segment>
+  <h1> Account
+
+  <p> Username: #{usernameText accountInfoUsername}
+  <p> Created: ^{timestampWidget}
+
+$if accountInfoAdmin
+  <div .ui .segment>
+    This account is an administrator, go to 
+    <a .button href=@{AdminR}>
+      The Admin Panel
+    for more details.
