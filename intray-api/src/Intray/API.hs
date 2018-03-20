@@ -24,6 +24,8 @@ module Intray.API
     , AuthCookie(..)
     , IntrayListItems
     , ListEntireIntray
+    , ShowItem
+    , IntraySize
     , AddItem
     , GetItem
     , DeleteItem
@@ -39,10 +41,12 @@ module Intray.API
     , Sync
     , AccountInfo(..)
     , GetAccountInfo
+    , DeleteAccount
     , Registration(..)
     , Register
     , LoginForm(..)
     , Login
+    , Docs
     , GetDocsResponse(..)
     , AdminStats(..)
     , GetAdminStats
@@ -120,6 +124,7 @@ data IntrayProtectedSite route = IntrayProtectedSite
     , deleteItem :: route :- DeleteItem
     , sync :: route :- Sync
     , accountInfo :: route :- GetAccountInfo
+    , deleteAccount :: route :- DeleteAccount
     } deriving (Generic)
 
 type IntrayPublicAPI = ToServant (IntrayPublicSite AsApi)
@@ -353,7 +358,7 @@ instance ToJSON SyncResponse where
 
 instance ToSample SyncResponse
 
-type GetAccountInfo = ProtectAPI :> Get '[ JSON] AccountInfo
+type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 data AccountInfo = AccountInfo
     { accountInfoUsername :: Username
@@ -368,6 +373,8 @@ instance FromJSON AccountInfo
 instance ToJSON AccountInfo
 
 instance ToSample AccountInfo
+
+type DeleteAccount = ProtectAPI :> "account" :> Delete '[ JSON] NoContent
 
 data Registration = Registration
     { registrationUsername :: Username

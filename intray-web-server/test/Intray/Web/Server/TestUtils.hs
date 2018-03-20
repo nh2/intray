@@ -4,12 +4,16 @@
 module Intray.Web.Server.TestUtils
     ( intrayTestServeSettings
     , intrayWebServerSpec
+    , withExampleAccount
     , withExampleAccount_
+    , withExampleAccountAndLogin
+    , withExampleAccountAndLogin_
     , withAdminAccount_
     ) where
 
 import TestImport
 
+import Yesod.Auth
 import Yesod.Test
 
 import Data.Text (Text)
@@ -29,6 +33,8 @@ import Intray.Web.Server.Foundation
 import Intray.Web.Server.OptParse.Types
 
 import Intray.Data.Gen ()
+
+{-# ANN module ("HLint: ignore Reduce duplication" :: String) #-}
 
 intrayTestServeSettings :: IO ServeSettings
 intrayTestServeSettings = do
@@ -56,10 +62,24 @@ intrayWebServerSpec = b . a
     b :: SpecWith ClientEnv -> Spec
     b = API.withIntrayServer
 
+loginTo :: Username -> Text -> YesodExample App ()
+loginTo username passphrase = do
+    get $ AuthR LoginR
+    statusIs 200
+    request $ do
+        setMethod methodPost
+        setUrl $ AuthR loginFormPostTargetR
+        addTokenFromCookie
+        addPostParam "userkey" $ usernameText username
+        addPostParam "passphrase" passphrase
+    statusIs 303
+    loc <- getLocation
+    liftIO $ loc `shouldBe` Right AddR
+
 withFreshAccount ::
        Username
     -> Text
-    -> (Username -> YesodExample App a)
+    -> (Username -> Text -> YesodExample App a)
     -> YesodExample App a
 withFreshAccount exampleUsername examplePassphrase func = do
     get $ AuthR registerR
@@ -74,17 +94,29 @@ withFreshAccount exampleUsername examplePassphrase func = do
     statusIs 303
     loc <- getLocation
     liftIO $ loc `shouldBe` Right AddR
-    func exampleUsername
+    func exampleUsername examplePassphrase
 
-withExampleAccount :: (Username -> YesodExample App a) -> YesodExample App a
+withExampleAccount ::
+       (Username -> Text -> YesodExample App a) -> YesodExample App a
 withExampleAccount =
     withFreshAccount (fromJust $ parseUsername "example") "pass"
 
-withExampleAccount_ :: YesodExample App a -> YesodExample App a
-withExampleAccount_ = withExampleAccount . const
+withExampleAccountAndLogin ::
+       (Username -> Text -> YesodExample App a) -> YesodExample App a
+withExampleAccountAndLogin func =
+    withExampleAccount $ \un p -> do
+        loginTo un p
+        func un p
 
-withAdminAccount :: (Username -> YesodExample App a) -> YesodExample App a
+withExampleAccount_ :: YesodExample App a -> YesodExample App a
+withExampleAccount_ = withExampleAccount . const . const
+
+withExampleAccountAndLogin_ :: YesodExample App a -> YesodExample App a
+withExampleAccountAndLogin_ = withExampleAccountAndLogin . const . const
+
+withAdminAccount ::
+       (Username -> Text -> YesodExample App a) -> YesodExample App a
 withAdminAccount = withFreshAccount (fromJust $ parseUsername "admin") "admin"
 
 withAdminAccount_ :: YesodExample App a -> YesodExample App a
-withAdminAccount_ = withAdminAccount . const
+withAdminAccount_ = withAdminAccount . const . const

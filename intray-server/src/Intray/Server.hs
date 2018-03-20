@@ -35,6 +35,7 @@ import Intray.Server.SigningKey
 
 import Intray.Server.Handler.AddItem
 import Intray.Server.Handler.AdminStats
+import Intray.Server.Handler.DeleteAccount
 import Intray.Server.Handler.DeleteItem
 import Intray.Server.Handler.Docs
 import Intray.Server.Handler.GetAccountInfo
@@ -112,6 +113,7 @@ intrayProtectedServer =
     , deleteItem = serveDeleteItem
     , sync = serveSync
     , accountInfo = serveGetAccountInfo
+    , deleteAccount = serveDeleteAccount
     }
 
 intrayPublicServer :: IntrayPublicSite (AsServerT IntrayHandler)

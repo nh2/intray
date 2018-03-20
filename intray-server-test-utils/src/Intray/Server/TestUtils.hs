@@ -16,6 +16,7 @@ module Intray.Server.TestUtils
     , withAdmin
     , withValidNewUser
     , withValidNewUserAndData
+    , module Servant.Client
     ) where
 
 import Import

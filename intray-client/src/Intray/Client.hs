@@ -1,8 +1,4 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Intray.Client
     ( clientShowItem
@@ -17,6 +13,7 @@ module Intray.Client
     , clientLogin
     , clientDocs
     , clientGetAccountInfo
+    , clientDeleteAccount
     , clientAdminStats
     , ItemType(..)
     , TypedItem(..)
@@ -45,31 +42,13 @@ import Import
 
 import qualified Data.UUID.Typed
 import Servant.API
+import Servant.API.Flatten
 import Servant.Auth.Client
 import Servant.Auth.Server
 import Servant.Auth.Server.SetCookieOrphan ()
 import Servant.Client
 
 import Intray.API
-
-intrayClient :: Client IntrayAPI
-intrayClient = client intrayAPI
-
-intrayOpenClient :: Client IntrayOpenAPI
-intrayAdminClient :: Client IntrayAdminAPI
-intrayOpenClient :<|> intrayAdminClient = intrayClient
-
-intrayProtectedClient :: Client IntrayProtectedAPI
-intrayPublicClient :: Client IntrayPublicAPI
-intrayProtectedClient :<|> intrayPublicClient = intrayOpenClient
-
-clientAdminStats :: Token -> ClientM AdminStats
-clientAdminStats = intrayAdminClient
-
-((clientShowItem :<|> clientSize) :<|> (clientListItemUuids :<|> clientListItems)) :<|> ((clientAddItem :<|> clientGetItem) :<|> (clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo)) =
-    intrayProtectedClient
-
-clientRegister :<|> clientLogin :<|> clientDocs = intrayPublicClient
 
 clientShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
 clientSize :: Token -> ClientM Int
@@ -80,8 +59,12 @@ clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
+clientDeleteAccount :: Token -> ClientM NoContent
 clientRegister :: Registration -> ClientM NoContent
 clientLogin ::
        LoginForm
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 clientDocs :: ClientM GetDocsResponse
+clientAdminStats :: Token -> ClientM AdminStats
+clientShowItem :<|> clientSize :<|> clientListItemUuids :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats =
+    client (flatten intrayAPI)

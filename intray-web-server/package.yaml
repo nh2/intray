@@ -86,4 +86,5 @@ tests:
     - servant-client
     - text
     - typed-uuid
+    - yesod-auth
     - yesod-test
