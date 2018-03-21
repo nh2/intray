@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.GetAccountInfo
-    ( serveGetAccountInfo
+module Intray.Server.Handler.AdminGetAccounts
+    ( serveAdminGetAccounts
     ) where
 
 import Import
@@ -24,18 +24,17 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveGetAccountInfo :: AuthResult AuthCookie -> IntrayHandler AccountInfo
-serveGetAccountInfo (Authenticated AuthCookie {..}) = do
-    admins <- asks envAdmins
-    mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUuid
-    case mUser of
-        Nothing -> throwError $ err404 {errBody = "User not found."}
-        Just (Entity _ User {..}) ->
-            pure
+serveAdminGetAccounts :: AuthResult AuthCookie -> IntrayHandler [AccountInfo]
+serveAdminGetAccounts (Authenticated AuthCookie {..}) =
+    withAdminCreds authCookieUserUuid $ do
+        admins <- asks envAdmins
+        users <- runDb $ selectList [] [Asc UserId]
+        pure $
+            flip map users $ \(Entity _ User {..}) ->
                 AccountInfo
-                { accountInfoUuid = authCookieUserUuid
+                { accountInfoUuid = userIdentifier
                 , accountInfoUsername = userUsername
                 , accountInfoCreatedTimestamp = userCreatedTimestamp
                 , accountInfoAdmin = userUsername `elem` admins
                 }
-serveGetAccountInfo _ = throwAll err401
+serveAdminGetAccounts _ = throwAll err401

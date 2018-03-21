@@ -11,3 +11,40 @@
         #{adminStatsNbItems}
       <div class="label">
         Items
+
+<div .ui .segment>
+  <table .ui .celled .table>
+    <thead>
+      <tr>
+        <th>
+          UUID
+        <th>
+          Username
+        <th>
+          Created
+        <th>
+          Admin
+        <th>
+          Delete
+    <tbody>
+      $forall u <- users
+        <tr>
+          <td>
+            <code>
+              #{uuidText $ accountInfoUuid u}
+          <td>
+            #{usernameText $ accountInfoUsername u}
+          <td>
+            #{prettyTimestamp now $ accountInfoCreatedTimestamp u}
+          <td>
+            #{accountInfoAdmin u}
+          <td>
+            <form
+              method=post
+              action=@{AdminAccountDeleteR $ accountInfoUuid u}
+              onclick="return confirm('Are you sure you want to delete this account? This cannot be undone.');">
+             ^{token}
+             <button
+               .negative .ui .button>
+               Delete
+

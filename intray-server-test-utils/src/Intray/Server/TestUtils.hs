@@ -16,6 +16,7 @@ module Intray.Server.TestUtils
     , withAdmin
     , withValidNewUser
     , withValidNewUserAndData
+    , requiresAdmin
     , module Servant.Client
     ) where
 
@@ -27,6 +28,7 @@ import qualified Data.Text as T
 import Data.UUID.Typed
 import Lens.Micro
 import qualified Network.HTTP.Client as HTTP
+import qualified Network.HTTP.Types as HTTP
 import Web.Cookie
 
 import Servant
@@ -158,3 +160,17 @@ withNewUser cenv r func = do
                     expectationFailure
                         "Login should return a decodable session header"
                 Header session -> func $ Token $ setCookieValue session
+
+requiresAdmin :: ClientEnv -> (Token -> ClientM a) -> Expectation
+requiresAdmin cenv func =
+    withValidNewUser cenv $ \token -> do
+        errOrStats <- runClient cenv $ func token
+        case errOrStats of
+            Left err ->
+                case err of
+                    FailureResponse {} ->
+                        HTTP.statusCode (Servant.Client.responseStatus err) `shouldBe`
+                        401
+                    _ ->
+                        expectationFailure "Should have got a failure response."
+            Right _ -> expectationFailure "Should not have been allowed."

@@ -8,7 +8,10 @@ module Intray.Web.Server.TestUtils
     , withExampleAccount_
     , withExampleAccountAndLogin
     , withExampleAccountAndLogin_
+    , withAdminAccount
     , withAdminAccount_
+    , withAdminAccountAndLogin
+    , withAdminAccountAndLogin_
     ) where
 
 import TestImport
@@ -120,3 +123,13 @@ withAdminAccount = withFreshAccount (fromJust $ parseUsername "admin") "admin"
 
 withAdminAccount_ :: YesodExample App a -> YesodExample App a
 withAdminAccount_ = withAdminAccount . const . const
+
+withAdminAccountAndLogin ::
+       (Username -> Text -> YesodExample App a) -> YesodExample App a
+withAdminAccountAndLogin func =
+    withAdminAccount $ \un p -> do
+        loginTo un p
+        func un p
+
+withAdminAccountAndLogin_ :: YesodExample App a -> YesodExample App a
+withAdminAccountAndLogin_ = withAdminAccountAndLogin . const . const

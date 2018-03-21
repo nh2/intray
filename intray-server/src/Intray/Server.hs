@@ -34,6 +34,8 @@ import Intray.Server.Types
 import Intray.Server.SigningKey
 
 import Intray.Server.Handler.AddItem
+import Intray.Server.Handler.AdminDeleteAccount
+import Intray.Server.Handler.AdminGetAccounts
 import Intray.Server.Handler.AdminStats
 import Intray.Server.Handler.DeleteAccount
 import Intray.Server.Handler.DeleteItem
@@ -122,4 +124,9 @@ intrayPublicServer =
     {register = serveRegister, login = serveLogin, docs = serveDocs}
 
 intrayAdminServer :: IntrayAdminSite (AsServerT IntrayHandler)
-intrayAdminServer = IntrayAdminSite {adminStats = serveAdminStats}
+intrayAdminServer =
+    IntrayAdminSite
+    { adminStats = serveAdminStats
+    , adminDeleteAccount = serveAdminDeleteAccount
+    , adminGetAccounts = serveAdminGetAccounts
+    }

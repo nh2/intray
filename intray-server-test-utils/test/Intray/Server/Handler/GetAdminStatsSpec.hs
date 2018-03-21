@@ -8,9 +8,6 @@ module Intray.Server.Handler.GetAdminStatsSpec
 
 import TestImport
 
-import qualified Network.HTTP.Types as Http
-import Servant.Client
-
 import Intray.Client
 
 import Intray.Client.Gen ()
@@ -22,20 +19,7 @@ spec =
     withIntrayServer $
     describe "get admin stats" $ do
         it "forbids non-admin users from fetching admin stats" $ \cenv ->
-            withValidNewUser cenv $ \token -> do
-                errOrStats <- runClient cenv $ clientAdminStats token
-                case errOrStats of
-                    Left err ->
-                        case err of
-                            FailureResponse {} ->
-                                Http.statusCode (responseStatus err) `shouldBe`
-                                401
-                            _ ->
-                                expectationFailure
-                                    "Should have got a failure response."
-                    Right _ ->
-                        expectationFailure
-                            "Should not have been allowed to view admin stats."
+            requiresAdmin cenv clientAdminStats
         it "returns valid admin stats" $ \cenv ->
             withAdmin cenv $ \token -> do
                 adminStats <- runClientOrError cenv $ clientAdminStats token

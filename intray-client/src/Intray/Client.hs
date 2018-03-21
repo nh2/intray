@@ -15,6 +15,8 @@ module Intray.Client
     , clientGetAccountInfo
     , clientDeleteAccount
     , clientAdminStats
+    , clientAdminDeleteAccount
+    , clientAdminGetAccounts
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -35,6 +37,7 @@ module Intray.Client
     , parseUsername
     , usernameText
     , NoContent(..)
+    , Token
     , module Data.UUID.Typed
     ) where
 
@@ -66,5 +69,7 @@ clientLogin ::
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 clientDocs :: ClientM GetDocsResponse
 clientAdminStats :: Token -> ClientM AdminStats
-clientShowItem :<|> clientSize :<|> clientListItemUuids :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats =
+clientAdminDeleteAccount :: Token -> UserUUID -> ClientM NoContent
+clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
+clientShowItem :<|> clientSize :<|> clientListItemUuids :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)

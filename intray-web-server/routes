@@ -17,3 +17,4 @@
 
 -- Admin pages
 /admin                          AdminR               GET
+/admin/account/delete/#UserUUID AdminAccountDeleteR  POST

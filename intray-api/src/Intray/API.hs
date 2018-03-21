@@ -50,6 +50,8 @@ module Intray.API
     , GetDocsResponse(..)
     , AdminStats(..)
     , GetAdminStats
+    , AdminDeleteAccount
+    , AdminGetAccounts
     , HashedPassword
     , passwordHash
     , validatePassword
@@ -99,7 +101,7 @@ type IntrayAPI = ToServant (IntraySite AsApi)
 
 data IntraySite route = IntraySite
     { openSite :: route :- ToServant (IntrayOpenSite AsApi)
-    , adminSite :: route :- ToServant (IntrayAdminSite AsApi)
+    , adminSite :: route :- "admin" :> ToServant (IntrayAdminSite AsApi)
     } deriving (Generic)
 
 intrayOpenAPI :: Proxy IntrayOpenAPI
@@ -147,8 +149,10 @@ instance ToJWT AuthCookie
 
 type IntrayAdminAPI = ToServant (IntrayAdminSite AsApi)
 
-newtype IntrayAdminSite route = IntrayAdminSite
+data IntrayAdminSite route = IntrayAdminSite
     { adminStats :: route :- GetAdminStats
+    , adminDeleteAccount :: route :- AdminDeleteAccount
+    , adminGetAccounts :: route :- AdminGetAccounts
     } deriving (Generic)
 
 -- | The item is not guaranteed to be the same one for every call if there are multiple items available.
@@ -361,7 +365,8 @@ instance ToSample SyncResponse
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 data AccountInfo = AccountInfo
-    { accountInfoUsername :: Username
+    { accountInfoUuid :: UserUUID
+    , accountInfoUsername :: Username
     , accountInfoCreatedTimestamp :: UTCTime
     , accountInfoAdmin :: Bool
     } deriving (Show, Eq, Generic)
@@ -447,7 +452,7 @@ instance ToMarkup GetDocsResponse where
 distinct :: Eq a => [a] -> Bool
 distinct ls = length ls == length (nub ls)
 
-type GetAdminStats = ProtectAPI :> "admin" :> "stats" :> Get '[ JSON] AdminStats
+type GetAdminStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 
 data AdminStats = AdminStats
     { adminStatsNbUsers :: Int
@@ -461,3 +466,8 @@ instance FromJSON AdminStats
 instance ToJSON AdminStats
 
 instance ToSample AdminStats
+
+type AdminDeleteAccount
+     = ProtectAPI :> "account" :> Capture "id" UserUUID :> Delete '[ JSON] NoContent
+
+type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[ JSON] [AccountInfo]

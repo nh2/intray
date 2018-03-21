@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.AdminStats
-    ( serveAdminStats
+module Intray.Server.Handler.AdminDeleteAccount
+    ( serveAdminDeleteAccount
     ) where
 
 import Import
@@ -24,10 +24,13 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveAdminStats :: AuthResult AuthCookie -> IntrayHandler AdminStats
-serveAdminStats (Authenticated AuthCookie {..}) =
+serveAdminDeleteAccount ::
+       AuthResult AuthCookie -> UserUUID -> IntrayHandler NoContent
+serveAdminDeleteAccount (Authenticated AuthCookie {..}) uuid =
     withAdminCreds authCookieUserUuid $ do
-        adminStatsNbUsers <- runDb $ count ([] :: [Filter User])
-        adminStatsNbItems <- runDb $ count ([] :: [Filter IntrayItem])
-        pure AdminStats {..}
-serveAdminStats _ = throwAll err401
+        mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid
+        case mEnt of
+            Nothing -> throwError $ err404 {errBody = "User not found."}
+            Just (Entity uid _) -> runDb $ delete uid
+        pure NoContent
+serveAdminDeleteAccount _ _ = throwAll err401
