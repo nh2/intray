@@ -6,6 +6,7 @@
 module Intray.Server.Handler.Utils
     ( runDb
     , withAdminCreds
+    , deleteAccountFully
     ) where
 
 import Import
@@ -36,3 +37,13 @@ withAdminCreds adminCandidate func = do
             if userUsername `elem` admins
                 then func
                 else throwAll err401
+
+deleteAccountFully :: UserUUID -> IntrayHandler ()
+deleteAccountFully uuid = do
+    mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid
+    case mEnt of
+        Nothing -> throwError $ err404 {errBody = "User not found."}
+        Just (Entity uid _) ->
+            runDb $ do
+                deleteWhere [IntrayItemUserId ==. uuid]
+                delete uid
