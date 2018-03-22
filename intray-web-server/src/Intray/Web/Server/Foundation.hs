@@ -47,6 +47,7 @@ import Servant.Common.Req
 import Intray.Client
 
 import Intray.Web.Server.Constants
+import Intray.Web.Server.Persistence
 import Intray.Web.Server.Static
 import Intray.Web.Server.Widget
 
@@ -62,6 +63,7 @@ data App = App
     { appHttpManager :: Http.Manager
     , appStatic :: EmbeddedStatic
     , appAPIBaseUrl :: BaseUrl
+    , appPersistLogins :: Bool
     , appLoginTokens :: MVar (HashMap Username Token)
     }
 
@@ -289,19 +291,45 @@ login form = do
                     else error $ show (urlReq, status, mediaType, resp)
         Right (Headers NoContent (HCons _ (HCons sessionHeader HNil))) ->
             case sessionHeader of
-                Header session -> do
-                    let token = Token $ setCookieValue session
-                    tokenMapVar <- asks appLoginTokens
-                    liftIO $
-                        modifyMVar_ tokenMapVar $
-                        pure . HM.insert (loginFormUsername form) token
+                Header session ->
+                    recordLoginToken (loginFormUsername form) session
                 _ -> undefined -- TODO deal with this error
 
 withLogin :: (Token -> Handler Html) -> Handler Html
 withLogin func = do
     un <- requireAuthId
-    tokenMapVar <- asks appLoginTokens
-    tokenMap <- liftIO $ readMVar tokenMapVar
-    case HM.lookup un tokenMap of
+    mLoginToken <- lookupToginToken un
+    case mLoginToken of
         Nothing -> redirect $ AuthR LoginR
         Just token -> func token
+
+lookupToginToken :: Username -> Handler (Maybe Token)
+lookupToginToken un = do
+    whenPersistLogins loadLogins
+    tokenMapVar <- asks appLoginTokens
+    tokenMap <- liftIO $ readMVar tokenMapVar
+    pure $ HM.lookup un tokenMap
+
+recordLoginToken :: Username -> SetCookie -> Handler ()
+recordLoginToken un session = do
+    let token = Token $ setCookieValue session
+    tokenMapVar <- asks appLoginTokens
+    liftIO $ modifyMVar_ tokenMapVar $ pure . HM.insert un token
+    whenPersistLogins storeLogins
+
+whenPersistLogins :: Handler () -> Handler ()
+whenPersistLogins f = do
+    b <- getsYesod appPersistLogins
+    when b f
+
+loadLogins :: Handler ()
+loadLogins = do
+    tokenMapVar <- asks appLoginTokens
+    liftIO $ modifyMVar_ tokenMapVar $ \m -> fromMaybe m <$> readLogins
+
+storeLogins :: Handler ()
+storeLogins = do
+    tokenMapVar <- asks appLoginTokens
+    liftIO $ do
+        m <- readMVar tokenMapVar
+        writeLogins m

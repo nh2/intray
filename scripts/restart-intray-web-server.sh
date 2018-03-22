@@ -3,7 +3,7 @@ set -x
 
 cd $HOME
 
-killall --wait --signal SIGINT intray-web-server
+killall intray-web-server
 
 set -e
 

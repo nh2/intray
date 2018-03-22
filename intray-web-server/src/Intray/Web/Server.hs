@@ -9,7 +9,6 @@ import Import
 
 import Control.Concurrent
 import Control.Concurrent.Async (concurrently_)
-import Control.Exception
 import qualified Data.HashMap.Strict as HM
 import qualified Network.HTTP.Client as Http
 import Yesod
@@ -22,7 +21,6 @@ import qualified Intray.Server.OptParse as API
 import Intray.Web.Server.Application ()
 import Intray.Web.Server.Foundation
 import Intray.Web.Server.OptParse
-import Intray.Web.Server.Persistence
 
 intrayWebServer :: IO ()
 intrayWebServer = do
@@ -33,10 +31,7 @@ intrayWebServer = do
 runIntrayWebServer :: ServeSettings -> IO ()
 runIntrayWebServer ss@ServeSettings {..} = do
     app <- makeIntrayApp ss
-    when serveSetPersistLogins $ loadLogins app
-    let runServer = warp serveSetPort app
-        cleanup = when serveSetPersistLogins $ storeLogins app
-    runServer `finally` cleanup
+    warp serveSetPort app
 
 makeIntrayApp :: ServeSettings -> IO App
 makeIntrayApp ServeSettings {..} = do
@@ -47,6 +42,7 @@ makeIntrayApp ServeSettings {..} = do
         App
         { appHttpManager = man
         , appStatic = myStatic
+        , appPersistLogins = serveSetPersistLogins
         , appLoginTokens = tokens
         , appAPIBaseUrl = burl
         }
