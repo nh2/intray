@@ -67,10 +67,11 @@
           Steps
         <th>
           Clicks
+        <th>
     <tbody>
       <tr>
         <td> Google Chrome on Android
-        <td .positive>
+        <td>
           <div .ui .ordered .list>
             <div .item>
               Click the Intray icon on the launcher
