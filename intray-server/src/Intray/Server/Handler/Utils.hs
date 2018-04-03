@@ -27,7 +27,7 @@ runDb query = do
     pool <- asks envConnectionPool
     liftIO $ runSqlPool query pool
 
-withAdminCreds :: UserUUID -> IntrayHandler a -> IntrayHandler a
+withAdminCreds :: AccountUUID -> IntrayHandler a -> IntrayHandler a
 withAdminCreds adminCandidate func = do
     admins <- asks envAdmins
     mUser <- runDb $ getBy $ UniqueUserIdentifier adminCandidate
@@ -38,7 +38,7 @@ withAdminCreds adminCandidate func = do
                 then func
                 else throwAll err401
 
-deleteAccountFully :: UserUUID -> IntrayHandler ()
+deleteAccountFully :: AccountUUID -> IntrayHandler ()
 deleteAccountFully uuid = do
     mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid
     case mEnt of

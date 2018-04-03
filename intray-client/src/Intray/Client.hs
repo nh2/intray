@@ -32,7 +32,7 @@ module Intray.Client
     , GetDocsResponse(..)
     , AdminStats(..)
     , ItemUUID
-    , UserUUID
+    , AccountUUID
     , Username
     , parseUsername
     , usernameText
@@ -69,7 +69,7 @@ clientLogin ::
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 clientDocs :: ClientM GetDocsResponse
 clientAdminStats :: Token -> ClientM AdminStats
-clientAdminDeleteAccount :: Token -> UserUUID -> ClientM NoContent
+clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
 clientShowItem :<|> clientSize :<|> clientListItemUuids :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)

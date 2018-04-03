@@ -23,17 +23,17 @@ import Database.Persist.Sql
 import Database.Persist.TH
 
 import Data.UUID.Typed as X
+import Intray.Data.AccountUUID as X
 import Intray.Data.HashedPassword as X
 import Intray.Data.ItemType as X
 import Intray.Data.ItemUUID as X
-import Intray.Data.UserUUID as X
 import Intray.Data.Username as X
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     [persistLowerCase|
 
 User
-    identifier UserUUID
+    identifier AccountUUID
     username Username
     hashedPassword HashedPassword
     createdTimestamp UTCTime
@@ -48,7 +48,7 @@ IntrayItem
     type ItemType
     contents ByteString
     timestamp UTCTime
-    userId UserUUID
+    userId AccountUUID
     UniqueItem identifier type contents timestamp userId
     UniqueIdentifier identifier userId
     deriving Show

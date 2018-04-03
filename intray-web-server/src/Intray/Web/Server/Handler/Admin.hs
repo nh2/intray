@@ -26,7 +26,7 @@ getAdminR =
         token <- genToken
         withNavBar $(widgetFile "admin")
 
-postAdminAccountDeleteR :: UserUUID -> Handler Html
+postAdminAccountDeleteR :: AccountUUID -> Handler Html
 postAdminAccountDeleteR uuid =
     withAdminCreds $ \t -> do
         NoContent <- runClientOrErr $ clientAdminDeleteAccount t uuid

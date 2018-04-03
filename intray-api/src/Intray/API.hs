@@ -56,7 +56,7 @@ module Intray.API
     , passwordHash
     , validatePassword
     , ItemUUID
-    , UserUUID
+    , AccountUUID
     , Username
     , parseUsername
     , usernameText
@@ -140,7 +140,7 @@ data IntrayPublicSite route = IntrayPublicSite
 type ProtectAPI = Auth '[ JWT] AuthCookie
 
 newtype AuthCookie = AuthCookie
-    { authCookieUserUuid :: UserUUID
+    { authCookieUserUuid :: AccountUUID
     } deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 instance FromJWT AuthCookie
@@ -365,7 +365,7 @@ instance ToSample SyncResponse
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 data AccountInfo = AccountInfo
-    { accountInfoUuid :: UserUUID
+    { accountInfoUuid :: AccountUUID
     , accountInfoUsername :: Username
     , accountInfoCreatedTimestamp :: UTCTime
     , accountInfoAdmin :: Bool
@@ -468,6 +468,6 @@ instance ToJSON AdminStats
 instance ToSample AdminStats
 
 type AdminDeleteAccount
-     = ProtectAPI :> "account" :> Capture "id" UserUUID :> Delete '[ JSON] NoContent
+     = ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[ JSON] NoContent
 
 type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[ JSON] [AccountInfo]

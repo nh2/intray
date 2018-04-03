@@ -19,9 +19,9 @@ instance GenUnchecked ItemUUID
 
 instance GenValid ItemUUID
 
-instance GenUnchecked UserUUID
+instance GenUnchecked AccountUUID
 
-instance GenValid UserUUID
+instance GenValid AccountUUID
 
 instance GenUnchecked ItemType
 

@@ -55,7 +55,7 @@ spec = do
     jsonSpecOnValid @Username
     genValidSpec @Username
     eqSpec @HashedPassword
-    eqSpec @UserUUID
-    ordSpec @UserUUID
-    genValidSpec @UserUUID
-    jsonSpecOnValid @UserUUID
+    eqSpec @AccountUUID
+    ordSpec @AccountUUID
+    genValidSpec @AccountUUID
+    jsonSpecOnValid @AccountUUID

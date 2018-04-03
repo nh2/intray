@@ -22,7 +22,7 @@ import Intray.Server.Types
 import Intray.Server.Handler.Utils
 
 serveAdminDeleteAccount ::
-       AuthResult AuthCookie -> UserUUID -> IntrayHandler NoContent
+       AuthResult AuthCookie -> AccountUUID -> IntrayHandler NoContent
 serveAdminDeleteAccount (Authenticated AuthCookie {..}) uuid =
     withAdminCreds authCookieUserUuid $ do
         deleteAccountFully uuid

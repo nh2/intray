@@ -10,7 +10,7 @@ import Data.Time
 import Intray.API
 import Intray.Data
 
-makeIntrayItem :: UserUUID -> ItemUUID -> UTCTime -> TypedItem -> IntrayItem
+makeIntrayItem :: AccountUUID -> ItemUUID -> UTCTime -> TypedItem -> IntrayItem
 makeIntrayItem u i ts TypedItem {..} =
     IntrayItem
     { intrayItemIdentifier = i
