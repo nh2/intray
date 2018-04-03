@@ -80,7 +80,7 @@
               Click the 'add item' tex area.
             <div .item>
               Start typing
-        <td>
+        <td> 3
         <td> <i class="green checkmark icon"></i>
       <tr>
         <td .positive>
@@ -284,7 +284,7 @@
 
 
 <div .ui .huge .padded .segment>
-  <h2 .ui .header> Just write it down
+  <h2 .ui .header>
     Contact
   <p>
     For questions and feedback, feel free to
