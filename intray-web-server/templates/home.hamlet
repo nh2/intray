@@ -124,6 +124,20 @@
       <i .question .icon>
       <div .content>
         <div .header>
+          How is it better than the notes application on my phone?
+        <div .description>
+          Notes and intray Items serve a fundamentally different purpose.
+          Intray items are meant to be short term, ephemeral and for prosessing.
+          Notes have an indeterminate life-time and do not lend themselves well for processing.
+          Intray incorporates the best-practices for processing and is not cluttered by unnecessary features.
+          
+          Moreover, Intray items will persist beyond eventual damage to your phone.
+          This is not the case for all notes apps.
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
           How is it better than google keep, remember the milk, todoist..?
         <div .description>
           Intray has been designed with your ease of mind and efficiency in mind.
@@ -136,8 +150,21 @@
         <div .header>
           How is it better than org-mode?
         <div .description>
-          <div .item> Intray allows for more efficient processing.
-          <div .item> Intray allows you to use a web interface, e.g. through your phone,
-                      as well as a command line interface. This combination makes intray
-                      more efficient to use.
+          <div .item>
+            Intray allows for more efficient processing.
+          <div .item>
+            Intray allows you to use a web interface, e.g. through your phone,
+            as well as a command line interface. This combination makes intray
+            more efficient to use.
 
+
+    <div .item>
+      <i .question .icon>
+      <div .content>
+        <div .header>
+          How do I use Intray for "Getting Things Done" (GTD)?
+        <div .description>
+          Intray was built specifically to act as the first part in a GTD process.
+          Use it as the "in-basket" in the following flowchart.
+        <img .ui .large .centered .image
+          src=@{StaticR static_gtd_flowchart_jpg}>
