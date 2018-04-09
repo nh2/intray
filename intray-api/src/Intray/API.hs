@@ -368,6 +368,7 @@ data AccountInfo = AccountInfo
     { accountInfoUuid :: AccountUUID
     , accountInfoUsername :: Username
     , accountInfoCreatedTimestamp :: UTCTime
+    , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
     } deriving (Show, Eq, Generic)
 

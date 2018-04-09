@@ -37,6 +37,7 @@ User
     username Username
     hashedPassword HashedPassword
     createdTimestamp UTCTime
+    lastLogin UTCTime Maybe
     UniqueUserIdentifier identifier
     UniqueUsername username
     deriving Show

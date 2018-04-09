@@ -35,6 +35,7 @@ serveAdminGetAccounts (Authenticated AuthCookie {..}) =
                 { accountInfoUuid = userIdentifier
                 , accountInfoUsername = userUsername
                 , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoLastLogin = userLastLogin
                 , accountInfoAdmin = userUsername `elem` admins
                 }
 serveAdminGetAccounts _ = throwAll err401

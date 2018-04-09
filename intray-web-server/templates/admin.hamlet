@@ -23,6 +23,8 @@
         <th>
           Created
         <th>
+          Last Login
+        <th>
           Admin
         <th>
           Delete
@@ -36,6 +38,9 @@
             #{usernameText $ accountInfoUsername u}
           <td>
             #{prettyTimestamp now $ accountInfoCreatedTimestamp u}
+          <td>
+            $maybe ll <- accountInfoLastLogin u
+              #{prettyTimestamp now ll}
           <td>
             #{accountInfoAdmin u}
           <td>

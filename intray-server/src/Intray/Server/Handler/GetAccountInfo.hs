@@ -36,6 +36,7 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) = do
                 { accountInfoUuid = authCookieUserUuid
                 , accountInfoUsername = userUsername
                 , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoLastLogin = userLastLogin
                 , accountInfoAdmin = userUsername `elem` admins
                 }
 serveGetAccountInfo _ = throwAll err401

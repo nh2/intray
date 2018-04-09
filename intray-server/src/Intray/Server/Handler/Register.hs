@@ -42,6 +42,7 @@ serveRegister Registration {..} = do
                     , userUsername = registrationUsername
                     , userHashedPassword = hashedPassword
                     , userCreatedTimestamp = now
+                    , userLastLogin = Nothing
                     }
             maybeUserEntity <-
                 runDb . getBy $ UniqueUsername $ userUsername user

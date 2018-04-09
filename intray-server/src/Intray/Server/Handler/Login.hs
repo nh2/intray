@@ -13,6 +13,7 @@ import Import
 
 import Control.Monad.Except
 import qualified Data.Text.Encoding as TE
+import Data.Time
 import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)
@@ -33,7 +34,7 @@ serveLogin LoginForm {..} = do
     me <- runDb $ getBy $ UniqueUsername loginFormUsername
     case me of
         Nothing -> throwError err401
-        Just (Entity _ user) ->
+        Just (Entity uid user) ->
             if validatePassword
                    (userHashedPassword user)
                    (TE.encodeUtf8 loginFormPassword)
@@ -47,5 +48,8 @@ serveLogin LoginForm {..} = do
                         acceptLogin envCookieSettings envJWTSettings cookie
                     case mApplyCookies of
                         Nothing -> throwError err401
-                        Just applyCookies -> return $ applyCookies NoContent
+                        Just applyCookies -> do
+                            now <- liftIO getCurrentTime
+                            runDb $ update uid [UserLastLogin =. Just now]
+                            return $ applyCookies NoContent
                 else throwError err401
