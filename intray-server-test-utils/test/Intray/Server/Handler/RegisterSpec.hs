@@ -33,13 +33,13 @@ spec =
                             let snf =
                                     expectationFailure $
                                     "Should not fail with error: " <> show err
-                            in case err of
-                                   FailureResponse {} ->
-                                       if HTTP.statusCode (responseStatus err) ==
-                                          409
-                                           then pure ()
-                                           else snf
-                                   _ -> snf
+                             in case err of
+                                    FailureResponse {} ->
+                                        if HTTP.statusCode (responseStatus err) ==
+                                           409
+                                            then pure ()
+                                            else snf
+                                    _ -> snf
         describe "duplicated users" $
             it "returns err409 when the username already exists" $ \cenv ->
                 forAllValid $ \(password, registration) -> do
@@ -54,12 +54,12 @@ spec =
                             let snf =
                                     expectationFailure $
                                     "Should not fail with error: " <> show err
-                            in case err of
-                                   FailureResponse {} ->
-                                       if HTTP.statusCode (responseStatus err) ==
-                                          409
-                                           then pure ()
-                                           else snf
-                                   _ -> snf
+                             in case err of
+                                    FailureResponse {} ->
+                                        if HTTP.statusCode (responseStatus err) ==
+                                           409
+                                            then pure ()
+                                            else snf
+                                    _ -> snf
                         Right _ ->
                             expectationFailure "Should not have succeeded."

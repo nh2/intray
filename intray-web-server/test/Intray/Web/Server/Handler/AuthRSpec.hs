@@ -8,6 +8,7 @@ import Network.HTTP.Types
 
 import Yesod.Test
 
+import Intray.Data (parseUsername)
 import Intray.Web.Server.Foundation
 import Intray.Web.Server.TestUtils
 
@@ -21,7 +22,7 @@ spec =
             get $ AuthR registerR
             statusIs 200
         yit "registers an example account correctly" $ do
-            registerFlow
+            registerFlow "example" "example"
             statusIs 303
             loc <- getLocation
             liftIO $ loc `shouldBe` Right AddR
@@ -29,18 +30,26 @@ spec =
             statusIs 200
         yit
             "fails to register and shows an error if an account with the same username exists" $ do
-            registerFlow
+            registerFlow "example" "example"
             statusIs 303
             loc <- getLocation
             liftIO $ loc `shouldBe` Right (AuthR registerR)
             void followRedirect
             statusIs 200
             bodyContains "exists"
+        yit "fails to register and shows an error if the username is not valid" $ do
+            let un = "example with a space"
+            liftIO $ parseUsername un `shouldBe` Nothing
+            registerFlow un "example"
+            statusIs 303
+            loc <- getLocation
+            liftIO $ loc `shouldBe` Right (AuthR registerR)
+            void followRedirect
+            statusIs 200
+            bodyContains "Invalid"
 
-registerFlow :: YesodExample App ()
-registerFlow = do
-    let exampleUsername = "example"
-    let examplePassphrase = "example"
+registerFlow :: Text -> Text -> YesodExample App ()
+registerFlow exampleUsername examplePassphrase = do
     get $ AuthR registerR
     statusIs 200
     request $ do

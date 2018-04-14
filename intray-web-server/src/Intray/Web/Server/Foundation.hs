@@ -88,7 +88,7 @@ instance YesodAuth App where
     authenticate creds =
         if credsPlugin creds == intrayAuthPluginName
             then case parseUsername $ credsIdent creds of
-                     Nothing -> pure $ UserError Msg.NoIdentifierProvided
+                     Nothing -> pure $ UserError Msg.InvalidLogin
                      Just un -> pure $ Authenticated un
             else pure $
                  ServerError $
@@ -140,9 +140,9 @@ postLoginR = do
                         lift $
                             login
                                 LoginForm
-                                { loginFormUsername = un
-                                , loginFormPassword = pwd
-                                }
+                                    { loginFormUsername = un
+                                    , loginFormPassword = pwd
+                                    }
                         pure $ Right un
     case muser of
         Left err -> loginErrorMessageI LoginR err
@@ -173,9 +173,16 @@ postNewAccountR = do
                 (checkMMap
                      (\t ->
                           pure $
-                          case parseUsername t of
-                              Nothing -> Left ("Invalid username" :: Text)
-                              Just un -> Right un)
+                          case parseUsernameWithError t of
+                              Left err ->
+                                  Left
+                                      (T.pack $
+                                       unwords
+                                           [ "Invalid username:"
+                                           , show t ++ ";"
+                                           , err
+                                           ])
+                              Right un -> Right un)
                      usernameText
                      textField)
                 "username" <*>
@@ -186,15 +193,15 @@ postNewAccountR = do
     mdata <-
         case result of
             FormMissing -> invalidArgs ["Form is incomplete"]
-            FormFailure msgs -> invalidArgs msgs
+            FormFailure msgs -> pure $ Left msgs
             FormSuccess d ->
-                return $
+                pure $
                 if newAccountPassword1 d == newAccountPassword2 d
                     then Right
                              Registration
-                             { registrationUsername = newAccountUsername d
-                             , registrationPassword = newAccountPassword1 d
-                             }
+                                 { registrationUsername = newAccountUsername d
+                                 , registrationPassword = newAccountPassword1 d
+                                 }
                     else Left [mr Msg.PassMismatch]
     case mdata of
         Left errs -> do
@@ -220,9 +227,9 @@ postNewAccountR = do
                     lift $ do
                         login
                             LoginForm
-                            { loginFormUsername = registrationUsername reg
-                            , loginFormPassword = registrationPassword reg
-                            }
+                                { loginFormUsername = registrationUsername reg
+                                , loginFormPassword = registrationPassword reg
+                                }
                         setCredsRedirect $
                             Creds
                                 intrayAuthPluginName

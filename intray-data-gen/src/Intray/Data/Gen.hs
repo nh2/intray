@@ -54,7 +54,10 @@ instance GenValid Username where
             Just name -> pure name
             Nothing -> genValid
       where
-        textGen = T.pack <$> ((:) <$> charGen <*> genListOf charGen)
+        textGen =
+            T.pack <$>
+            ((:) <$> charGen <*>
+             ((:) <$> charGen <*> ((:) <$> charGen <*> genListOf charGen)))
         charGen = genValid `suchThat` validUsernameChar
 
 instance GenUnchecked User

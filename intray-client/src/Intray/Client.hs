@@ -35,6 +35,7 @@ module Intray.Client
     , AccountUUID
     , Username
     , parseUsername
+    , parseUsernameWithError
     , usernameText
     , NoContent(..)
     , Token

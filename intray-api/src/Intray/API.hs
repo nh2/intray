@@ -59,8 +59,8 @@ module Intray.API
     , AccountUUID
     , Username
     , parseUsername
+    , parseUsernameWithError
     , usernameText
-    , validUsernameChar
     , module Data.UUID.Typed
     ) where
 

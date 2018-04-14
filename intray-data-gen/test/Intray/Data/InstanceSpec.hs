@@ -17,12 +17,12 @@ spec :: Spec
 spec = do
     eqSpec @ItemUUID
     ordSpec @ItemUUID
-    genValidSpec @ItemUUID
     jsonSpecOnValid @ItemUUID
+    genValidSpec @ItemUUID
     eqSpec @ItemType
     ordSpec @ItemType
-    genValidSpec @ItemType
     jsonSpecOnValid @ItemType
+    genValidSpec @ItemType
     eqSpec @IntrayItem
     genValidSpec @IntrayItem
     eqSpec @(ItemInfo ByteString)
@@ -47,14 +47,14 @@ spec = do
     ordSpec @SyncResponse
     genValidSpec @SyncResponse
     jsonSpecOnValid @SyncResponse
+    eqSpec @Username
+    ordSpec @Username
+    genValidSpec @Username
+    jsonSpecOnValid @Username
+    eqSpec @HashedPassword
     eqSpec @Registration
     genValidSpec @Registration
     jsonSpecOnValid @Registration
-    eqSpec @Username
-    ordSpec @Username
-    jsonSpecOnValid @Username
-    genValidSpec @Username
-    eqSpec @HashedPassword
     eqSpec @AccountUUID
     ordSpec @AccountUUID
     genValidSpec @AccountUUID
