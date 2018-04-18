@@ -82,6 +82,24 @@ instance GenValid SyncResponse where
 instance GenUnchecked Registration
 
 instance GenValid Registration where
-    genValid = Registration <$> genValid <*> genValid
+    genValid = (Registration <$> genValid <*> genValid) `suchThat` isValid
 
 instance GenUnchecked HashedPassword
+
+instance GenUnchecked AccountInfo
+
+instance GenValid AccountInfo where
+    genValid =
+        (AccountInfo <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid) `suchThat`
+        isValid
+
+instance GenUnchecked LoginForm
+
+instance GenValid LoginForm where
+    genValid = (LoginForm <$> genValid <*> genValid) `suchThat` isValid
+
+instance GenUnchecked AdminStats
+
+instance GenValid AdminStats where
+    genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid

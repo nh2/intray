@@ -370,13 +370,26 @@ data AccountInfo = AccountInfo
     , accountInfoCreatedTimestamp :: UTCTime
     , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AccountInfo
 
-instance FromJSON AccountInfo
+instance FromJSON AccountInfo where
+    parseJSON =
+        withObject "AccountInfo" $ \o ->
+            AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*>
+            o .: "last-login" <*>
+            o .: "admin"
 
-instance ToJSON AccountInfo
+instance ToJSON AccountInfo where
+    toJSON AccountInfo {..} =
+        object
+            [ "uuid" .= accountInfoUuid
+            , "username" .= accountInfoUsername
+            , "created" .= accountInfoCreatedTimestamp
+            , "last-login" .= accountInfoLastLogin
+            , "admin" .= accountInfoAdmin
+            ]
 
 instance ToSample AccountInfo
 
@@ -385,7 +398,7 @@ type DeleteAccount = ProtectAPI :> "account" :> Delete '[ JSON] NoContent
 data Registration = Registration
     { registrationUsername :: Username
     , registrationPassword :: Text
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity Registration
 
@@ -407,7 +420,7 @@ type Register
 data LoginForm = LoginForm
     { loginFormUsername :: Username
     , loginFormPassword :: Text
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity LoginForm
 
@@ -458,13 +471,18 @@ type GetAdminStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 data AdminStats = AdminStats
     { adminStatsNbUsers :: Int
     , adminStatsNbItems :: Int
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AdminStats
 
-instance FromJSON AdminStats
+instance FromJSON AdminStats where
+    parseJSON =
+        withObject "AdminStats" $ \o ->
+            AdminStats <$> o .: "users" <*> o .: "items"
 
-instance ToJSON AdminStats
+instance ToJSON AdminStats where
+    toJSON AdminStats {..} =
+        object ["users" .= adminStatsNbUsers, "items" .= adminStatsNbItems]
 
 instance ToSample AdminStats
 

@@ -50,14 +50,13 @@ combineToInstructions (CommandServe ServeFlags {..}) Flags Configuration Environ
     pure
         ( DispatchServe
               ServeSettings
-                  { serveSetPort = port
-                  , serveSetPersistLogins =
-                        fromMaybe False serveFlagPersistLogins
-                  , serveSetAPIPort = apiPort
-                  , serveSetAPIConnectionInfo = connInfo
-                  , serveSetAPIConnectionCount = connCount
-                  , serveSetAPIAdmins = admins
-                  }
+              { serveSetPort = port
+              , serveSetPersistLogins = fromMaybe False serveFlagPersistLogins
+              , serveSetAPIPort = apiPort
+              , serveSetAPIConnectionInfo = connInfo
+              , serveSetAPIConnectionCount = connCount
+              , serveSetAPIAdmins = admins
+              }
         , Settings)
 
 getConfiguration :: Command -> Flags -> IO Configuration
@@ -69,9 +68,9 @@ getEnv = do
     let mv k = lookup k env
     pure
         Environment
-            { envPort = mv "PORT" >>= readMaybe
-            , envAPIPort = mv "API_PORT" >>= readMaybe
-            }
+        { envPort = mv "PORT" >>= readMaybe
+        , envAPIPort = mv "API_PORT" >>= readMaybe
+        }
 
 getArguments :: IO Arguments
 getArguments = do
@@ -84,13 +83,13 @@ runArgumentsParser = execParserPure prefs_ argParser
   where
     prefs_ =
         ParserPrefs
-            { prefMultiSuffix = ""
-            , prefDisambiguate = True
-            , prefShowHelpOnError = True
-            , prefShowHelpOnEmpty = True
-            , prefBacktrack = True
-            , prefColumns = 80
-            }
+        { prefMultiSuffix = ""
+        , prefDisambiguate = True
+        , prefShowHelpOnError = True
+        , prefShowHelpOnEmpty = True
+        , prefBacktrack = True
+        , prefColumns = 80
+        }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_

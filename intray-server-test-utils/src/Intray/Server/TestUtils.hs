@@ -80,11 +80,11 @@ setupIntrayTestApp = do
     let cookieCfg = defaultCookieSettings
     let intrayEnv =
             IntrayServerEnv
-                { envConnectionPool = pool
-                , envCookieSettings = cookieCfg
-                , envJWTSettings = jwtCfg
-                , envAdmins = [fromJust $ parseUsername "admin"]
-                }
+            { envConnectionPool = pool
+            , envCookieSettings = cookieCfg
+            , envJWTSettings = jwtCfg
+            , envAdmins = [fromJust $ parseUsername "admin"]
+            }
     pure
         ( man
         , serveWithContext
@@ -128,9 +128,9 @@ randomRegistration = do
     u2 <- nextRandomUUID :: IO (UUID Text)
     pure
         Registration
-            { registrationUsername = fromJust $ parseUsername $ uuidText u1
-            , registrationPassword = uuidText u2
-            }
+        { registrationUsername = fromJust $ parseUsername $ uuidText u1
+        , registrationPassword = uuidText u2
+        }
 
 withValidNewUserAndData ::
        ClientEnv -> (Username -> Text -> Token -> IO ()) -> Expectation
@@ -148,9 +148,9 @@ withNewUser cenv r func = do
         Right NoContent -> do
             let lf =
                     LoginForm
-                        { loginFormUsername = registrationUsername r
-                        , loginFormPassword = registrationPassword r
-                        }
+                    { loginFormUsername = registrationUsername r
+                    , loginFormPassword = registrationPassword r
+                    }
             Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
                 runClientOrError cenv $ clientLogin lf
             case sessionHeader of

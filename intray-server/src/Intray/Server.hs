@@ -60,11 +60,11 @@ runIntrayServer ServeSettings {..} =
         let cookieCfg = defaultCookieSettings
         let intrayEnv =
                 IntrayServerEnv
-                    { envConnectionPool = pool
-                    , envCookieSettings = cookieCfg
-                    , envJWTSettings = jwtCfg
-                    , envAdmins = serveSetAdmins
-                    }
+                { envConnectionPool = pool
+                , envCookieSettings = cookieCfg
+                , envJWTSettings = jwtCfg
+                , envAdmins = serveSetAdmins
+                }
         liftIO $ Warp.run serveSetPort $ intrayApp intrayEnv
 
 intrayApp :: IntrayServerEnv -> Wai.Application
@@ -75,9 +75,9 @@ intrayApp se =
     addPolicy = cors (const $ Just policy)
     policy =
         simpleCorsResourcePolicy
-            { corsRequestHeaders = ["content-type"]
-            , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
-            }
+        { corsRequestHeaders = ["content-type"]
+        , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
+        }
 
 intrayAppContext :: IntrayServerEnv -> Context '[ CookieSettings, JWTSettings]
 intrayAppContext IntrayServerEnv {..} =
@@ -92,41 +92,41 @@ makeIntrayServer cfg = enter (readerToEither cfg) (toServant intrayServer)
 intrayServer :: IntraySite (AsServerT IntrayHandler)
 intrayServer =
     IntraySite
-        { openSite = toServant intrayOpenServer
-        , adminSite = toServant intrayAdminServer
-        }
+    { openSite = toServant intrayOpenServer
+    , adminSite = toServant intrayAdminServer
+    }
 
 intrayOpenServer :: IntrayOpenSite (AsServerT IntrayHandler)
 intrayOpenServer =
     IntrayOpenSite
-        { protectedSite = toServant intrayProtectedServer
-        , publicSite = toServant intrayPublicServer
-        }
+    { protectedSite = toServant intrayProtectedServer
+    , publicSite = toServant intrayPublicServer
+    }
 
 intrayProtectedServer :: IntrayProtectedSite (AsServerT IntrayHandler)
 intrayProtectedServer =
     IntrayProtectedSite
-        { showItem = serveShowItem
-        , size = serveSize
-        , listItems = serveListItems
-        , listEntireIntray = serveListEntireIntray
-        , addItem = serveAddItem
-        , getItem = serveGetItem
-        , deleteItem = serveDeleteItem
-        , sync = serveSync
-        , accountInfo = serveGetAccountInfo
-        , deleteAccount = serveDeleteAccount
-        }
+    { showItem = serveShowItem
+    , size = serveSize
+    , listItems = serveListItems
+    , listEntireIntray = serveListEntireIntray
+    , addItem = serveAddItem
+    , getItem = serveGetItem
+    , deleteItem = serveDeleteItem
+    , sync = serveSync
+    , accountInfo = serveGetAccountInfo
+    , deleteAccount = serveDeleteAccount
+    }
 
 intrayPublicServer :: IntrayPublicSite (AsServerT IntrayHandler)
 intrayPublicServer =
     IntrayPublicSite
-        {register = serveRegister, login = serveLogin, docs = serveDocs}
+    {register = serveRegister, login = serveLogin, docs = serveDocs}
 
 intrayAdminServer :: IntrayAdminSite (AsServerT IntrayHandler)
 intrayAdminServer =
     IntrayAdminSite
-        { adminStats = serveAdminStats
-        , adminDeleteAccount = serveAdminDeleteAccount
-        , adminGetAccounts = serveAdminGetAccounts
-        }
+    { adminStats = serveAdminStats
+    , adminDeleteAccount = serveAdminDeleteAccount
+    , adminGetAccounts = serveAdminGetAccounts
+    }

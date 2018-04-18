@@ -31,31 +31,44 @@ spec = do
     ordSpec @TypedItem
     genValidSpec @TypedItem
     jsonSpecOnValid @TypedItem
-    eqSpec @(ItemInfo TypedItem)
-    ordSpec @(ItemInfo TypedItem)
-    genValidSpec @(ItemInfo TypedItem)
-    jsonSpecOnValid @(ItemInfo TypedItem)
-    eqSpec @NewSyncItem
-    ordSpec @NewSyncItem
-    genValidSpec @NewSyncItem
-    jsonSpecOnValid @NewSyncItem
-    eqSpec @SyncRequest
-    ordSpec @SyncRequest
-    genValidSpec @SyncRequest
-    jsonSpecOnValid @SyncRequest
-    eqSpec @SyncResponse
-    ordSpec @SyncResponse
-    genValidSpec @SyncResponse
-    jsonSpecOnValid @SyncResponse
     eqSpec @Username
     ordSpec @Username
     genValidSpec @Username
     jsonSpecOnValid @Username
     eqSpec @HashedPassword
-    eqSpec @Registration
-    genValidSpec @Registration
-    jsonSpecOnValid @Registration
     eqSpec @AccountUUID
     ordSpec @AccountUUID
     genValidSpec @AccountUUID
     jsonSpecOnValid @AccountUUID
+    eqSpec @(ItemInfo TypedItem)
+    ordSpec @(ItemInfo TypedItem)
+    genValidSpec @(ItemInfo TypedItem)
+    jsonSpecOnValid @(ItemInfo TypedItem)
+    eqSpec @SyncRequest
+    ordSpec @SyncRequest
+    genValidSpec @SyncRequest
+    jsonSpecOnValid @SyncRequest
+    eqSpec @NewSyncItem
+    ordSpec @NewSyncItem
+    genValidSpec @NewSyncItem
+    jsonSpecOnValid @NewSyncItem
+    eqSpec @SyncResponse
+    ordSpec @SyncResponse
+    genValidSpec @SyncResponse
+    jsonSpecOnValid @SyncResponse
+    eqSpec @AccountInfo
+    ordSpec @AccountInfo
+    genValidSpec @AccountInfo
+    jsonSpecOnValid @AccountInfo
+    eqSpec @Registration
+    ordSpec @Registration
+    genValidSpec @Registration
+    jsonSpecOnValid @Registration
+    eqSpec @LoginForm
+    ordSpec @LoginForm
+    genValidSpec @LoginForm
+    jsonSpecOnValid @LoginForm
+    eqSpec @AdminStats
+    ordSpec @AdminStats
+    genValidSpec @AdminStats
+    jsonSpecOnValid @AdminStats

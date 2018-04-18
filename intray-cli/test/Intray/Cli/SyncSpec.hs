@@ -43,11 +43,11 @@ spec =
                     ]
                 let sets =
                         Settings
-                            { setBaseUrl = Just burl
-                            , setUsername = Just un
-                            , setIntrayDir = dir
-                            , setSyncStrategy = NeverSync
-                            }
+                        { setBaseUrl = Just burl
+                        , setUsername = Just un
+                        , setIntrayDir = dir
+                        , setSyncStrategy = NeverSync
+                        }
                 mToken <- runReaderT loadToken sets
                 token <-
                     case mToken of
