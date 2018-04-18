@@ -7,7 +7,6 @@ module Intray.Client.StoreSpec
 import TestImport
 
 import Intray.Client.Gen ()
-import Intray.Data.Gen ()
 
 import Intray.Client.Store
 

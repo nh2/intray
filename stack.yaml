@@ -2,6 +2,7 @@ flags: {}
 extra-package-dbs: []
 packages:
 - intray-api
+- intray-api-gen
 - intray-cli
 - intray-client
 - intray-client-gen

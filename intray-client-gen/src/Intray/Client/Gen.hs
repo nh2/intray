@@ -7,7 +7,7 @@ import Import
 
 import Intray.Client.Store
 
-import Intray.Data.Gen ()
+import Intray.API.Gen ()
 
 instance GenUnchecked StoreItem
 

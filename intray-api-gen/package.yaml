@@ -1,12 +1,12 @@
-name: intray-data-gen
+name: intray-api-gen
 version: '0.0.0.0'
-synopsis: Generators for intray-data
+synopsis: Generators for intray-api
 category: Intray
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2018 Tom Sydney Kerckhove'
 license: AllRightsReserved
-github: NorfairKing/intray-server
+github: NorfairKing/intray
 default-extensions:
 - NoImplicitPrelude
 
@@ -14,7 +14,7 @@ library:
   source-dirs: src
   ghc-options: -Wall
   exposed-modules:
-  - Intray.Data.Gen
+  - Intray.API.Gen
 
   dependencies:
   - QuickCheck
@@ -25,7 +25,9 @@ library:
   - genvalidity-text
   - genvalidity-time
   - genvalidity-uuid
+  - intray-api
   - intray-data
+  - intray-data-gen
   - text
   - validity
   - validity-bytestring
@@ -33,7 +35,7 @@ library:
   - validity-time
 
 tests:
-  intray-data-test:
+  intray-api-test:
     main: Spec.hs
     source-dirs: test
     ghc-options:
@@ -47,6 +49,8 @@ tests:
     - genvalidity-hspec-aeson
     - genvalidity-text
     - hspec
+    - intray-api
+    - intray-api-gen
     - intray-data
     - intray-data-gen
     - QuickCheck
