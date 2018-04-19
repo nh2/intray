@@ -48,6 +48,6 @@ extra-deps:
   commit: f4919a0f7f69940b865eba6e8138c76d7b1ad10b
   subdirs:
     - yesod-test
-- git: git@github.com:NorfairKing/pretty-relative-time.git
+- git: https://github.com/NorfairKing/pretty-relative-time
   commit: 659a84718bb5056c93cb72bedc3f57c7ba912427
 resolver: lts-9.6
