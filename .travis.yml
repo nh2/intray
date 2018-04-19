@@ -1,34 +1,48 @@
-language: c
-sudo: false
+sudo: true
+language: haskell
 
-addons:
-  apt:
-    packages:
-    - libgmp-dev
-
-cache:
-  directories:
-  - $HOME/.stack
 
 # Handle git submodules ourselves
 git:
   submodules: false
 
+
+cache:
+  directories:
+  - "$HOME/.stack"
+  - "$HOME/build/NorfairKing/intray/.stack-work"
+
+
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:hvr/ghc'
+    packages:
+      - libgmp-dev
+      - cabal-install-2.0
+
+cache:
+  directories:
+  - $HOME/.stack
+
 before_install:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git --version
   - git submodule update --init --recursive
   - mkdir -p ~/.local/bin
   - export PATH=$HOME/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
   - chmod a+x ~/.local/bin/stack
+  - stack --version
 
 install:
-  - stack setup
-  - stack build --only-snapshot
+  - travis_wait 30 stack setup --no-terminal
+  - stack ghc -- --version
+
+  - travis_wait 40 stack build --only-dependencies --no-terminal
+  - travis_wait 40 stack build --test --bench --no-run-tests --no-run-benchmarks --no-terminal
   - stack install hindent
-  - stack install cabal-install
 
 script:
-  - git --version
-  - stack --version
   - travis_wait 120 ./zift.hs run
