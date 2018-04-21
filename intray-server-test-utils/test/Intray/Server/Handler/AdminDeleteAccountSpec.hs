@@ -33,7 +33,7 @@ spec =
                         runClientOrError cenv $ clientGetAccountInfo ut
                     NoContent <-
                         runClientOrError cenv $
-                        clientAdminDeleteAccount token accountInfoUuid
+                        clientAdminDeleteAccount token accountInfoUUID
                     errOrAccountInfo <- runClient cenv $ clientGetAccountInfo ut
                     case errOrAccountInfo of
                         Left err ->

@@ -23,6 +23,6 @@ import Intray.Server.Handler.Utils
 
 serveDeleteAccount :: AuthResult AuthCookie -> IntrayHandler NoContent
 serveDeleteAccount (Authenticated AuthCookie {..}) = do
-    deleteAccountFully authCookieUserUuid
+    deleteAccountFully authCookieUserUUID
     pure NoContent
 serveDeleteAccount _ = throwAll err401

@@ -29,7 +29,7 @@ serveShowItem (Authenticated AuthCookie {..}) = do
     itemsEnt <-
         runDb $
         selectFirst
-            [IntrayItemUserId ==. authCookieUserUuid]
+            [IntrayItemUserId ==. authCookieUserUUID]
             [Asc IntrayItemTimestamp]
     pure $ (makeItemInfo . entityVal) <$> itemsEnt
 serveShowItem _ = throwAll err401

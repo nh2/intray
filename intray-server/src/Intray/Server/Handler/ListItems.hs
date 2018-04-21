@@ -29,6 +29,6 @@ serveListItems (Authenticated AuthCookie {..}) =
     fmap (fmap $ intrayItemIdentifier . entityVal) $
     runDb $
     selectList
-        [IntrayItemUserId ==. authCookieUserUuid]
+        [IntrayItemUserId ==. authCookieUserUUID]
         [Asc IntrayItemTimestamp]
 serveListItems _ = throwAll err401

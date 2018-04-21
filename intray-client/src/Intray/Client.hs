@@ -3,7 +3,7 @@
 module Intray.Client
     ( clientShowItem
     , clientSize
-    , clientListItemUuids
+    , clientListItemUUIDs
     , clientListItems
     , clientAddItem
     , clientGetItem
@@ -56,7 +56,7 @@ import Intray.API
 
 clientShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
 clientSize :: Token -> ClientM Int
-clientListItemUuids :: Token -> ClientM [ItemUUID]
+clientListItemUUIDs :: Token -> ClientM [ItemUUID]
 clientListItems :: Token -> ClientM [ItemInfo TypedItem]
 clientAddItem :: Token -> TypedItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
@@ -72,5 +72,5 @@ clientDocs :: ClientM GetDocsResponse
 clientAdminStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientShowItem :<|> clientSize :<|> clientListItemUuids :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientShowItem :<|> clientSize :<|> clientListItemUUIDs :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)

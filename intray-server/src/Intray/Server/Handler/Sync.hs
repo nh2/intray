@@ -42,7 +42,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     deleteUndeleted =
         runDb $
         deleteWhere
-            [ IntrayItemUserId ==. authCookieUserUuid
+            [ IntrayItemUserId ==. authCookieUserUUID
             , IntrayItemIdentifier <-. syncRequestUndeletedItems
             ]
     syncItemsToBeDeletedLocally :: IntrayHandler [ItemUUID]
@@ -50,7 +50,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
         foundItems <-
             runDb $
             selectList
-                [ IntrayItemUserId ==. authCookieUserUuid
+                [ IntrayItemUserId ==. authCookieUserUUID
                 , IntrayItemIdentifier <-. syncRequestSyncedItems
                 ]
                 []
@@ -65,7 +65,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
         map (makeItemInfo . entityVal) <$>
         runDb
             (selectList
-                 [ IntrayItemUserId ==. authCookieUserUuid
+                 [ IntrayItemUserId ==. authCookieUserUUID
                  , IntrayItemIdentifier /<-. syncRequestSyncedItems
                  ]
                  [])
@@ -77,7 +77,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
             uuid <- liftIO nextRandomUUID
             runDb $
                 insert_ $
-                makeIntrayItem authCookieUserUuid uuid now newSyncItemContents
+                makeIntrayItem authCookieUserUUID uuid now newSyncItemContents
             pure
                 ItemInfo
                     { itemInfoIdentifier = uuid

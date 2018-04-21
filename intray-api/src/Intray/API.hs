@@ -140,7 +140,7 @@ data IntrayPublicSite route = IntrayPublicSite
 type ProtectAPI = Auth '[ JWT] AuthCookie
 
 newtype AuthCookie = AuthCookie
-    { authCookieUserUuid :: AccountUUID
+    { authCookieUserUUID :: AccountUUID
     } deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 instance FromJWT AuthCookie
@@ -365,7 +365,7 @@ instance ToSample SyncResponse
 type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 data AccountInfo = AccountInfo
-    { accountInfoUuid :: AccountUUID
+    { accountInfoUUID :: AccountUUID
     , accountInfoUsername :: Username
     , accountInfoCreatedTimestamp :: UTCTime
     , accountInfoLastLogin :: Maybe UTCTime
@@ -384,7 +384,7 @@ instance FromJSON AccountInfo where
 instance ToJSON AccountInfo where
     toJSON AccountInfo {..} =
         object
-            [ "uuid" .= accountInfoUuid
+            [ "uuid" .= accountInfoUUID
             , "username" .= accountInfoUsername
             , "created" .= accountInfoCreatedTimestamp
             , "last-login" .= accountInfoLastLogin

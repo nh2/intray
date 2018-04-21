@@ -27,7 +27,7 @@ getProcessR =
                case mItem of
                    Nothing -> pure Nothing
                    Just i -> Just <$> makeItemInfoWidget i
-        nrItems <- runClientOrErr $ length <$> clientListItemUuids t
+        nrItems <- runClientOrErr $ length <$> clientListItemUUIDs t
         withNavBar $(widgetFile "process")
 
 makeItemInfoWidget :: ItemInfo TypedItem -> Handler Widget

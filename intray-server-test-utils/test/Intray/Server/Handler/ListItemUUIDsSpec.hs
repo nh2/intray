@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Intray.Server.Handler.ListItemUuidsSpec
+module Intray.Server.Handler.ListItemUUIDsSpec
     ( spec
     ) where
 
@@ -22,13 +22,13 @@ spec =
                 withValidNewUser cenv $ \token -> do
                     uuids <-
                         runClientOrError cenv $ mapM (clientAddItem token) items
-                    itemUuids' <-
-                        runClientOrError cenv $ clientListItemUuids token
-                    itemUuids' `shouldContain` uuids
+                    itemUUIDs' <-
+                        runClientOrError cenv $ clientListItemUUIDs token
+                    itemUUIDs' `shouldContain` uuids
         it "it always lists valid item uuids" $ \cenv ->
             withValidNewUser cenv $ \token -> do
-                itemUuids <- runClientOrError cenv $ clientListItemUuids token
-                shouldBeValid itemUuids
+                itemUUIDs <- runClientOrError cenv $ clientListItemUUIDs token
+                shouldBeValid itemUUIDs
         it "does not list others' item uuids" $ \cenv ->
             forAllValid $ \items1 ->
                 forAllValid $ \items2 ->
@@ -40,9 +40,9 @@ spec =
                             uuids2 <-
                                 runClientOrError cenv $
                                 mapM (clientAddItem token2) items2
-                            itemUuids' <-
+                            itemUUIDs' <-
                                 runClientOrError cenv $
-                                clientListItemUuids token1
-                            itemUuids' `shouldContain` uuids1
+                                clientListItemUUIDs token1
+                            itemUUIDs' `shouldContain` uuids1
                             forM_ (uuids2 :: [ItemUUID]) $ \u ->
-                                u `shouldNotSatisfy` (`elem` itemUuids')
+                                u `shouldNotSatisfy` (`elem` itemUUIDs')

@@ -26,13 +26,13 @@ import Intray.Server.Handler.Utils
 
 serveAdminGetAccounts :: AuthResult AuthCookie -> IntrayHandler [AccountInfo]
 serveAdminGetAccounts (Authenticated AuthCookie {..}) =
-    withAdminCreds authCookieUserUuid $ do
+    withAdminCreds authCookieUserUUID $ do
         admins <- asks envAdmins
         users <- runDb $ selectList [] [Asc UserId]
         pure $
             flip map users $ \(Entity _ User {..}) ->
                 AccountInfo
-                    { accountInfoUuid = userIdentifier
+                    { accountInfoUUID = userIdentifier
                     , accountInfoUsername = userUsername
                     , accountInfoCreatedTimestamp = userCreatedTimestamp
                     , accountInfoLastLogin = userLastLogin

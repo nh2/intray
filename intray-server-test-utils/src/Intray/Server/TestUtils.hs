@@ -140,8 +140,8 @@ withValidNewUserAndData cenv func = do
 
 withNewUser :: ClientEnv -> Registration -> (Token -> IO ()) -> Expectation
 withNewUser cenv r func = do
-    errOrUuid <- runClient cenv $ clientRegister r
-    case errOrUuid of
+    errOrUUID <- runClient cenv $ clientRegister r
+    case errOrUUID of
         Left err ->
             expectationFailure $
             "Registration should not fail with error: " <> show err

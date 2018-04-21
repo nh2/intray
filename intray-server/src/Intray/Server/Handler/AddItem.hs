@@ -30,6 +30,6 @@ serveAddItem :: AuthResult AuthCookie -> TypedItem -> IntrayHandler ItemUUID
 serveAddItem (Authenticated AuthCookie {..}) typedItem = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    runDb $ insert_ $ makeIntrayItem authCookieUserUuid uuid now typedItem
+    runDb $ insert_ $ makeIntrayItem authCookieUserUUID uuid now typedItem
     pure uuid
 serveAddItem _ _ = throwAll err401

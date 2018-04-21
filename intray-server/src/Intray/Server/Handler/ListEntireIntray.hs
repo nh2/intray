@@ -29,7 +29,7 @@ serveListEntireIntray (Authenticated AuthCookie {..}) = do
     itemsEnts <-
         runDb $
         selectList
-            [IntrayItemUserId ==. authCookieUserUuid]
+            [IntrayItemUserId ==. authCookieUserUUID]
             [Asc IntrayItemTimestamp]
     pure $ map (makeItemInfo . entityVal) itemsEnts
 serveListEntireIntray _ = throwAll err401

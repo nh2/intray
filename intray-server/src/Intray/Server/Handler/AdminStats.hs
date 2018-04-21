@@ -26,7 +26,7 @@ import Intray.Server.Handler.Utils
 
 serveAdminStats :: AuthResult AuthCookie -> IntrayHandler AdminStats
 serveAdminStats (Authenticated AuthCookie {..}) =
-    withAdminCreds authCookieUserUuid $ do
+    withAdminCreds authCookieUserUUID $ do
         adminStatsNbUsers <- runDb $ count ([] :: [Filter User])
         adminStatsNbItems <- runDb $ count ([] :: [Filter IntrayItem])
         pure AdminStats {..}

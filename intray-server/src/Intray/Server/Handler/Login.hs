@@ -41,7 +41,7 @@ serveLogin LoginForm {..} = do
                 then do
                     let cookie =
                             AuthCookie
-                                {authCookieUserUuid = userIdentifier user}
+                                {authCookieUserUUID = userIdentifier user}
                     IntrayServerEnv {..} <- ask
                     mApplyCookies <-
                         liftIO $
