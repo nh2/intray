@@ -32,10 +32,10 @@ serveAdminGetAccounts (Authenticated AuthCookie {..}) =
         pure $
             flip map users $ \(Entity _ User {..}) ->
                 AccountInfo
-                { accountInfoUuid = userIdentifier
-                , accountInfoUsername = userUsername
-                , accountInfoCreatedTimestamp = userCreatedTimestamp
-                , accountInfoLastLogin = userLastLogin
-                , accountInfoAdmin = userUsername `elem` admins
-                }
+                    { accountInfoUuid = userIdentifier
+                    , accountInfoUsername = userUsername
+                    , accountInfoCreatedTimestamp = userCreatedTimestamp
+                    , accountInfoLastLogin = userLastLogin
+                    , accountInfoAdmin = userUsername `elem` admins
+                    }
 serveAdminGetAccounts _ = throwAll err401
