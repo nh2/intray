@@ -5,26 +5,29 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.AdminDeleteAccount
-    ( serveAdminDeleteAccount
+module Intray.Server.Handler.Admin.GetStats
+    ( serveAdminGetStats
     ) where
 
 import Import
+
+import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 
 import Intray.API
+import Intray.Data
 
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveAdminDeleteAccount ::
-       AuthResult AuthCookie -> AccountUUID -> IntrayHandler NoContent
-serveAdminDeleteAccount (Authenticated AuthCookie {..}) uuid =
+serveAdminGetStats :: AuthResult AuthCookie -> IntrayHandler AdminStats
+serveAdminGetStats (Authenticated AuthCookie {..}) =
     withAdminCreds authCookieUserUUID $ do
-        deleteAccountFully uuid
-        pure NoContent
-serveAdminDeleteAccount _ _ = throwAll err401
+        adminStatsNbUsers <- runDb $ count ([] :: [Filter User])
+        adminStatsNbItems <- runDb $ count ([] :: [Filter IntrayItem])
+        pure AdminStats {..}
+serveAdminGetStats _ = throwAll err401

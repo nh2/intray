@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.AdminGetAccounts
+module Intray.Server.Handler.Admin.GetAccounts
     ( serveAdminGetAccounts
     ) where
 

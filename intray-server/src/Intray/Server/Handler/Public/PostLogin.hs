@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.PostLogin
+module Intray.Server.Handler.Public.PostLogin
     ( servePostLogin
     ) where
 

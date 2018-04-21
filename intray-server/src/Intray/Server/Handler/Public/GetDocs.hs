@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Intray.Server.Handler.GetDocs
+module Intray.Server.Handler.Public.GetDocs
     ( serveGetDocs
     ) where
 
