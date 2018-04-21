@@ -22,11 +22,13 @@ import Intray.Server.TestUtils
 
 spec :: Spec
 spec =
-    withIntrayServer $ do
+    withIntrayServer $
+    describe "Register" $ do
         describe "make user" $
             it "does not crash" $ \cenv ->
                 forAllValid $ \registration -> do
-                    nameOrError <- runClient cenv $ clientRegister registration
+                    nameOrError <-
+                        runClient cenv $ clientPostRegister registration
                     case nameOrError of
                         Right NoContent -> pure ()
                         Left err ->
@@ -43,9 +45,9 @@ spec =
         describe "duplicated users" $
             it "returns err409 when the username already exists" $ \cenv ->
                 forAllValid $ \(password, registration) -> do
-                    void $ runClient cenv $ clientRegister registration
+                    void $ runClient cenv $ clientPostRegister registration
                     nameOrError <-
-                        runClient cenv . clientRegister $
+                        runClient cenv . clientPostRegister $
                         Registration
                             (registrationUsername registration)
                             password

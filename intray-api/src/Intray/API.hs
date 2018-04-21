@@ -22,11 +22,11 @@ module Intray.API
     , IntrayAdminAPI
     , IntrayAdminSite(..)
     , AuthCookie(..)
-    , IntrayListItems
-    , ListEntireIntray
-    , ShowItem
-    , IntraySize
-    , AddItem
+    , GetItemUUIDs
+    , GetItems
+    , GetShowItem
+    , GetIntraySize
+    , PostAddItem
     , GetItem
     , DeleteItem
     , ItemType(..)
@@ -38,18 +38,18 @@ module Intray.API
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
-    , Sync
+    , PostSync
     , AccountInfo(..)
     , GetAccountInfo
     , DeleteAccount
     , Registration(..)
-    , Register
+    , PostRegister
     , LoginForm(..)
-    , Login
-    , Docs
+    , PostLogin
+    , GetDocs
     , GetDocsResponse(..)
     , AdminStats(..)
-    , GetAdminStats
+    , AdminGetStats
     , AdminDeleteAccount
     , AdminGetAccounts
     , HashedPassword
@@ -117,24 +117,24 @@ data IntrayOpenSite route = IntrayOpenSite
 type IntrayProtectedAPI = ToServant (IntrayProtectedSite AsApi)
 
 data IntrayProtectedSite route = IntrayProtectedSite
-    { showItem :: route :- ShowItem
-    , size :: route :- IntraySize
-    , listItems :: route :- IntrayListItems
-    , listEntireIntray :: route :- ListEntireIntray
-    , addItem :: route :- AddItem
+    { getShowItem :: route :- GetShowItem
+    , getIntraySize :: route :- GetIntraySize
+    , getItemUUIDs :: route :- GetItemUUIDs
+    , getItems :: route :- GetItems
+    , postAddItem :: route :- PostAddItem
     , getItem :: route :- GetItem
     , deleteItem :: route :- DeleteItem
-    , sync :: route :- Sync
-    , accountInfo :: route :- GetAccountInfo
+    , postSync :: route :- PostSync
+    , getAccountInfo :: route :- GetAccountInfo
     , deleteAccount :: route :- DeleteAccount
     } deriving (Generic)
 
 type IntrayPublicAPI = ToServant (IntrayPublicSite AsApi)
 
 data IntrayPublicSite route = IntrayPublicSite
-    { register :: route :- Register
-    , login :: route :- Login
-    , docs :: route :- Docs
+    { postRegister :: route :- PostRegister
+    , postLogin :: route :- PostLogin
+    , getDocs :: route :- GetDocs
     } deriving (Generic)
 
 type ProtectAPI = Auth '[ JWT] AuthCookie
@@ -150,27 +150,26 @@ instance ToJWT AuthCookie
 type IntrayAdminAPI = ToServant (IntrayAdminSite AsApi)
 
 data IntrayAdminSite route = IntrayAdminSite
-    { adminStats :: route :- GetAdminStats
+    { adminGetStats :: route :- AdminGetStats
     , adminDeleteAccount :: route :- AdminDeleteAccount
     , adminGetAccounts :: route :- AdminGetAccounts
     } deriving (Generic)
 
 -- | The item is not guaranteed to be the same one for every call if there are multiple items available.
-type ShowItem
+type GetShowItem
      = ProtectAPI :> "intray" :> "show-item" :> Get '[ JSON] (Maybe (ItemInfo TypedItem))
 
 -- | Show the number of items in the intray
-type IntraySize = ProtectAPI :> "intray" :> "size" :> Get '[ JSON] Int
+type GetIntraySize = ProtectAPI :> "intray" :> "size" :> Get '[ JSON] Int
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type IntrayListItems
-     = ProtectAPI :> "intray" :> "uuids" :> Get '[ JSON] [ItemUUID]
+type GetItemUUIDs = ProtectAPI :> "intray" :> "uuids" :> Get '[ JSON] [ItemUUID]
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type ListEntireIntray
+type GetItems
      = ProtectAPI :> "intray" :> "items" :> Get '[ JSON] [ItemInfo TypedItem]
 
-type AddItem
+type PostAddItem
      = ProtectAPI :> "intray" :> "item" :> ReqBody '[ JSON] TypedItem :> Post '[ JSON] ItemUUID
 
 type GetItem
@@ -258,7 +257,7 @@ instance ToSample Int where
 type DeleteItem
      = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
-type Sync
+type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
 
 data SyncRequest = SyncRequest
@@ -414,7 +413,7 @@ instance FromJSON Registration where
 
 instance ToSample Registration
 
-type Register
+type PostRegister
      = "item" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 data LoginForm = LoginForm
@@ -441,10 +440,10 @@ instance ToSample Username
 instance ToSample SetCookie where
     toSamples Proxy = singleSample def
 
-type Login
+type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 
-type Docs = Get '[ HTML] GetDocsResponse
+type GetDocs = Get '[ HTML] GetDocsResponse
 
 newtype GetDocsResponse = GetDocsResponse
     { unGetDocsResponse :: HTML.Html
@@ -466,7 +465,7 @@ instance ToMarkup GetDocsResponse where
 distinct :: Eq a => [a] -> Bool
 distinct ls = length ls == length (nub ls)
 
-type GetAdminStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
+type AdminGetStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 
 data AdminStats = AdminStats
     { adminStatsNbUsers :: Int

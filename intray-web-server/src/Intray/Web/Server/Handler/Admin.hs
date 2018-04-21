@@ -20,7 +20,7 @@ import Intray.Web.Server.Time
 getAdminR :: Handler Html
 getAdminR =
     withAdminCreds $ \t -> do
-        AdminStats {..} <- runClientOrErr $ clientAdminStats t
+        AdminStats {..} <- runClientOrErr $ clientAdminGetStats t
         users <- runClientOrErr $ clientAdminGetAccounts t
         now <- liftIO getCurrentTime
         token <- genToken

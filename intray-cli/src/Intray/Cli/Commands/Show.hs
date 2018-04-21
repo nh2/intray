@@ -14,7 +14,7 @@ import qualified Data.Text as T
 import Data.Time
 import Text.Time.Pretty
 
-import Intray.API hiding (showItem)
+import Intray.API
 
 import Intray.Cli.LastSeen
 import Intray.Cli.OptParse

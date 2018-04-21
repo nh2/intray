@@ -6,7 +6,8 @@ module Intray.Cli.Commands.Sync
 
 import Import
 
-import Intray.API hiding (sync)
+import Intray.API
+
 import Intray.Client
 import Intray.Client.Store
 
@@ -19,7 +20,7 @@ sync :: CliM ()
 sync = do
     before <- readStoreOrEmpty
     let req = makeSyncRequest before
-    mErrOrStore <- withToken $ \t -> runSingleClient $ clientSync t req
+    mErrOrStore <- withToken $ \t -> runSingleClient $ clientPostSync t req
     after <-
         case mErrOrStore of
             Nothing -> liftIO $ die "No server configured."

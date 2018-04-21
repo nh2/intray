@@ -23,11 +23,11 @@ getProcessR :: Handler Html
 getProcessR =
     withLogin $ \t -> do
         mItemWidget <-
-            do mItem <- runClientOrErr $ clientShowItem t
+            do mItem <- runClientOrErr $ clientGetShowItem t
                case mItem of
                    Nothing -> pure Nothing
                    Just i -> Just <$> makeItemInfoWidget i
-        nrItems <- runClientOrErr $ length <$> clientListItemUUIDs t
+        nrItems <- runClientOrErr $ length <$> clientGetItemUUIDs t
         withNavBar $(widgetFile "process")
 
 makeItemInfoWidget :: ItemInfo TypedItem -> Handler Widget
@@ -49,7 +49,7 @@ postAddR =
         NewItem {..} <- runInputPost newItemForm
         void $
             runClientOrErr $
-            clientAddItem t $ textTypedItem $ unTextarea newItemText
+            clientPostAddItem t $ textTypedItem $ unTextarea newItemText
         redirect AddR
 
 newtype DoneItem = DoneItem

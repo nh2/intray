@@ -140,7 +140,7 @@ withValidNewUserAndData cenv func = do
 
 withNewUser :: ClientEnv -> Registration -> (Token -> IO ()) -> Expectation
 withNewUser cenv r func = do
-    errOrUUID <- runClient cenv $ clientRegister r
+    errOrUUID <- runClient cenv $ clientPostRegister r
     case errOrUUID of
         Left err ->
             expectationFailure $
@@ -152,7 +152,7 @@ withNewUser cenv r func = do
                         , loginFormPassword = registrationPassword r
                         }
             Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
-                runClientOrError cenv $ clientLogin lf
+                runClientOrError cenv $ clientPostLogin lf
             case sessionHeader of
                 MissingHeader ->
                     expectationFailure "Login should return a session header"

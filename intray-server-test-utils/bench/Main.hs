@@ -47,47 +47,47 @@ register :: ClientEnv -> Benchmarkable
 register cenv =
     whnfIO $ do
         r <- randomRegistration
-        runClientOrError cenv $ clientRegister r
+        runClientOrError cenv $ clientPostRegister r
 
 registerAndLogin :: ClientEnv -> Benchmarkable
 registerAndLogin cenv =
     whnfIO $ do
         r <- randomRegistration
         runClientOrError cenv $ do
-            NoContent <- clientRegister r
-            clientLogin $ registrationLoginForm r
+            NoContent <- clientPostRegister r
+            clientPostLogin $ registrationLoginForm r
 
 size :: ClientEnv -> Token -> Benchmarkable
-size cenv tok = whnfIO $ runClientOrError cenv $ clientSize tok
+size cenv tok = whnfIO $ runClientOrError cenv $ clientGetSize tok
 
 add :: ClientEnv -> Token -> TypedItem -> Benchmarkable
-add cenv tok ti = whnfIO $ runClientOrError cenv $ clientAddItem tok ti
+add cenv tok ti = whnfIO $ runClientOrError cenv $ clientPostAddItem tok ti
 
 addAndGet :: ClientEnv -> Token -> TypedItem -> Benchmarkable
 addAndGet cenv tok ti =
     whnfIO $
     runClientOrError cenv $ do
-        u <- clientAddItem tok ti
+        u <- clientPostAddItem tok ti
         clientGetItem tok u
 
 addAndDelete :: ClientEnv -> Token -> TypedItem -> Benchmarkable
 addAndDelete cenv tok ti =
     whnfIO $
     runClientOrError cenv $ do
-        u <- clientAddItem tok ti
+        u <- clientPostAddItem tok ti
         clientDeleteItem tok u
 
 setupTestUser :: ClientEnv -> IO (Registration, Token)
 setupTestUser cenv = do
     r <- randomRegistration
-    NoContent <- runClientOrError cenv $ clientRegister r
+    NoContent <- runClientOrError cenv $ clientPostRegister r
     t <- login cenv $ registrationLoginForm r
     pure (r, t)
 
 login :: ClientEnv -> LoginForm -> IO Token
 login cenv form = do
     Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
-        runClientOrError cenv $ clientLogin form
+        runClientOrError cenv $ clientPostLogin form
     case sessionHeader of
         Header session -> pure $ Token $ setCookieValue session
         _ -> die "something is wrong in the benchmark"

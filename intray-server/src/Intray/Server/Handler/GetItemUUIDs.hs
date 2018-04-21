@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.ListItems
-    ( serveListItems
+module Intray.Server.Handler.GetItemUUIDs
+    ( serveGetItemUUIDs
     ) where
 
 import Import
@@ -24,11 +24,11 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveListItems :: AuthResult AuthCookie -> IntrayHandler [ItemUUID]
-serveListItems (Authenticated AuthCookie {..}) =
+serveGetItemUUIDs :: AuthResult AuthCookie -> IntrayHandler [ItemUUID]
+serveGetItemUUIDs (Authenticated AuthCookie {..}) =
     fmap (fmap $ intrayItemIdentifier . entityVal) $
     runDb $
     selectList
         [IntrayItemUserId ==. authCookieUserUUID]
         [Asc IntrayItemTimestamp]
-serveListItems _ = throwAll err401
+serveGetItemUUIDs _ = throwAll err401

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Intray.Server.Handler.GetAdminStatsSpec
+module Intray.Server.Handler.AdminGetStatsSpec
     ( spec
     ) where
 
@@ -17,10 +17,10 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "get admin stats" $ do
+    describe "AdminGetStats" $ do
         it "forbids non-admin users from fetching admin stats" $ \cenv ->
-            requiresAdmin cenv clientAdminStats
+            requiresAdmin cenv clientAdminGetStats
         it "returns valid admin stats" $ \cenv ->
             withAdmin cenv $ \token -> do
-                adminStats <- runClientOrError cenv $ clientAdminStats token
+                adminStats <- runClientOrError cenv $ clientAdminGetStats token
                 shouldBeValid adminStats

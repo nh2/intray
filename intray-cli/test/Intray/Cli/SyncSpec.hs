@@ -56,7 +56,7 @@ spec =
                                 "Should have a token after logging in"
                             undefined
                         Just t -> pure t
-                uuid <- runClientOrError cenv $ clientAddItem token ti
+                uuid <- runClientOrError cenv $ clientPostAddItem token ti
                 intray ["sync", "--url", showBaseUrl burl, "--intray-dir", d]
                 intray ["show", "--url", showBaseUrl burl, "--intray-dir", d]
                 mLastSeen1 <- runReaderT readLastSeen sets

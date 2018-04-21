@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.Login
-    ( serveLogin
+module Intray.Server.Handler.PostLogin
+    ( servePostLogin
     ) where
 
 import Import
@@ -27,10 +27,10 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveLogin ::
+servePostLogin ::
        LoginForm
     -> IntrayHandler (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
-serveLogin LoginForm {..} = do
+servePostLogin LoginForm {..} = do
     me <- runDb $ getBy $ UniqueUsername loginFormUsername
     case me of
         Nothing -> throwError err401

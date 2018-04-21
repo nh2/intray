@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Intray.Server.Handler.Docs
-    ( serveDocs
+module Intray.Server.Handler.GetDocs
+    ( serveGetDocs
     ) where
 
 import Import
@@ -21,8 +21,8 @@ import Intray.API
 
 import Intray.Server.Types
 
-serveDocs :: IntrayHandler GetDocsResponse
-serveDocs =
+serveGetDocs :: IntrayHandler GetDocsResponse
+serveGetDocs =
     case intrayHtmlResponse of
         Left _ ->
             throwError $

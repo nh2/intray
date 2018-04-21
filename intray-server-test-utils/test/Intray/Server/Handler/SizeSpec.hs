@@ -13,13 +13,13 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "size" $
+    describe "GetSize" $
     it "does not count other accounts' items" $ \cenv ->
         forAllValid $ \t ->
             withValidNewUser cenv $ \t1 ->
                 withValidNewUser cenv $ \t2 -> do
                     mr <-
                         runClientOrError cenv $ do
-                            void $ clientAddItem t1 t
-                            clientSize t2
+                            void $ clientPostAddItem t1 t
+                            clientGetSize t2
                     mr `shouldBe` 0

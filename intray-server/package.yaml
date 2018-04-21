@@ -17,7 +17,7 @@ library:
   exposed-modules:
   - IntrayServer
   - Intray.Server
-  - Intray.Server.Handler.Sync
+  - Intray.Server.Handler.PostSync
   - Intray.Server.Handler.Utils
   - Intray.Server.Types
   - Intray.Server.OptParse

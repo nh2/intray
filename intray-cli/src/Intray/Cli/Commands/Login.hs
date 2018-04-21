@@ -13,7 +13,8 @@ import Import
 import Servant
 import Servant.Auth.Server.SetCookieOrphan ()
 
-import Intray.API hiding (login)
+import Intray.API
+
 import Intray.Client
 
 import Intray.Cli.Client
@@ -32,7 +33,7 @@ login LoginSettings {..} = do
                     (LoginForm <$> promptUsername loginSetUsername <*>
                      promptPassword loginSetPassword)
                     sets
-            clientLogin loginForm
+            clientPostLogin loginForm
     case mRes of
         Nothing -> liftIO $ die "No server configured."
         Just (Headers NoContent (HCons _ (HCons sessionHeader HNil))) ->

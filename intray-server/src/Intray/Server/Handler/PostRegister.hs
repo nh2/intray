@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.Register
-    ( serveRegister
+module Intray.Server.Handler.PostRegister
+    ( servePostRegister
     ) where
 
 import Import
@@ -28,8 +28,8 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveRegister :: Registration -> IntrayHandler NoContent
-serveRegister Registration {..} = do
+servePostRegister :: Registration -> IntrayHandler NoContent
+servePostRegister Registration {..} = do
     maybeHashedPassword <- liftIO $ passwordHash registrationPassword
     case maybeHashedPassword of
         Nothing -> throwError $ err400 {errBody = "Failed to hash password."}

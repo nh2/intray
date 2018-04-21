@@ -208,7 +208,7 @@ postNewAccountR = do
             setMessage $ toHtml $ T.concat errs
             redirect registerR
         Right reg -> do
-            errOrOk <- lift $ runClient $ clientRegister reg
+            errOrOk <- lift $ runClient $ clientPostRegister reg
             case errOrOk of
                 Left err -> do
                     case err of
@@ -287,7 +287,7 @@ handleStandardServantErrs err func =
 
 login :: LoginForm -> Handler ()
 login form = do
-    errOrRes <- runClient $ clientLogin form
+    errOrRes <- runClient $ clientPostLogin form
     case errOrRes of
         Left err ->
             handleStandardServantErrs err $ \urlReq status mediaType resp ->

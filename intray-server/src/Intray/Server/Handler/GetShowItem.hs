@@ -5,9 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.Size
-    ( serveSize
-    ) where
+module Intray.Server.Handler.GetShowItem where
 
 import Import
 
@@ -23,8 +21,15 @@ import Intray.Data
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
+import Intray.Server.Item
 
-serveSize :: AuthResult AuthCookie -> IntrayHandler Int
-serveSize (Authenticated AuthCookie {..}) =
-    runDb $ count [IntrayItemUserId ==. authCookieUserUUID]
-serveSize _ = throwAll err401
+serveGetShowItem ::
+       AuthResult AuthCookie -> IntrayHandler (Maybe (ItemInfo TypedItem))
+serveGetShowItem (Authenticated AuthCookie {..}) = do
+    itemsEnt <-
+        runDb $
+        selectFirst
+            [IntrayItemUserId ==. authCookieUserUUID]
+            [Asc IntrayItemTimestamp]
+    pure $ (makeItemInfo . entityVal) <$> itemsEnt
+serveGetShowItem _ = throwAll err401

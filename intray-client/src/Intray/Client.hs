@@ -1,20 +1,20 @@
 {-# LANGUAGE DataKinds #-}
 
 module Intray.Client
-    ( clientShowItem
-    , clientSize
-    , clientListItemUUIDs
-    , clientListItems
-    , clientAddItem
+    ( clientGetShowItem
+    , clientGetSize
+    , clientGetItemUUIDs
+    , clientGetItems
+    , clientPostAddItem
     , clientGetItem
     , clientDeleteItem
-    , clientSync
-    , clientRegister
-    , clientLogin
-    , clientDocs
+    , clientPostSync
+    , clientPostRegister
+    , clientPostLogin
+    , clientGetDocs
     , clientGetAccountInfo
     , clientDeleteAccount
-    , clientAdminStats
+    , clientAdminGetStats
     , clientAdminDeleteAccount
     , clientAdminGetAccounts
     , ItemType(..)
@@ -54,23 +54,23 @@ import Servant.Client
 
 import Intray.API
 
-clientShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
-clientSize :: Token -> ClientM Int
-clientListItemUUIDs :: Token -> ClientM [ItemUUID]
-clientListItems :: Token -> ClientM [ItemInfo TypedItem]
-clientAddItem :: Token -> TypedItem -> ClientM ItemUUID
+clientGetShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
+clientGetSize :: Token -> ClientM Int
+clientGetItemUUIDs :: Token -> ClientM [ItemUUID]
+clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
+clientPostAddItem :: Token -> TypedItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientSync :: Token -> SyncRequest -> ClientM SyncResponse
+clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientDeleteAccount :: Token -> ClientM NoContent
-clientRegister :: Registration -> ClientM NoContent
-clientLogin ::
+clientPostRegister :: Registration -> ClientM NoContent
+clientPostLogin ::
        LoginForm
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
-clientDocs :: ClientM GetDocsResponse
-clientAdminStats :: Token -> ClientM AdminStats
+clientGetDocs :: ClientM GetDocsResponse
+clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientShowItem :<|> clientSize :<|> clientListItemUUIDs :<|> clientListItems :<|> clientAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientRegister :<|> clientLogin :<|> clientDocs :<|> clientAdminStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)

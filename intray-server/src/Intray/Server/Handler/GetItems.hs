@@ -5,9 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.AdminStats
-    ( serveAdminStats
-    ) where
+module Intray.Server.Handler.GetItems where
 
 import Import
 
@@ -20,14 +18,17 @@ import Servant.Auth.Server.SetCookieOrphan ()
 import Intray.API
 import Intray.Data
 
+import Intray.Server.Item
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveAdminStats :: AuthResult AuthCookie -> IntrayHandler AdminStats
-serveAdminStats (Authenticated AuthCookie {..}) =
-    withAdminCreds authCookieUserUUID $ do
-        adminStatsNbUsers <- runDb $ count ([] :: [Filter User])
-        adminStatsNbItems <- runDb $ count ([] :: [Filter IntrayItem])
-        pure AdminStats {..}
-serveAdminStats _ = throwAll err401
+serveGetItems :: AuthResult AuthCookie -> IntrayHandler [ItemInfo TypedItem]
+serveGetItems (Authenticated AuthCookie {..}) = do
+    itemsEnts <-
+        runDb $
+        selectList
+            [IntrayItemUserId ==. authCookieUserUUID]
+            [Asc IntrayItemTimestamp]
+    pure $ map (makeItemInfo . entityVal) itemsEnts
+serveGetItems _ = throwAll err401

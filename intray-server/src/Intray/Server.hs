@@ -33,22 +33,22 @@ import Intray.Server.Types
 
 import Intray.Server.SigningKey
 
-import Intray.Server.Handler.AddItem
 import Intray.Server.Handler.AdminDeleteAccount
 import Intray.Server.Handler.AdminGetAccounts
-import Intray.Server.Handler.AdminStats
+import Intray.Server.Handler.AdminGetStats
 import Intray.Server.Handler.DeleteAccount
 import Intray.Server.Handler.DeleteItem
-import Intray.Server.Handler.Docs
 import Intray.Server.Handler.GetAccountInfo
+import Intray.Server.Handler.GetDocs
+import Intray.Server.Handler.GetIntraySize
 import Intray.Server.Handler.GetItem
-import Intray.Server.Handler.ListEntireIntray
-import Intray.Server.Handler.ListItems
-import Intray.Server.Handler.Login
-import Intray.Server.Handler.Register
-import Intray.Server.Handler.ShowItem
-import Intray.Server.Handler.Size
-import Intray.Server.Handler.Sync
+import Intray.Server.Handler.GetItemUUIDs
+import Intray.Server.Handler.GetItems
+import Intray.Server.Handler.GetShowItem
+import Intray.Server.Handler.PostAddItem
+import Intray.Server.Handler.PostLogin
+import Intray.Server.Handler.PostRegister
+import Intray.Server.Handler.PostSync
 
 runIntrayServer :: ServeSettings -> IO ()
 runIntrayServer ServeSettings {..} =
@@ -106,27 +106,30 @@ intrayOpenServer =
 intrayProtectedServer :: IntrayProtectedSite (AsServerT IntrayHandler)
 intrayProtectedServer =
     IntrayProtectedSite
-        { showItem = serveShowItem
-        , size = serveSize
-        , listItems = serveListItems
-        , listEntireIntray = serveListEntireIntray
-        , addItem = serveAddItem
+        { getShowItem = serveGetShowItem
+        , getIntraySize = serveGetIntraySize
+        , getItemUUIDs = serveGetItemUUIDs
+        , getItems = serveGetItems
+        , postAddItem = servePostAddItem
         , getItem = serveGetItem
         , deleteItem = serveDeleteItem
-        , sync = serveSync
-        , accountInfo = serveGetAccountInfo
+        , postSync = servePostSync
+        , getAccountInfo = serveGetAccountInfo
         , deleteAccount = serveDeleteAccount
         }
 
 intrayPublicServer :: IntrayPublicSite (AsServerT IntrayHandler)
 intrayPublicServer =
     IntrayPublicSite
-        {register = serveRegister, login = serveLogin, docs = serveDocs}
+        { postRegister = servePostRegister
+        , postLogin = servePostLogin
+        , getDocs = serveGetDocs
+        }
 
 intrayAdminServer :: IntrayAdminSite (AsServerT IntrayHandler)
 intrayAdminServer =
     IntrayAdminSite
-        { adminStats = serveAdminStats
+        { adminGetStats = serveAdminGetStats
         , adminDeleteAccount = serveAdminDeleteAccount
         , adminGetAccounts = serveAdminGetAccounts
         }

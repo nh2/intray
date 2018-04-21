@@ -76,7 +76,8 @@ getDispatch cmd =
                           (T.pack <$> loginArgUsername) >>= parseUsername
                     , loginSetPassword = T.pack <$> loginArgPassword
                     }
-        CommandAddItem ss -> pure $ DispatchAddItem $ T.unwords $ map T.pack ss
+        CommandPostPostAddItem ss ->
+            pure $ DispatchPostPostAddItem $ T.unwords $ map T.pack ss
         CommandShowItem -> pure DispatchShowItem
         CommandDoneItem -> pure DispatchDoneItem
         CommandSize -> pure DispatchSize
@@ -149,7 +150,7 @@ parseCommand =
     mconcat
         [ command "register" parseCommandRegister
         , command "login" parseCommandLogin
-        , command "add" parseCommandAddItem
+        , command "add" parseCommandPostPostAddItem
         , command "show" parseCommandShowItem
         , command "done" parseCommandDoneItem
         , command "size" parseCommandSize
@@ -206,12 +207,12 @@ parseCommandLogin = info parser modifier
                   , metavar "PASSWORD"
                   ]))
 
-parseCommandAddItem :: ParserInfo Command
-parseCommandAddItem = info parser modifier
+parseCommandPostPostAddItem :: ParserInfo Command
+parseCommandPostPostAddItem = info parser modifier
   where
     modifier = fullDesc <> progDesc "Add an item"
     parser =
-        CommandAddItem <$>
+        CommandPostPostAddItem <$>
         some
             (strArgument
                  (mconcat

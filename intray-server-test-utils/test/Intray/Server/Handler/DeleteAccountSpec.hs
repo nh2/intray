@@ -19,7 +19,7 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "delete account" $
+    describe "DeleteAccount" $
     it "deletes an account" $ \cenv ->
         withValidNewUser cenv $ \token -> do
             NoContent <- runClientOrError cenv $ clientDeleteAccount token
