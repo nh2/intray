@@ -27,8 +27,9 @@ spec =
             case errOrAccountInfo of
                 Left err ->
                     case err of
-                        FailureResponse {} ->
-                            Http.statusCode (responseStatus err) `shouldBe` 404
+                        FailureResponse resp ->
+                            Http.statusCode (responseStatusCode resp) `shouldBe`
+                            404
                         _ ->
                             expectationFailure
                                 "Should have gotten the right error."

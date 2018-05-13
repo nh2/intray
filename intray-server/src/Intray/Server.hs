@@ -45,11 +45,11 @@ runIntrayServer ServeSettings {..} =
         let cookieCfg = defaultCookieSettings
         let intrayEnv =
                 IntrayServerEnv
-                    { envConnectionPool = pool
-                    , envCookieSettings = cookieCfg
-                    , envJWTSettings = jwtCfg
-                    , envAdmins = serveSetAdmins
-                    }
+                { envConnectionPool = pool
+                , envCookieSettings = cookieCfg
+                , envJWTSettings = jwtCfg
+                , envAdmins = serveSetAdmins
+                }
         liftIO $ Warp.run serveSetPort $ intrayApp intrayEnv
 
 intrayApp :: IntrayServerEnv -> Wai.Application
@@ -60,16 +60,20 @@ intrayApp se =
     addPolicy = cors (const $ Just policy)
     policy =
         simpleCorsResourcePolicy
-            { corsRequestHeaders = ["content-type"]
-            , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
-            }
+        { corsRequestHeaders = ["content-type"]
+        , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
+        }
 
-intrayAppContext :: IntrayServerEnv -> Context '[ CookieSettings, JWTSettings]
+makeIntrayServer :: IntrayServerEnv -> Server IntrayAPI
+makeIntrayServer cfg =
+    hoistServerWithContext
+        intrayAPI
+        (Proxy :: Proxy IntrayContext)
+        (`runReaderT` cfg)
+        (toServant intrayServer)
+
+intrayAppContext :: IntrayServerEnv -> Context IntrayContext
 intrayAppContext IntrayServerEnv {..} =
     envCookieSettings :. envJWTSettings :. EmptyContext
 
-makeIntrayServer :: IntrayServerEnv -> Server IntrayAPI
-makeIntrayServer cfg = enter (readerToEither cfg) (toServant intrayServer)
-  where
-    readerToEither :: IntrayServerEnv -> (IntrayHandler :~> Handler)
-    readerToEither = runReaderTNat
+type IntrayContext = '[ CookieSettings, JWTSettings]

@@ -25,7 +25,7 @@ spec =
     it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
         forAllValid $ \ti ->
             withValidNewUserAndData cenv $ \un pw _ -> do
-                let (ClientEnv _ burl) = cenv
+                let (ClientEnv _ burl _) = cenv
                 let u = T.unpack $ usernameText un
                 let p = T.unpack pw
                 let d = "/tmp"
@@ -43,11 +43,11 @@ spec =
                     ]
                 let sets =
                         Settings
-                            { setBaseUrl = Just burl
-                            , setUsername = Just un
-                            , setIntrayDir = dir
-                            , setSyncStrategy = NeverSync
-                            }
+                        { setBaseUrl = Just burl
+                        , setUsername = Just un
+                        , setIntrayDir = dir
+                        , setSyncStrategy = NeverSync
+                        }
                 mToken <- runReaderT loadToken sets
                 token <-
                     case mToken of

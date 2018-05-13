@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
@@ -31,5 +30,5 @@ serveGetShowItem (Authenticated AuthCookie {..}) = do
         selectFirst
             [IntrayItemUserId ==. authCookieUserUUID]
             [Asc IntrayItemTimestamp]
-    pure $ (makeItemInfo . entityVal) <$> itemsEnt
+    pure $ makeItemInfo . entityVal <$> itemsEnt
 serveGetShowItem _ = throwAll err401

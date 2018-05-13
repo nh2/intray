@@ -32,9 +32,9 @@ library:
   - text
   - time
   - typed-uuid
-  - validity >=0.4 && <0.5
-  - validity-bytestring >=0.2 && <0.3
-  - validity-containers >=0.2 && <0.3
-  - validity-text >=0.2 && <0.3
-  - validity-time >=0.1 && <0.2
-  - validity-uuid >=0.0 && <0.1
+  - validity >=0.4
+  - validity-bytestring >=0.2
+  - validity-containers >=0.2
+  - validity-text >=0.2
+  - validity-time >=0.1
+  - validity-uuid >=0.0

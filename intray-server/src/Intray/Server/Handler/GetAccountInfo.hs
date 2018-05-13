@@ -29,14 +29,14 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) = do
     admins <- asks envAdmins
     mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
     case mUser of
-        Nothing -> throwError $ err404 {errBody = "User not found."}
+        Nothing -> throwError err404 {errBody = "User not found."}
         Just (Entity _ User {..}) ->
             pure
                 AccountInfo
-                    { accountInfoUUID = authCookieUserUUID
-                    , accountInfoUsername = userUsername
-                    , accountInfoCreatedTimestamp = userCreatedTimestamp
-                    , accountInfoLastLogin = userLastLogin
-                    , accountInfoAdmin = userUsername `elem` admins
-                    }
+                { accountInfoUUID = authCookieUserUUID
+                , accountInfoUsername = userUsername
+                , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoLastLogin = userLastLogin
+                , accountInfoAdmin = userUsername `elem` admins
+                }
 serveGetAccountInfo _ = throwAll err401

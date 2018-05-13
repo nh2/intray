@@ -71,7 +71,6 @@ import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import qualified Data.ByteString.Lazy as LB
 import Data.List (nub)
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
@@ -267,17 +266,20 @@ data SyncRequest = SyncRequest
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncRequest where
-    isValid = isValidByValidating
     validate SyncRequest {..} =
         mconcat
-            [ syncRequestUnsyncedItems <?!> "syncRequestUnsyncedItems"
-            , syncRequestSyncedItems <?!> "syncRequestSyncedItems"
-            , syncRequestUndeletedItems <?!> "syncRequestUndeletedItems"
-            , distinct syncRequestUnsyncedItems <?@>
-              "Unsynced items are distinct"
-            , distinct syncRequestSyncedItems <?@> "Synced items are distinct"
-            , distinct syncRequestUndeletedItems <?@>
-              "undeleted items are distinct"
+            [ annotate syncRequestUnsyncedItems "syncRequestUnsyncedItems"
+            , annotate syncRequestSyncedItems "syncRequestSyncedItems"
+            , annotate syncRequestUndeletedItems "syncRequestUndeletedItems"
+            , check
+                  (distinct syncRequestUnsyncedItems)
+                  "Unsynced items are distinct"
+            , check
+                  (distinct syncRequestSyncedItems)
+                  "Synced items are distinct"
+            , check
+                  (distinct syncRequestUndeletedItems)
+                  "undeleted items are distinct"
             ]
 
 instance FromJSON SyncRequest where
@@ -301,13 +303,7 @@ data NewSyncItem = NewSyncItem
     , newSyncItemTimestamp :: Maybe UTCTime
     } deriving (Show, Eq, Ord, Generic)
 
-instance Validity NewSyncItem where
-    isValid = isValidByValidating
-    validate NewSyncItem {..} =
-        mconcat
-            [ newSyncItemContents <?!> "newSyncItemContents"
-            , newSyncItemTimestamp <?!> "newSyncItemTimestamp"
-            ]
+instance Validity NewSyncItem
 
 instance FromJSON NewSyncItem where
     parseJSON v =
@@ -333,17 +329,20 @@ data SyncResponse = SyncResponse
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncResponse where
-    isValid = isValidByValidating
     validate SyncResponse {..} =
         mconcat
-            [ syncResponseAddedItems <?!> "syncResponseAddedItems"
-            , syncResponseNewRemoteItems <?!> "syncResponseNewRemoteItems"
-            , syncResponseItemsToBeDeletedLocally <?!>
-              "syncResponseItemsToBeDeletedLocally"
-            , distinct syncResponseAddedItems <?@> "Added items are distinct"
-            , distinct syncResponseNewRemoteItems <?@> "new items are distinct"
-            , distinct syncResponseItemsToBeDeletedLocally <?@>
-              "deleted items are distinct"
+            [ annotate syncResponseAddedItems "syncResponseAddedItems"
+            , annotate syncResponseNewRemoteItems "syncResponseNewRemoteItems"
+            , annotate
+                  syncResponseItemsToBeDeletedLocally
+                  "syncResponseItemsToBeDeletedLocally"
+            , check (distinct syncResponseAddedItems) "Added items are distinct"
+            , check
+                  (distinct syncResponseNewRemoteItems)
+                  "new items are distinct"
+            , check
+                  (distinct syncResponseItemsToBeDeletedLocally)
+                  "deleted items are distinct"
             ]
 
 instance FromJSON SyncResponse where
@@ -450,11 +449,12 @@ newtype GetDocsResponse = GetDocsResponse
     } deriving (Generic)
 
 instance MimeUnrender HTML GetDocsResponse where
-    mimeUnrender Proxy bs = do
-        pandoc <-
-            left show $
-            Pandoc.readHtml def $ T.unpack $ TE.decodeUtf8 $ LB.toStrict bs
-        pure $ GetDocsResponse $ Pandoc.writeHtml def pandoc
+    mimeUnrender Proxy bs =
+        left show $
+        runPure $ do
+            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
+            html <- Pandoc.writeHtml5 def pandoc
+            pure $ GetDocsResponse html
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."

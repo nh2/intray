@@ -12,7 +12,7 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    it "Going through the usual manual steps 'just works'" $ \(ClientEnv _ burl) -> do
+    it "Going through the usual manual steps 'just works'" $ \(ClientEnv _ burl _) -> do
         intray
             [ "register"
             , "--username"

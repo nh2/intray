@@ -33,12 +33,12 @@ library:
   - intray-data
   - jose
   - monad-logger
-  - mtl >=2.2 && <2.3
-  - optparse-applicative >=0.13 && <0.14
+  - mtl >=2.2
+  - optparse-applicative >=0.13
   - pandoc
   - path
   - path-io
-  - persistent >=2.7 && <2.8
+  - persistent >=2.7
   - persistent-sqlite
   - pretty-show
   - resourcet
@@ -52,7 +52,7 @@ library:
   - typed-uuid
   - wai
   - wai-cors
-  - warp >=3.2 && <3.3
+  - warp >=3.2
 
 executables:
   intray-server:

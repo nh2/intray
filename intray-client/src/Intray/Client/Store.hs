@@ -26,6 +26,8 @@ import Intray.API
 
 {-# ANN module ("HLint: ignore Use &&" :: Text) #-}
 
+{-# ANN module ("HLint: ignore Use lambda-case" :: Text) #-}
+
 newtype Store = Store
     { storeItems :: Set StoreItem
     } deriving (Show, Eq, Generic)
@@ -89,19 +91,19 @@ lastItemInStore (Store is) =
                     Unsynced t ts ->
                         Just
                             LastItem
-                                { lastItemData = t
-                                , lastItemTimestamp = ts
-                                , lastItemUUID = Nothing
-                                }
+                            { lastItemData = t
+                            , lastItemTimestamp = ts
+                            , lastItemUUID = Nothing
+                            }
                     Synced ItemInfo {..} ->
                         Just
                             LastItem
-                                { lastItemData = itemInfoContents
-                                , lastItemTimestamp = itemInfoTimestamp
-                                , lastItemUUID = Just itemInfoIdentifier
-                                }
+                            { lastItemData = itemInfoContents
+                            , lastItemTimestamp = itemInfoTimestamp
+                            , lastItemUUID = Just itemInfoIdentifier
+                            }
                     Undeleted _ -> Nothing
-     in fst <$> S.minView ls
+    in fst <$> S.minView ls
 
 data LastItem = LastItem
     { lastItemData :: TypedItem
@@ -144,30 +146,30 @@ storeSize (Store is) =
 makeSyncRequest :: Store -> SyncRequest
 makeSyncRequest Store {..} =
     SyncRequest
-        { syncRequestUnsyncedItems =
-              S.toList $
-              flip mapSetMaybe storeItems $ \si ->
-                  case si of
-                      Unsynced t ts ->
-                          Just
-                              NewSyncItem
-                                  { newSyncItemContents = t
-                                  , newSyncItemTimestamp = Just ts
-                                  }
-                      _ -> Nothing
-        , syncRequestSyncedItems =
-              S.toList $
-              flip mapSetMaybe storeItems $ \si ->
-                  case si of
-                      Synced ii -> Just $ itemInfoIdentifier ii
-                      _ -> Nothing
-        , syncRequestUndeletedItems =
-              S.toList $
-              flip mapSetMaybe storeItems $ \si ->
-                  case si of
-                      Undeleted uuid -> Just uuid
-                      _ -> Nothing
-        }
+    { syncRequestUnsyncedItems =
+          S.toList $
+          flip mapSetMaybe storeItems $ \si ->
+              case si of
+                  Unsynced t ts ->
+                      Just
+                          NewSyncItem
+                          { newSyncItemContents = t
+                          , newSyncItemTimestamp = Just ts
+                          }
+                  _ -> Nothing
+    , syncRequestSyncedItems =
+          S.toList $
+          flip mapSetMaybe storeItems $ \si ->
+              case si of
+                  Synced ii -> Just $ itemInfoIdentifier ii
+                  _ -> Nothing
+    , syncRequestUndeletedItems =
+          S.toList $
+          flip mapSetMaybe storeItems $ \si ->
+              case si of
+                  Undeleted uuid -> Just uuid
+                  _ -> Nothing
+    }
 
 mergeStore :: Store -> SyncResponse -> Store
 mergeStore s SyncResponse {..} =
@@ -192,7 +194,7 @@ mergeStore s SyncResponse {..} =
         withNewOtherItems =
             withNewOwnItems `S.union`
             S.map Synced (S.fromList syncResponseNewRemoteItems)
-     in Store {storeItems = withNewOtherItems}
+    in Store {storeItems = withNewOtherItems}
 
 mapSetMaybe :: Ord b => (a -> Maybe b) -> Set a -> Set b
 mapSetMaybe func = S.map fromJust . S.filter isJust . S.map func

@@ -32,7 +32,7 @@ withAdminCreds adminCandidate func = do
     admins <- asks envAdmins
     mUser <- runDb $ getBy $ UniqueUserIdentifier adminCandidate
     case mUser of
-        Nothing -> throwError $ err404 {errBody = "User not found."}
+        Nothing -> throwError err404 {errBody = "User not found."}
         Just (Entity _ User {..}) ->
             if userUsername `elem` admins
                 then func
@@ -42,7 +42,7 @@ deleteAccountFully :: AccountUUID -> IntrayHandler ()
 deleteAccountFully uuid = do
     mEnt <- runDb $ getBy $ UniqueUserIdentifier uuid
     case mEnt of
-        Nothing -> throwError $ err404 {errBody = "User not found."}
+        Nothing -> throwError err404 {errBody = "User not found."}
         Just (Entity uid _) ->
             runDb $ do
                 deleteWhere [IntrayItemUserId ==. uuid]

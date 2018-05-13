@@ -26,7 +26,6 @@ newtype Username = Username
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity Username where
-    isValid = isValidByValidating
     validate (Username t) =
         mconcat
             [ check (not (T.null t)) "The username is not empty."
@@ -89,7 +88,6 @@ newtype UsernameChar =
     UsernameChar Char
 
 instance Validity UsernameChar where
-    isValid = isValidByValidating
     validate (UsernameChar '-') = mempty
     validate (UsernameChar '_') = mempty
     validate (UsernameChar c) =

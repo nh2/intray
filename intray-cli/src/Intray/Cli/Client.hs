@@ -32,5 +32,5 @@ runSingleClient func = do
             fmap Just $
             liftIO $ do
                 man <- newManager tlsManagerSettings
-                let env = ClientEnv man burl
+                let env = ClientEnv man burl Nothing
                 runClientM func env

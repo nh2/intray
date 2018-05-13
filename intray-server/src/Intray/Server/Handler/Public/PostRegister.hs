@@ -32,25 +32,25 @@ servePostRegister :: Registration -> IntrayHandler NoContent
 servePostRegister Registration {..} = do
     maybeHashedPassword <- liftIO $ passwordHash registrationPassword
     case maybeHashedPassword of
-        Nothing -> throwError $ err400 {errBody = "Failed to hash password."}
+        Nothing -> throwError err400 {errBody = "Failed to hash password."}
         Just hashedPassword -> do
             uuid <- liftIO nextRandomUUID
             now <- liftIO getCurrentTime
             let user =
                     User
-                        { userIdentifier = uuid
-                        , userUsername = registrationUsername
-                        , userHashedPassword = hashedPassword
-                        , userCreatedTimestamp = now
-                        , userLastLogin = Nothing
-                        }
+                    { userIdentifier = uuid
+                    , userUsername = registrationUsername
+                    , userHashedPassword = hashedPassword
+                    , userCreatedTimestamp = now
+                    , userLastLogin = Nothing
+                    }
             maybeUserEntity <-
                 runDb . getBy $ UniqueUsername $ userUsername user
             case maybeUserEntity of
                 Nothing -> runDb $ insert_ user
                 Just _ ->
-                    throwError $
-                    err409
+                    throwError
+                        err409
                         { errBody =
                               LB.fromStrict $
                               TE.encodeUtf8 $

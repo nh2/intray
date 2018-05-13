@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
@@ -32,10 +31,10 @@ serveAdminGetAccounts (Authenticated AuthCookie {..}) =
         pure $
             flip map users $ \(Entity _ User {..}) ->
                 AccountInfo
-                    { accountInfoUUID = userIdentifier
-                    , accountInfoUsername = userUsername
-                    , accountInfoCreatedTimestamp = userCreatedTimestamp
-                    , accountInfoLastLogin = userLastLogin
-                    , accountInfoAdmin = userUsername `elem` admins
-                    }
+                { accountInfoUUID = userIdentifier
+                , accountInfoUsername = userUsername
+                , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoLastLogin = userLastLogin
+                , accountInfoAdmin = userUsername `elem` admins
+                }
 serveAdminGetAccounts _ = throwAll err401

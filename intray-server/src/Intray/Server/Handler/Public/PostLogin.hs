@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
@@ -41,7 +40,7 @@ servePostLogin LoginForm {..} = do
                 then do
                     let cookie =
                             AuthCookie
-                                {authCookieUserUUID = userIdentifier user}
+                            {authCookieUserUUID = userIdentifier user}
                     IntrayServerEnv {..} <- ask
                     mApplyCookies <-
                         liftIO $

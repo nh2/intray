@@ -64,18 +64,18 @@ getDispatch cmd =
             pure $
             DispatchRegister
                 RegisterSettings
-                    { registerSetUsername =
-                          (T.pack <$> registerArgUsername) >>= parseUsername
-                    , registerSetPassword = T.pack <$> registerArgPassword
-                    }
+                { registerSetUsername =
+                      (T.pack <$> registerArgUsername) >>= parseUsername
+                , registerSetPassword = T.pack <$> registerArgPassword
+                }
         CommandLogin LoginArgs {..} ->
             pure $
             DispatchLogin
                 LoginSettings
-                    { loginSetUsername =
-                          (T.pack <$> loginArgUsername) >>= parseUsername
-                    , loginSetPassword = T.pack <$> loginArgPassword
-                    }
+                { loginSetUsername =
+                      (T.pack <$> loginArgUsername) >>= parseUsername
+                , loginSetPassword = T.pack <$> loginArgPassword
+                }
         CommandPostPostAddItem ss ->
             pure $ DispatchPostPostAddItem $ T.unwords $ map T.pack ss
         CommandShowItem -> pure DispatchShowItem
@@ -87,9 +87,7 @@ getDispatch cmd =
 
 getConfig :: Flags -> IO Configuration
 getConfig Flags {..} = do
-    path <-
-        fromMaybe (defaultConfigFile flagIntrayDir) $
-        resolveFile' <$> flagConfigFile
+    path <- maybe (defaultConfigFile flagIntrayDir) resolveFile' flagConfigFile
     mContents <- forgivingAbsence $ SB.readFile $ fromAbsFile path
     case mContents of
         Nothing -> pure emptyConfiguration
@@ -127,13 +125,13 @@ runArgumentsParser = execParserPure prefs_ argParser
 prefs_ :: ParserPrefs
 prefs_ =
     ParserPrefs
-        { prefMultiSuffix = ""
-        , prefDisambiguate = True
-        , prefShowHelpOnError = True
-        , prefShowHelpOnEmpty = True
-        , prefBacktrack = True
-        , prefColumns = 80
-        }
+    { prefMultiSuffix = ""
+    , prefDisambiguate = True
+    , prefShowHelpOnError = True
+    , prefShowHelpOnEmpty = True
+    , prefBacktrack = True
+    , prefColumns = 80
+    }
 
 argParser :: ParserInfo Arguments
 argParser = info (helper <*> parseArgs) help_

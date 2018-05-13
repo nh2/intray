@@ -34,10 +34,10 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     newLocalItems <- syncAddedItems
     pure
         SyncResponse
-            { syncResponseNewRemoteItems = newRemoteItems
-            , syncResponseAddedItems = newLocalItems
-            , syncResponseItemsToBeDeletedLocally = deletedRemotely
-            }
+        { syncResponseNewRemoteItems = newRemoteItems
+        , syncResponseAddedItems = newLocalItems
+        , syncResponseItemsToBeDeletedLocally = deletedRemotely
+        }
   where
     deleteUndeleted :: IntrayHandler ()
     deleteUndeleted =
@@ -81,8 +81,8 @@ servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
                 makeIntrayItem authCookieUserUUID uuid now newSyncItemContents
             pure
                 ItemInfo
-                    { itemInfoIdentifier = uuid
-                    , itemInfoTimestamp = ts
-                    , itemInfoContents = newSyncItemContents
-                    }
+                { itemInfoIdentifier = uuid
+                , itemInfoTimestamp = ts
+                , itemInfoContents = newSyncItemContents
+                }
 servePostSync _ _ = throwAll err401
