@@ -1,7 +1,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
 
-module Intray.API.Gen where
+module Intray.API.Gen
+    ( module Intray.API.Gen
+    , module Intray.API.Admin.Gen
+    ) where
 
 import Import
 
@@ -13,6 +17,8 @@ import Data.GenValidity.UUID ()
 
 import Intray.API
 import Intray.Data.Gen ()
+
+import Intray.API.Admin.Gen ()
 
 instance GenUnchecked TypedItem
 
@@ -59,8 +65,3 @@ instance GenUnchecked LoginForm
 
 instance GenValid LoginForm where
     genValid = (LoginForm <$> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked AdminStats
-
-instance GenValid AdminStats where
-    genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid

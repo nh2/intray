@@ -15,6 +15,7 @@ library:
   ghc-options: -Wall
   exposed-modules:
   - Intray.API.Gen
+  - Intray.API.Admin.Gen
 
   dependencies:
   - QuickCheck

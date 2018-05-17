@@ -8,8 +8,8 @@ import TestImport
 
 import Test.Validity.Aeson
 
-import Intray.API
 import Intray.API.Gen ()
+import Intray.API.Types
 
 spec :: Spec
 spec = do
@@ -49,7 +49,3 @@ spec = do
     ordSpec @LoginForm
     genValidSpec @LoginForm
     jsonSpecOnValid @LoginForm
-    eqSpec @AdminStats
-    ordSpec @AdminStats
-    genValidSpec @AdminStats
-    jsonSpecOnValid @AdminStats
