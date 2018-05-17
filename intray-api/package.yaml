@@ -15,8 +15,11 @@ library:
   ghc-options: -Wall
   exposed-modules:
   - Intray.API
+  - Intray.API.Account.Types
   - Intray.API.Admin
   - Intray.API.Admin.Types
+  - Intray.API.Protected
+  - Intray.API.Protected.Types
   - Intray.API.Types
   dependencies:
   - aeson

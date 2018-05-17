@@ -5,7 +5,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Intray.API.Admin.Types
     ( AdminStats(..)
