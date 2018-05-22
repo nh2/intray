@@ -13,6 +13,10 @@ import Intray.API.Types
 
 spec :: Spec
 spec = do
+    eqSpec @Permission
+    ordSpec @Permission
+    genValidSpec @Permission
+    jsonSpecOnValid @Permission
     eqSpec @Registration
     ordSpec @Registration
     genValidSpec @Registration

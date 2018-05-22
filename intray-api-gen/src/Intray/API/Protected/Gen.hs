@@ -15,7 +15,6 @@ import Data.GenValidity.UUID ()
 import Intray.Data.Gen ()
 
 import Intray.API.Protected
-import Intray.API.Protected.Types
 
 instance GenUnchecked TypedItem
 

@@ -23,21 +23,22 @@ import Intray.Server.Types
 
 servePostSync ::
        AuthResult AuthCookie -> SyncRequest -> IntrayHandler SyncResponse
-servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
-    deleteUndeleted
-    -- First we delete the items that were deleted locally but not yet remotely.
-    -- Then we find the items that have been deleted remotely but not locally
-    deletedRemotely <- syncItemsToBeDeletedLocally
-    -- Then we find the items that have appeared remotely but aren't known locally
-    newRemoteItems <- syncNewRemoteItems
-    -- Then we add the items that should be added.
-    newLocalItems <- syncAddedItems
-    pure
-        SyncResponse
-        { syncResponseNewRemoteItems = newRemoteItems
-        , syncResponseAddedItems = newLocalItems
-        , syncResponseItemsToBeDeletedLocally = deletedRemotely
-        }
+servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} =
+    withPermission authCookiePermissions PermitSync $ do
+        deleteUndeleted
+        -- First we delete the items that were deleted locally but not yet remotely.
+        -- Then we find the items that have been deleted remotely but not locally
+        deletedRemotely <- syncItemsToBeDeletedLocally
+        -- Then we find the items that have appeared remotely but aren't known locally
+        newRemoteItems <- syncNewRemoteItems
+        -- Then we add the items that should be added.
+        newLocalItems <- syncAddedItems
+        pure
+            SyncResponse
+            { syncResponseNewRemoteItems = newRemoteItems
+            , syncResponseAddedItems = newLocalItems
+            , syncResponseItemsToBeDeletedLocally = deletedRemotely
+            }
   where
     deleteUndeleted :: IntrayHandler ()
     deleteUndeleted =

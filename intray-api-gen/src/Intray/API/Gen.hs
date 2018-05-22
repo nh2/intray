@@ -24,6 +24,9 @@ import Intray.API.Account.Gen ()
 import Intray.API.Admin.Gen ()
 import Intray.API.Protected.Gen ()
 
+instance GenUnchecked Permission
+
+instance GenValid Permission
 
 instance GenUnchecked Registration
 

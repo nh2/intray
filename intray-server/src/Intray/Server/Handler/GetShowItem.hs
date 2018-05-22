@@ -24,11 +24,12 @@ import Intray.Server.Item
 
 serveGetShowItem ::
        AuthResult AuthCookie -> IntrayHandler (Maybe (ItemInfo TypedItem))
-serveGetShowItem (Authenticated AuthCookie {..}) = do
-    itemsEnt <-
-        runDb $
-        selectFirst
-            [IntrayItemUserId ==. authCookieUserUUID]
-            [Asc IntrayItemTimestamp]
-    pure $ makeItemInfo . entityVal <$> itemsEnt
+serveGetShowItem (Authenticated AuthCookie {..}) =
+    withPermission authCookiePermissions PermitShow $ do
+        itemsEnt <-
+            runDb $
+            selectFirst
+                [IntrayItemUserId ==. authCookieUserUUID]
+                [Asc IntrayItemTimestamp]
+        pure $ makeItemInfo . entityVal <$> itemsEnt
 serveGetShowItem _ = throwAll err401

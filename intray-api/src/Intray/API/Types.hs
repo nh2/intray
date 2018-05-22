@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -11,6 +10,9 @@
 module Intray.API.Types
     ( ProtectAPI
     , AuthCookie(..)
+    , Permission(..)
+    , userPermissions
+    , adminPermissions
     , Registration(..)
     , LoginForm(..)
     , GetDocsResponse(..)
@@ -30,6 +32,8 @@ import Import
 
 import Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LB
+import Data.Set (Set)
+import qualified Data.Set as S
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
@@ -53,13 +57,65 @@ import Intray.Data
 
 type ProtectAPI = Auth '[ JWT] AuthCookie
 
-newtype AuthCookie = AuthCookie
+data AuthCookie = AuthCookie
     { authCookieUserUUID :: AccountUUID
-    } deriving (Show, Eq, Generic, FromJSON, ToJSON)
+    , authCookiePermissions :: Set Permission
+    } deriving (Show, Eq, Ord, Generic)
+
+instance FromJSON AuthCookie
+
+instance ToJSON AuthCookie
 
 instance FromJWT AuthCookie
 
 instance ToJWT AuthCookie
+
+data Permission
+    = PermitAdd
+    | PermitShow
+    | PermitSize
+    | PermitDelete
+    | PermitGetItem
+    | PermitGetItems
+    | PermitGetItemUUIDs
+    | PermitSync
+    | PermitDeleteAccount
+    | PermitGetAccountInfo
+    | PermitAdminDeleteAccount
+    | PermitAdminGetAccounts
+    | PermitAdminGetStats
+    deriving (Show, Eq, Ord, Generic)
+
+instance Validity Permission
+
+userPermissions :: Set Permission
+userPermissions =
+    S.fromList
+        [ PermitAdd
+        , PermitShow
+        , PermitSize
+        , PermitDelete
+        , PermitGetItem
+        , PermitGetItems
+        , PermitGetItemUUIDs
+        , PermitSync
+        , PermitDeleteAccount
+        , PermitGetAccountInfo
+        ]
+
+adminPermissions :: Set Permission
+adminPermissions =
+    S.union userPermissions $
+    S.fromList
+        [PermitAdminDeleteAccount, PermitAdminGetAccounts, PermitAdminGetStats]
+
+instance FromJSON Permission
+
+instance ToJSON Permission
+
+instance FromJWT Permission
+
+instance ToJWT Permission
 
 instance ToCapture (Capture "id" ItemUUID) where
     toCapture _ = DocCapture "id" "The UUID of the item"

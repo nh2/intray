@@ -30,6 +30,7 @@ servePostLogin ::
        LoginForm
     -> IntrayHandler (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 servePostLogin LoginForm {..} = do
+    admins <- asks envAdmins
     me <- runDb $ getBy $ UniqueUsername loginFormUsername
     case me of
         Nothing -> throwError err401
@@ -40,7 +41,12 @@ servePostLogin LoginForm {..} = do
                 then do
                     let cookie =
                             AuthCookie
-                            {authCookieUserUUID = userIdentifier user}
+                            { authCookieUserUUID = userIdentifier user
+                            , authCookiePermissions =
+                                  if userUsername user `elem` admins
+                                      then adminPermissions
+                                      else userPermissions
+                            }
                     IntrayServerEnv {..} <- ask
                     mApplyCookies <-
                         liftIO $

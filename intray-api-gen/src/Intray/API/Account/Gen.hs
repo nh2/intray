@@ -2,8 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
 
-module Intray.API.Account.Gen
-     where
+module Intray.API.Account.Gen where
 
 import Import
 

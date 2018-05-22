@@ -19,6 +19,9 @@ module Intray.API
     , IntrayAdminAPI
     , IntrayAdminSite(..)
     , AuthCookie(..)
+    , Permission(..)
+    , userPermissions
+    , adminPermissions
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -67,6 +70,7 @@ import Intray.Data
 
 import Intray.API.Admin
 import Intray.API.Protected
+import Intray.API.Types
 
 intrayAPI :: Proxy IntrayAPI
 intrayAPI = Proxy

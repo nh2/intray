@@ -25,5 +25,6 @@ import Intray.Server.Handler.Utils
 
 serveGetIntraySize :: AuthResult AuthCookie -> IntrayHandler Int
 serveGetIntraySize (Authenticated AuthCookie {..}) =
+    withPermission authCookiePermissions PermitSize $
     runDb $ count [IntrayItemUserId ==. authCookieUserUUID]
 serveGetIntraySize _ = throwAll err401

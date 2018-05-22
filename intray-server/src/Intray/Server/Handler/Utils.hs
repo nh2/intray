@@ -1,15 +1,17 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Intray.Server.Handler.Utils
     ( runDb
-    , withAdminCreds
+    , withPermission
     , deleteAccountFully
     ) where
 
 import Import
+
+import Data.Set (Set)
+import qualified Data.Set as S
 
 import Database.Persist
 import Database.Persist.Sqlite
@@ -27,16 +29,12 @@ runDb query = do
     pool <- asks envConnectionPool
     liftIO $ runSqlPool query pool
 
-withAdminCreds :: AccountUUID -> IntrayHandler a -> IntrayHandler a
-withAdminCreds adminCandidate func = do
-    admins <- asks envAdmins
-    mUser <- runDb $ getBy $ UniqueUserIdentifier adminCandidate
-    case mUser of
-        Nothing -> throwError err404 {errBody = "User not found."}
-        Just (Entity _ User {..}) ->
-            if userUsername `elem` admins
-                then func
-                else throwAll err401
+withPermission ::
+       Set Permission -> Permission -> IntrayHandler a -> IntrayHandler a
+withPermission ps p func =
+    if S.member p ps
+        then func
+        else throwError err401
 
 deleteAccountFully :: AccountUUID -> IntrayHandler ()
 deleteAccountFully uuid = do

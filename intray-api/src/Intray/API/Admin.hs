@@ -23,8 +23,8 @@ import Servant.Generic
 
 import Intray.Data
 
-import Intray.API.Admin.Types
 import Intray.API.Account.Types
+import Intray.API.Admin.Types
 import Intray.API.Types
 
 type IntrayAdminAPI = ToServant (IntrayAdminSite AsApi)
