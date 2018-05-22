@@ -14,6 +14,10 @@ module Intray.API
     , IntrayOpenSite(..)
     , IntrayProtectedAPI
     , IntrayProtectedSite(..)
+    , IntrayProtectedItemAPI
+    , IntrayProtectedItemSite(..)
+    , IntrayProtectedAccountAPI
+    , IntrayProtectedAccountSite(..)
     , IntrayPublicAPI
     , IntrayPublicSite(..)
     , IntrayAdminAPI

@@ -6,7 +6,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Intray.API.Account.Types
+module Intray.API.Protected.Account.Types
     ( AccountInfo(..)
     , AccountUUID
     , Username

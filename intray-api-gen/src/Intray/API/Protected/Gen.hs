@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
 
-module Intray.API.Protected.Gen where
+module Intray.API.Protected.Gen (module Intray.API.Protected.Item.Gen,module Intray.API.Protected.Account.Gen)where
 
 import Import
 
@@ -16,30 +16,5 @@ import Intray.Data.Gen ()
 
 import Intray.API.Protected
 
-instance GenUnchecked TypedItem
-
-instance GenValid TypedItem where
-    genValid = (TypedItem <$> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked a => GenUnchecked (ItemInfo a)
-
-instance GenValid a => GenValid (ItemInfo a) where
-    genValid =
-        (ItemInfo <$> genValid <*> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked SyncRequest
-
-instance GenValid SyncRequest where
-    genValid =
-        (SyncRequest <$> genValid <*> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked NewSyncItem
-
-instance GenValid NewSyncItem where
-    genValid = (NewSyncItem <$> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked SyncResponse
-
-instance GenValid SyncResponse where
-    genValid =
-        (SyncResponse <$> genValid <*> genValid <*> genValid) `suchThat` isValid
+import Intray.API.Protected.Item.Gen
+import Intray.API.Protected.Account.Gen

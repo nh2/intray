@@ -23,7 +23,7 @@ import Servant.Generic
 
 import Intray.Data
 
-import Intray.API.Account.Types
+import Intray.API.Protected.Account.Types
 import Intray.API.Admin.Types
 import Intray.API.Types
 

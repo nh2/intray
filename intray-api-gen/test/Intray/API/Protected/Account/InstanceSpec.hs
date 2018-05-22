@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeApplications #-}
 
-module Intray.API.Account.InstanceSpec
+module Intray.API.Protected.Account.InstanceSpec
     ( spec
     ) where
 
@@ -8,8 +8,8 @@ import TestImport
 
 import Test.Validity.Aeson
 
-import Intray.API.Account.Gen ()
-import Intray.API.Account.Types
+import Intray.API.Protected.Account.Gen ()
+import Intray.API.Protected.Account.Types
 
 spec :: Spec
 spec = do

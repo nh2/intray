@@ -38,6 +38,12 @@ intrayOpenServer =
 intrayProtectedServer :: IntrayProtectedSite (AsServerT IntrayHandler)
 intrayProtectedServer =
     IntrayProtectedSite
+    { protectedItemSite = toServant intrayProtectedItemServer
+    , protectedAccountSite = toServant intrayProtectedAccountServer
+    }
+
+intrayProtectedItemServer :: IntrayProtectedItemSite (AsServerT IntrayHandler)
+intrayProtectedItemServer = IntrayProtectedItemSite
     { getShowItem = serveGetShowItem
     , getIntraySize = serveGetIntraySize
     , getItemUUIDs = serveGetItemUUIDs
@@ -46,6 +52,10 @@ intrayProtectedServer =
     , getItem = serveGetItem
     , deleteItem = serveDeleteItem
     , postSync = servePostSync
-    , getAccountInfo = serveGetAccountInfo
+    }
+
+intrayProtectedAccountServer :: IntrayProtectedAccountSite (AsServerT IntrayHandler)
+intrayProtectedAccountServer = IntrayProtectedAccountSite
+    { getAccountInfo = serveGetAccountInfo
     , deleteAccount = serveDeleteAccount
     }

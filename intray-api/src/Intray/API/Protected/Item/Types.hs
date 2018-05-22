@@ -6,7 +6,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Intray.API.Protected.Types
+module Intray.API.Protected.Item.Types
     ( ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -16,12 +16,6 @@ module Intray.API.Protected.Types
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
-    , Registration(..)
-    , LoginForm(..)
-    , GetDocsResponse(..)
-    , HashedPassword
-    , passwordHash
-    , validatePassword
     , ItemUUID
     , module Data.UUID.Typed
     ) where

@@ -4,7 +4,6 @@
 
 module Intray.API.Gen
     ( module Intray.API.Gen
-    , module Intray.API.Account.Gen
     , module Intray.API.Admin.Gen
     , module Intray.API.Protected.Gen
     ) where
@@ -20,7 +19,6 @@ import Data.GenValidity.UUID ()
 import Intray.API
 import Intray.Data.Gen ()
 
-import Intray.API.Account.Gen ()
 import Intray.API.Admin.Gen ()
 import Intray.API.Protected.Gen ()
 
