@@ -12,6 +12,8 @@ module Intray.API.Protected
     , IntrayProtectedItemSite(..)
     , IntrayProtectedAccountAPI
     , IntrayProtectedAccountSite(..)
+    , IntrayProtectedAccessKeyAPI
+    , IntrayProtectedAccessKeySite(..)
     , AuthCookie(..)
     , GetItemUUIDs
     , GetItems
@@ -33,6 +35,14 @@ module Intray.API.Protected
     , AccountInfo(..)
     , GetAccountInfo
     , DeleteAccount
+    , AccessKeyUUID
+    , AccessKeyInfo(..)
+    , AddAccessKey(..)
+    , AccessKeyCreated(..)
+    , PostAddAccessKey
+    , GetAccessKey
+    , GetAccessKeys
+    , DeleteAccessKey
     , ItemUUID
     , AccountUUID
     , Username
@@ -48,6 +58,7 @@ import Servant.Generic
 
 import Intray.Data
 
+import Intray.API.Protected.AccessKey
 import Intray.API.Protected.Account
 import Intray.API.Protected.Item
 
@@ -56,4 +67,5 @@ type IntrayProtectedAPI = ToServant (IntrayProtectedSite AsApi)
 data IntrayProtectedSite route = IntrayProtectedSite
     { protectedItemSite :: route :- "intray" :> ToServant (IntrayProtectedItemSite AsApi)
     , protectedAccountSite :: route :- "account" :> ToServant (IntrayProtectedAccountSite AsApi)
+    , protectedAccessKeySite :: route :- "access-key" :> ToServant (IntrayProtectedAccessKeySite AsApi)
     } deriving (Generic)

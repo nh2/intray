@@ -23,8 +23,8 @@ import Servant.Generic
 
 import Intray.Data
 
-import Intray.API.Protected.Account.Types
 import Intray.API.Admin.Types
+import Intray.API.Protected.Account.Types
 import Intray.API.Types
 
 type IntrayAdminAPI = ToServant (IntrayAdminSite AsApi)
@@ -38,6 +38,6 @@ data IntrayAdminSite route = IntrayAdminSite
 type AdminGetStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 
 type AdminDeleteAccount
-     = ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[ JSON] NoContent
+     = ProtectAPI :> "account" :> Capture "uuid" AccountUUID :> Delete '[ JSON] NoContent
 
 type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[ JSON] [AccountInfo]

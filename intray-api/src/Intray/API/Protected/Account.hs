@@ -21,8 +21,6 @@ import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
 import Servant.Generic
 
-import Intray.Data
-
 import Intray.API.Protected.Account.Types
 import Intray.API.Types
 

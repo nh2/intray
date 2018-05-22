@@ -78,10 +78,10 @@ type PostAddItem
      = ProtectAPI :> "item" :> ReqBody '[ JSON] TypedItem :> Post '[ JSON] ItemUUID
 
 type GetItem
-     = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
+     = ProtectAPI :> "item" :> Capture "uuid" ItemUUID :> Get '[ JSON] (ItemInfo TypedItem)
 
 type DeleteItem
-     = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
+     = ProtectAPI :> "item" :> Capture "uuid" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse

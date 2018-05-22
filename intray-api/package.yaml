@@ -18,6 +18,8 @@ library:
   - Intray.API.Admin
   - Intray.API.Admin.Types
   - Intray.API.Protected
+  - Intray.API.Protected.AccessKey
+  - Intray.API.Protected.AccessKey.Types
   - Intray.API.Protected.Account
   - Intray.API.Protected.Account.Types
   - Intray.API.Protected.Item

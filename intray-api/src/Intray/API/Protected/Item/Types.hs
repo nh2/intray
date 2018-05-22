@@ -34,7 +34,7 @@ import Servant.Docs
 
 import Intray.Data
 
-import Intray.API.Types
+import Intray.API.Types ()
 
 data TypedItem = TypedItem
     { itemType :: ItemType

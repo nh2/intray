@@ -15,6 +15,7 @@ library:
   ghc-options: -Wall
   exposed-modules:
   - Intray.Data
+  - Intray.Data.AccessKeyUUID
   - Intray.Data.AccountUUID
   - Intray.Data.HashedPassword
   - Intray.Data.ItemType
@@ -27,9 +28,12 @@ library:
   - base >=4.7 && <5
   - bcrypt
   - bytestring
+  - containers
   - hashable
   - persistent
   - persistent-template
+  - random
+  - base16-bytestring
   - text
   - time
   - typed-uuid

@@ -8,6 +8,14 @@ import Intray.API
 
 import Intray.Server.Types
 
+import Intray.Server.Handler.AccessKey.DeleteAccessKey
+       (serveDeleteAccessKey)
+import Intray.Server.Handler.AccessKey.GetAccessKey
+       (serveGetAccessKey)
+import Intray.Server.Handler.AccessKey.GetAccessKeys
+       (serveGetAccessKeys)
+import Intray.Server.Handler.AccessKey.PostAddAccessKey
+       (servePostAddAccessKey)
 import Intray.Server.Handler.Admin (intrayAdminServer)
 import Intray.Server.Handler.DeleteAccount (serveDeleteAccount)
 import Intray.Server.Handler.DeleteItem (serveDeleteItem)
@@ -40,10 +48,12 @@ intrayProtectedServer =
     IntrayProtectedSite
     { protectedItemSite = toServant intrayProtectedItemServer
     , protectedAccountSite = toServant intrayProtectedAccountServer
+    , protectedAccessKeySite = toServant intrayProtectedAccessKeyServer
     }
 
 intrayProtectedItemServer :: IntrayProtectedItemSite (AsServerT IntrayHandler)
-intrayProtectedItemServer = IntrayProtectedItemSite
+intrayProtectedItemServer =
+    IntrayProtectedItemSite
     { getShowItem = serveGetShowItem
     , getIntraySize = serveGetIntraySize
     , getItemUUIDs = serveGetItemUUIDs
@@ -54,8 +64,18 @@ intrayProtectedItemServer = IntrayProtectedItemSite
     , postSync = servePostSync
     }
 
-intrayProtectedAccountServer :: IntrayProtectedAccountSite (AsServerT IntrayHandler)
-intrayProtectedAccountServer = IntrayProtectedAccountSite
-    { getAccountInfo = serveGetAccountInfo
-    , deleteAccount = serveDeleteAccount
+intrayProtectedAccountServer ::
+       IntrayProtectedAccountSite (AsServerT IntrayHandler)
+intrayProtectedAccountServer =
+    IntrayProtectedAccountSite
+    {getAccountInfo = serveGetAccountInfo, deleteAccount = serveDeleteAccount}
+
+intrayProtectedAccessKeyServer ::
+       IntrayProtectedAccessKeySite (AsServerT IntrayHandler)
+intrayProtectedAccessKeyServer =
+    IntrayProtectedAccessKeySite
+    { postAddAccessKey = servePostAddAccessKey
+    , getAccessKey = serveGetAccessKey
+    , getAccessKeys = serveGetAccessKeys
+    , deleteAccessKey = serveDeleteAccessKey
     }

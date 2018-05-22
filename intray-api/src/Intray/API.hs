@@ -18,6 +18,8 @@ module Intray.API
     , IntrayProtectedItemSite(..)
     , IntrayProtectedAccountAPI
     , IntrayProtectedAccountSite(..)
+    , IntrayProtectedAccessKeyAPI
+    , IntrayProtectedAccessKeySite(..)
     , IntrayPublicAPI
     , IntrayPublicSite(..)
     , IntrayAdminAPI
@@ -36,6 +38,10 @@ module Intray.API
     , NewSyncItem(..)
     , SyncResponse(..)
     , AccountInfo(..)
+    , AccessKeyInfo(..)
+    , AddAccessKey(..)
+    , AccessKeyCreated(..)
+    , DeleteAccessKey
     , Registration(..)
     , PostRegister
     , LoginForm(..)
@@ -51,6 +57,7 @@ module Intray.API
     , validatePassword
     , ItemUUID
     , AccountUUID
+    , AccessKeyUUID
     , Username
     , parseUsername
     , parseUsernameWithError

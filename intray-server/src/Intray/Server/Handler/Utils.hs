@@ -17,7 +17,6 @@ import Database.Persist
 import Database.Persist.Sqlite
 
 import Servant
-import Servant.Auth.Server as Auth
 
 import Intray.API
 import Intray.Data

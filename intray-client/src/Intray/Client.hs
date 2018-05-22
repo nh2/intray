@@ -9,11 +9,15 @@ module Intray.Client
     , clientGetItem
     , clientDeleteItem
     , clientPostSync
-    , clientPostRegister
+    , clientPostAddAccessKey
     , clientPostLogin
     , clientGetDocs
     , clientGetAccountInfo
     , clientDeleteAccount
+    , clientGetAccessKey
+    , clientGetAccessKeys
+    , clientDeleteAccessKey
+    , clientPostRegister
     , clientAdminGetStats
     , clientAdminDeleteAccount
     , clientAdminGetAccounts
@@ -64,6 +68,10 @@ clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientDeleteAccount :: Token -> ClientM NoContent
+clientPostAddAccessKey :: Token -> AddAccessKey -> ClientM AccessKeyCreated
+clientGetAccessKey :: Token -> AccessKeyUUID -> ClientM AccessKeyInfo
+clientGetAccessKeys :: Token -> ClientM [AccessKeyInfo]
+clientDeleteAccessKey :: Token -> AccessKeyUUID -> ClientM NoContent
 clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin ::
        LoginForm
@@ -72,5 +80,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostAddAccessKey :<|> clientGetAccessKey :<|> clientGetAccessKeys :<|> clientDeleteAccessKey :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)
