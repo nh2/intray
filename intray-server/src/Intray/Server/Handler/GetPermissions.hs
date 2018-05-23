@@ -10,15 +10,11 @@ import Import
 
 import Data.Set (Set)
 
-import Database.Persist
-
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server
 
 import Intray.API
-import Intray.Data
 
-import Intray.Server.Item
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils

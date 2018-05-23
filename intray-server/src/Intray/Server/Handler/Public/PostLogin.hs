@@ -11,6 +11,7 @@ module Intray.Server.Handler.Public.PostLogin
 import Import
 
 import Control.Monad.Except
+import qualified Data.Set as S
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Database.Persist
@@ -30,7 +31,6 @@ servePostLogin ::
        LoginForm
     -> IntrayHandler (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 servePostLogin LoginForm {..} = do
-    admins <- asks envAdmins
     me <- runDb $ getBy $ UniqueUsername loginFormUsername
     case me of
         Nothing -> throwError err401
@@ -39,22 +39,40 @@ servePostLogin LoginForm {..} = do
                    (userHashedPassword user)
                    (TE.encodeUtf8 loginFormPassword)
                 then do
-                    let cookie =
-                            AuthCookie
-                            { authCookieUserUUID = userIdentifier user
-                            , authCookiePermissions =
-                                  if userUsername user `elem` admins
-                                      then adminPermissions
-                                      else userPermissions
-                            }
-                    IntrayServerEnv {..} <- ask
-                    mApplyCookies <-
-                        liftIO $
-                        acceptLogin envCookieSettings envJWTSettings cookie
-                    case mApplyCookies of
+                    admins <- asks envAdmins
+                    let perms =
+                            if userUsername user `elem` admins
+                                then adminPermissions
+                                else userPermissions
+                    setLoggedIn uid user perms
+                else do
+                    aks <- runDb $ selectList [] [Asc AccessKeyCreatedTimestamp]
+                    let mli =
+                            flip map aks $ \(Entity _ AccessKey {..}) -> do
+                                submittedKey <-
+                                    parseAccessKeySecretText loginFormPassword
+                                if validatePassword
+                                       accessKeyHashedKey
+                                       (TE.encodeUtf8 $
+                                        accessKeySecretText submittedKey)
+                                    then Just $ S.fromList accessKeyPermissions
+                                    else Nothing
+                    case msum mli of
                         Nothing -> throwError err401
-                        Just applyCookies -> do
-                            now <- liftIO getCurrentTime
-                            runDb $ update uid [UserLastLogin =. Just now]
-                            return $ applyCookies NoContent
-                else throwError err401
+                        Just perms -> setLoggedIn uid user perms
+  where
+    setLoggedIn uid user perms = do
+        let cookie =
+                AuthCookie
+                { authCookieUserUUID = userIdentifier user
+                , authCookiePermissions = perms
+                }
+        IntrayServerEnv {..} <- ask
+        mApplyCookies <-
+            liftIO $ acceptLogin envCookieSettings envJWTSettings cookie
+        case mApplyCookies of
+            Nothing -> throwError err401
+            Just applyCookies -> do
+                now <- liftIO getCurrentTime
+                runDb $ update uid [UserLastLogin =. Just now]
+                return $ applyCookies NoContent

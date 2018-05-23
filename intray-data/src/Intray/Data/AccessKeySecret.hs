@@ -9,6 +9,7 @@ module Intray.Data.AccessKeySecret
     ( AccessKeySecret
     , generateRandomAccessKeySecret
     , accessKeySecretText
+    , parseAccessKeySecretText
     ) where
 
 import Import

@@ -9,7 +9,6 @@ module Intray.Client
     , clientGetItem
     , clientDeleteItem
     , clientPostSync
-    , clientPostAddAccessKey
     , clientPostLogin
     , clientGetDocs
     , clientGetAccountInfo
