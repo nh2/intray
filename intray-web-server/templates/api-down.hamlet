@@ -1,4 +1,4 @@
 <h1> The Intray API is down.
 
 <pre>
-  #{ppShow e}
+  #{e}

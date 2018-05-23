@@ -40,6 +40,7 @@ makeAccessKeyInfo :: AccessKey -> AccessKeyInfo
 makeAccessKeyInfo AccessKey {..} =
     AccessKeyInfo
     { accessKeyInfoUUID = accessKeyIdentifier
+    , accessKeyInfoName = accessKeyName
     , accessKeyInfoCreatedTimestamp = accessKeyCreatedTimestamp
     , accessKeyInfoPermissions = S.fromList accessKeyPermissions
     }

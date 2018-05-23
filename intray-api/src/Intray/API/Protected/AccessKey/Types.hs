@@ -29,6 +29,7 @@ import Intray.API.Types ()
 
 data AccessKeyInfo = AccessKeyInfo
     { accessKeyInfoUUID :: AccessKeyUUID
+    , accessKeyInfoName :: Text
     , accessKeyInfoCreatedTimestamp :: UTCTime
     , accessKeyInfoPermissions :: Set Permission
     } deriving (Show, Eq, Ord, Generic)
@@ -38,21 +39,23 @@ instance Validity AccessKeyInfo
 instance FromJSON AccessKeyInfo where
     parseJSON =
         withObject "AccessKeyInfo" $ \o ->
-            AccessKeyInfo <$> o .: "uuid" <*> o .: "created" <*>
+            AccessKeyInfo <$> o .: "uuid" <*> o .: "name" <*> o .: "created" <*>
             o .: "permissions"
 
 instance ToJSON AccessKeyInfo where
     toJSON AccessKeyInfo {..} =
         object
             [ "uuid" .= accessKeyInfoUUID
+            , "name" .= accessKeyInfoName
             , "created" .= accessKeyInfoCreatedTimestamp
             , "permissions" .= accessKeyInfoPermissions
             ]
 
 instance ToSample AccessKeyInfo
 
-newtype AddAccessKey = AddAccessKey
-    { addAccesSKeyPermissions :: Set Permission
+data AddAccessKey = AddAccessKey
+    { addAccessKeyName :: Text
+    , addAccesSKeyPermissions :: Set Permission
     } deriving (Show, Eq, Generic)
 
 instance Validity AddAccessKey

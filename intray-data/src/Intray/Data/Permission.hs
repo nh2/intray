@@ -31,6 +31,7 @@ data Permission
     | PermitGetAccessKey
     | PermitGetAccessKeys
     | PermitDeleteAccessKey
+    | PermitGetPermissions
     | PermitAdminDeleteAccount
     | PermitAdminGetAccounts
     | PermitAdminGetStats
@@ -67,6 +68,7 @@ userPermissions =
         , PermitGetAccessKey
         , PermitGetAccessKeys
         , PermitDeleteAccessKey
+        , PermitGetPermissions
         ]
 
 adminPermissions :: Set Permission

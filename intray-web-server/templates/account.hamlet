@@ -7,21 +7,29 @@
 
 <div .ui .segment>
   <h2> Danger zone
-  <form
-     method=post
-     action=@{AccountDeleteR}
-     onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-    ^{token}
-    <button 
-      .negative .ui .button>
-      Delete account
+
+  <p>
+    <a .ui .button
+      href=@{AccessKeysR}>
+      Manage Access Keys
+    
+  <p>
+    <form
+       method=post
+       action=@{AccountDeleteR}
+       onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+      ^{token}
+      <button 
+        .negative .ui .button
+        type=submit>
+        Delete account
 
 
 $if accountInfoAdmin
   <div .ui .segment>
-    This account is an administrator, go to 
-    <a .button href=@{AdminR}>
-      The Admin Panel
-    for more details.
+    <p>
+      This account is an administrator.
+    <p>
+      <a .ui .positive .button href=@{AdminR}>
+        The Admin Panel
 
-  

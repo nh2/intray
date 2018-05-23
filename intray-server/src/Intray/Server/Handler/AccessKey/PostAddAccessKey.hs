@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Intray.Server.Handler.AccessKey.PostAddAccessKey
     ( servePostAddAccessKey
@@ -29,24 +30,30 @@ servePostAddAccessKey ::
        AuthResult AuthCookie -> AddAccessKey -> IntrayHandler AccessKeyCreated
 servePostAddAccessKey (Authenticated AuthCookie {..}) AddAccessKey {..} =
     withPermission authCookiePermissions PermitPostAddAccessKey $ do
-        let perms = authCookiePermissions `S.difference` addAccesSKeyPermissions
+        let perms =
+                authCookiePermissions `S.intersection` addAccesSKeyPermissions
         unless (perms == addAccesSKeyPermissions) $ throwAll err401
         uuid <- liftIO nextRandomUUID
         now <- liftIO getCurrentTime
-        runDb $
-            insert_
-                AccessKey
-                { accessKeyIdentifier = uuid
-                , accessKeyUser = authCookieUserUUID
-                , accessKeyHashedKey = undefined
-                , accessKeyCreatedTimestamp = now
-                , accessKeyPermissions = S.toList perms
-                }
         secret <- liftIO generateRandomAccessKeySecret
-        pure
-            AccessKeyCreated
-            { accessKeyCreatedCreatedTimestamp = now
-            , accessKeyCreatedKey = secret
-            , accessKeyCreatedUUID = uuid
-            }
+        mhp <- liftIO $ passwordHash $ accessKeySecretText secret
+        case mhp of
+            Nothing -> throwAll err500 {errBody = "Unable to hash secret key."}
+            Just hp -> do
+                runDb $
+                    insert_
+                        AccessKey
+                        { accessKeyIdentifier = uuid
+                        , accessKeyUser = authCookieUserUUID
+                        , accessKeyName = addAccessKeyName
+                        , accessKeyHashedKey = hp
+                        , accessKeyCreatedTimestamp = now
+                        , accessKeyPermissions = S.toList perms
+                        }
+                pure
+                    AccessKeyCreated
+                    { accessKeyCreatedCreatedTimestamp = now
+                    , accessKeyCreatedKey = secret
+                    , accessKeyCreatedUUID = uuid
+                    }
 servePostAddAccessKey _ _ = throwAll err401

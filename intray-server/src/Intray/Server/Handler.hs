@@ -24,6 +24,7 @@ import Intray.Server.Handler.GetIntraySize (serveGetIntraySize)
 import Intray.Server.Handler.GetItem (serveGetItem)
 import Intray.Server.Handler.GetItemUUIDs (serveGetItemUUIDs)
 import Intray.Server.Handler.GetItems (serveGetItems)
+import Intray.Server.Handler.GetPermissions (serveGetPermissions)
 import Intray.Server.Handler.GetShowItem (serveGetShowItem)
 import Intray.Server.Handler.PostAddItem (servePostAddItem)
 import Intray.Server.Handler.PostSync (servePostSync)
@@ -49,6 +50,7 @@ intrayProtectedServer =
     { protectedItemSite = toServant intrayProtectedItemServer
     , protectedAccountSite = toServant intrayProtectedAccountServer
     , protectedAccessKeySite = toServant intrayProtectedAccessKeyServer
+    , getPermissions = serveGetPermissions
     }
 
 intrayProtectedItemServer :: IntrayProtectedItemSite (AsServerT IntrayHandler)

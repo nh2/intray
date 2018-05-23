@@ -41,6 +41,7 @@ module Intray.API
     , AccessKeyInfo(..)
     , AddAccessKey(..)
     , AccessKeyCreated(..)
+    , accessKeySecretText
     , DeleteAccessKey
     , Registration(..)
     , PostRegister

@@ -60,6 +60,7 @@ IntrayItem
 AccessKey
     identifier AccessKeyUUID
     user AccountUUID
+    name Text
     hashedKey HashedPassword
     createdTimestamp UTCTime
     permissions [Permission] -- TODO put this in a set or some such

@@ -1,0 +1,28 @@
+<h1> Access Keys
+
+$forall akw <- accessKeysWidgets
+  <div .ui .segment>
+    ^{akw}
+
+<div .ui .segment>
+  <form .ui .form
+    method=post
+    action=@{AccessKeysR}>
+    <div .ui .field>
+      <label>
+        Name
+      <input
+        type="text"
+        name="name">
+      
+    $forall perm <- permissions
+      <div .ui .field>
+        <div .ui .toggle .checkbox>
+          <input name=#{show perm} type=checkbox>
+          <label>#{show perm}
+
+    ^{token}
+    <button 
+      .ui .button
+      type=submit>
+      Add AccessKey
