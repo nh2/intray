@@ -1,10 +1,7 @@
-<div .ui .segment>
-  <h1> Account
+<h1> Account
 
-  <p> Username: #{usernameText accountInfoUsername}
-  <p> Created: ^{timestampWidget}
+^{accountInfoWidget}
   
-
 <div .ui .segment>
   <h2> Danger zone
 
@@ -24,12 +21,4 @@
         type=submit>
         Delete account
 
-
-$if accountInfoAdmin
-  <div .ui .segment>
-    <p>
-      This account is an administrator.
-    <p>
-      <a .ui .positive .button href=@{AdminR}>
-        The Admin Panel
-
+^{adminSegment mai}

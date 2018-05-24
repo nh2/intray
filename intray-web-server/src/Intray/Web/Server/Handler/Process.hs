@@ -5,7 +5,6 @@
 
 module Intray.Web.Server.Handler.Process
     ( getProcessR
-    , postAddR
     , postDoneR
     ) where
 
@@ -22,35 +21,22 @@ import Intray.Web.Server.Time
 getProcessR :: Handler Html
 getProcessR =
     withLogin $ \t -> do
-        mItemWidget <-
-            do mItem <- runClientOrErr $ clientGetShowItem t
-               case mItem of
-                   Nothing -> pure Nothing
-                   Just i -> Just <$> makeItemInfoWidget i
-        nrItems <- runClientOrErr $ length <$> clientGetItemUUIDs t
-        withNavBar $(widgetFile "process")
+        mi <- runClientOrDisallow $ clientGetShowItem t
+        case mi of
+            Nothing -> withNavBar $(widgetFile "process-unauthorised")
+            Just mItem -> do
+                mItemWidget <-
+                    case mItem of
+                        Nothing -> pure Nothing
+                        Just i -> Just <$> makeItemInfoWidget i
+                nrItems <- runClientOrErr $ length <$> clientGetItemUUIDs t
+                withNavBar $(widgetFile "process")
 
 makeItemInfoWidget :: ItemInfo TypedItem -> Handler Widget
 makeItemInfoWidget ItemInfo {..} = do
     token <- genToken
     timestampWidget <- makeTimestampWidget itemInfoTimestamp
     pure $(widgetFile "item")
-
-newtype NewItem = NewItem
-    { newItemText :: Textarea
-    }
-
-newItemForm :: FormInput Handler NewItem
-newItemForm = NewItem <$> ireq textareaField "contents"
-
-postAddR :: Handler Html
-postAddR =
-    withLogin $ \t -> do
-        NewItem {..} <- runInputPost newItemForm
-        void $
-            runClientOrErr $
-            clientPostAddItem t $ textTypedItem $ unTextarea newItemText
-        redirect AddR
 
 newtype DoneItem = DoneItem
     { doneItemUUID :: ItemUUID

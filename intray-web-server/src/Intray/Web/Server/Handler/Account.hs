@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Intray.Web.Server.Handler.Account
@@ -19,10 +20,39 @@ import Intray.Web.Server.Time
 getAccountR :: Handler Html
 getAccountR =
     withLogin $ \t -> do
-        AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
-        timestampWidget <- makeTimestampWidget accountInfoCreatedTimestamp
+        mai <- runClientOrDisallow $ clientGetAccountInfo t
+        accountInfoWidget <- accountInfoSegment mai
         token <- genToken
         withNavBar $(widgetFile "account")
+
+accountInfoSegment :: Maybe AccountInfo -> Handler Widget
+accountInfoSegment Nothing =
+    pure
+        [whamlet|
+        <div .ui .negative .message>
+            You are not authorised to view account info.|]
+accountInfoSegment (Just AccountInfo {..}) = do
+    timestampWidget <- makeTimestampWidget accountInfoCreatedTimestamp
+    pure
+        [whamlet|
+        <div .ui .segment>
+          <h1> Account
+
+          <p> Username: #{usernameText accountInfoUsername}
+          <p> Created: ^{timestampWidget}|]
+
+adminSegment :: Maybe AccountInfo -> Widget
+adminSegment Nothing = mempty
+adminSegment (Just AccountInfo {..})
+    | accountInfoAdmin =
+        [whamlet|
+            <div .ui .segment>
+                <p>
+                  This account is an administrator.
+                <p>
+                  <a .ui .positive .button href=@{AdminR}>
+                    The Admin Panel|]
+    | otherwise = mempty
 
 postAccountDeleteR :: Handler Html
 postAccountDeleteR =
