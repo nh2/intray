@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -24,11 +25,58 @@ import Intray.Web.Server.Time
 getAccessKeysR :: Handler Html
 getAccessKeysR =
     withLogin $ \t -> do
-        accessKeys <- runClientOrErr $ clientGetAccessKeys t
-        accessKeysWidgets <- mapM accessKeyWidget accessKeys
-        permissions <- runClientOrErr $ clientGetPermissions t
-        token <- genToken
+        maks <- runClientOrDisallow $ clientGetAccessKeys t
+        aksw <- accessKeysWidget maks
+        mperms <- runClientOrDisallow $ clientGetPermissions t
+        nakf <- makeNewAccessKeyForm mperms
         withNavBar $(widgetFile "access-keys")
+
+accessKeysWidget :: Maybe [AccessKeyInfo] -> Handler Widget
+accessKeysWidget Nothing =
+    pure
+        [whamlet|
+          <div .ui .negative .message>
+              You are not authorised to view access keys.|]
+accessKeysWidget (Just accessKeys) = do
+    accessKeysWidgets <- mapM accessKeyWidget accessKeys
+    pure
+        [whamlet|
+          $forall akw <- accessKeysWidgets
+            <div .ui .segment>
+              ^{akw}|]
+
+makeNewAccessKeyForm :: Maybe (Set Permission) -> Handler Widget
+makeNewAccessKeyForm Nothing =
+    pure
+        [whamlet|
+          <div .ui .negative .message>
+            You are not authorised to view this account's permissions.|]
+makeNewAccessKeyForm (Just permissions) = do
+    token <- genToken
+    pure
+        [whamlet|
+          <div .ui .segment>
+            <form .ui .form
+              method=post
+              action=@{AccessKeysR}>
+              <div .ui .field>
+                <label>
+                  Name
+                <input
+                  type="text"
+                  name="name">
+
+              $forall perm <- permissions
+                <div .ui .field>
+                  <div .ui .toggle .checkbox>
+                    <input name=#{show perm} type=checkbox>
+                    <label>#{show perm}
+
+              ^{token}
+              <button
+                .ui .button
+                type=submit>
+                Add AccessKey|]
 
 newAccessKeyForm :: Set Permission -> FormInput Handler AddAccessKey
 newAccessKeyForm ps =

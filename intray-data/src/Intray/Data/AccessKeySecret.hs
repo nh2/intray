@@ -50,4 +50,4 @@ parseAccessKeySecretText t =
 
 generateRandomAccessKeySecret :: IO AccessKeySecret
 generateRandomAccessKeySecret =
-    AccessKeySecret . SB.pack <$> replicateM 32 randomIO
+    AccessKeySecret . SB.pack <$> replicateM 16 randomIO
