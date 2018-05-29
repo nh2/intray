@@ -22,6 +22,10 @@ spec :: Spec
 spec =
     withIntrayServer $
     describe "AdminDeleteAccount" $ do
+        it "fails without PermitAdminDeleteAccount" $ \cenv ->
+            forAllValid $ \uuid ->
+                failsWithOutPermission cenv PermitAdminDeleteAccount $ \t ->
+                    clientAdminDeleteAccount t uuid
         it "forbids non-admin users from deleting a user" $ \cenv ->
             forAllValid $ \uid ->
                 requiresAdmin cenv $ \token ->

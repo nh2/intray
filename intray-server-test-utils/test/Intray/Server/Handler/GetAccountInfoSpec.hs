@@ -18,6 +18,11 @@ spec :: Spec
 spec =
     withIntrayServer $
     describe "GetAccountInfo" $ do
+        it "fails without PermitGetAccountInfo" $ \cenv ->
+            failsWithOutPermission
+                cenv
+                PermitGetAccountInfo
+                clientGetAccountInfo
         it "returns valid account info" $ \cenv ->
             withValidNewUser cenv $ \token -> do
                 accountInfo <-

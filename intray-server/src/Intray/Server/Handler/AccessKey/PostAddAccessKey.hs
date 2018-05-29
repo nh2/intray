@@ -31,8 +31,8 @@ servePostAddAccessKey ::
 servePostAddAccessKey (Authenticated AuthCookie {..}) AddAccessKey {..} =
     withPermission authCookiePermissions PermitPostAddAccessKey $ do
         let perms =
-                authCookiePermissions `S.intersection` addAccesSKeyPermissions
-        unless (perms == addAccesSKeyPermissions) $ throwAll err401
+                authCookiePermissions `S.intersection` addAccessKeyPermissions
+        unless (perms == addAccessKeyPermissions) $ throwAll err401
         uuid <- liftIO nextRandomUUID
         now <- liftIO getCurrentTime
         secret <- liftIO generateRandomAccessKeySecret

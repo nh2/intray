@@ -19,6 +19,8 @@ spec :: Spec
 spec =
     withIntrayServer $
     describe "ListItems" $ do
+        it "fails without PermitGetitems" $ \cenv ->
+            failsWithOutPermission cenv PermitGetItems clientGetItems
         it "it lists items that were just added" $ \cenv ->
             forAllValid $ \items ->
                 withValidNewUser cenv $ \token -> do

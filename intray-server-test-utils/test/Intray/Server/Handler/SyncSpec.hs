@@ -19,6 +19,10 @@ spec :: Spec
 spec =
     withIntrayServer $
     describe "PostSync" $ do
+        it "fails without PermitSync" $ \cenv ->
+            forAllValid $ \syncRequest ->
+                failsWithOutPermission cenv PermitSync $ \t ->
+                    clientPostSync t syncRequest
         it "produces a valid sync result for any sync request" $ \cenv ->
             forAllValid $ \syncRequest ->
                 withValidNewUser cenv $ \token -> do

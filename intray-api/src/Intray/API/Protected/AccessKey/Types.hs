@@ -55,7 +55,7 @@ instance ToSample AccessKeyInfo
 
 data AddAccessKey = AddAccessKey
     { addAccessKeyName :: Text
-    , addAccesSKeyPermissions :: Set Permission
+    , addAccessKeyPermissions :: Set Permission
     } deriving (Show, Eq, Generic)
 
 instance Validity AddAccessKey
