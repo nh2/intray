@@ -15,11 +15,11 @@ library:
   ghc-options: -Wall
   exposed-modules:
   - Intray.Data
+  - Intray.Data.AccountUUID
   - Intray.Data.HashedPassword
   - Intray.Data.ItemType
   - Intray.Data.ItemUUID
   - Intray.Data.UUID
-  - Intray.Data.UserUUID
   - Intray.Data.Username
 
   dependencies:

@@ -33,19 +33,7 @@ import Intray.Server.Types
 
 import Intray.Server.SigningKey
 
-import Intray.Server.Handler.AddItem
-import Intray.Server.Handler.AdminStats
-import Intray.Server.Handler.DeleteItem
-import Intray.Server.Handler.Docs
-import Intray.Server.Handler.GetAccountInfo
-import Intray.Server.Handler.GetItem
-import Intray.Server.Handler.ListEntireIntray
-import Intray.Server.Handler.ListItems
-import Intray.Server.Handler.Login
-import Intray.Server.Handler.Register
-import Intray.Server.Handler.ShowItem
-import Intray.Server.Handler.Size
-import Intray.Server.Handler.Sync
+import Intray.Server.Handler (intrayServer)
 
 runIntrayServer :: ServeSettings -> IO ()
 runIntrayServer ServeSettings {..} =
@@ -76,48 +64,16 @@ intrayApp se =
         , corsMethods = ["GET", "POST", "HEAD", "DELETE"]
         }
 
-intrayAppContext :: IntrayServerEnv -> Context '[ CookieSettings, JWTSettings]
+makeIntrayServer :: IntrayServerEnv -> Server IntrayAPI
+makeIntrayServer cfg =
+    hoistServerWithContext
+        intrayAPI
+        (Proxy :: Proxy IntrayContext)
+        (`runReaderT` cfg)
+        (toServant intrayServer)
+
+intrayAppContext :: IntrayServerEnv -> Context IntrayContext
 intrayAppContext IntrayServerEnv {..} =
     envCookieSettings :. envJWTSettings :. EmptyContext
 
-makeIntrayServer :: IntrayServerEnv -> Server IntrayAPI
-makeIntrayServer cfg = enter (readerToEither cfg) (toServant intrayServer)
-  where
-    readerToEither :: IntrayServerEnv -> (IntrayHandler :~> Handler)
-    readerToEither = runReaderTNat
-
-intrayServer :: IntraySite (AsServerT IntrayHandler)
-intrayServer =
-    IntraySite
-    { openSite = toServant intrayOpenServer
-    , adminSite = toServant intrayAdminServer
-    }
-
-intrayOpenServer :: IntrayOpenSite (AsServerT IntrayHandler)
-intrayOpenServer =
-    IntrayOpenSite
-    { protectedSite = toServant intrayProtectedServer
-    , publicSite = toServant intrayPublicServer
-    }
-
-intrayProtectedServer :: IntrayProtectedSite (AsServerT IntrayHandler)
-intrayProtectedServer =
-    IntrayProtectedSite
-    { showItem = serveShowItem
-    , size = serveSize
-    , listItems = serveListItems
-    , listEntireIntray = serveListEntireIntray
-    , addItem = serveAddItem
-    , getItem = serveGetItem
-    , deleteItem = serveDeleteItem
-    , sync = serveSync
-    , accountInfo = serveGetAccountInfo
-    }
-
-intrayPublicServer :: IntrayPublicSite (AsServerT IntrayHandler)
-intrayPublicServer =
-    IntrayPublicSite
-    {register = serveRegister, login = serveLogin, docs = serveDocs}
-
-intrayAdminServer :: IntrayAdminSite (AsServerT IntrayHandler)
-intrayAdminServer = IntrayAdminSite {adminStats = serveAdminStats}
+type IntrayContext = '[ CookieSettings, JWTSettings]

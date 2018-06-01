@@ -1,23 +1,22 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Intray.Client
-    ( clientShowItem
-    , clientSize
-    , clientListItemUuids
-    , clientListItems
-    , clientAddItem
+    ( clientGetShowItem
+    , clientGetSize
+    , clientGetItemUUIDs
+    , clientGetItems
+    , clientPostAddItem
     , clientGetItem
     , clientDeleteItem
-    , clientSync
-    , clientRegister
-    , clientLogin
-    , clientDocs
+    , clientPostSync
+    , clientPostRegister
+    , clientPostLogin
+    , clientGetDocs
     , clientGetAccountInfo
-    , clientAdminStats
+    , clientDeleteAccount
+    , clientAdminGetStats
+    , clientAdminDeleteAccount
+    , clientAdminGetAccounts
     , ItemType(..)
     , TypedItem(..)
     , textTypedItem
@@ -33,11 +32,13 @@ module Intray.Client
     , GetDocsResponse(..)
     , AdminStats(..)
     , ItemUUID
-    , UserUUID
+    , AccountUUID
     , Username
     , parseUsername
+    , parseUsernameWithError
     , usernameText
     , NoContent(..)
+    , Token
     , module Data.UUID.Typed
     ) where
 
@@ -45,6 +46,7 @@ import Import
 
 import qualified Data.UUID.Typed
 import Servant.API
+import Servant.API.Flatten
 import Servant.Auth.Client
 import Servant.Auth.Server
 import Servant.Auth.Server.SetCookieOrphan ()
@@ -52,36 +54,23 @@ import Servant.Client
 
 import Intray.API
 
-intrayClient :: Client IntrayAPI
-intrayClient = client intrayAPI
-
-intrayOpenClient :: Client IntrayOpenAPI
-intrayAdminClient :: Client IntrayAdminAPI
-intrayOpenClient :<|> intrayAdminClient = intrayClient
-
-intrayProtectedClient :: Client IntrayProtectedAPI
-intrayPublicClient :: Client IntrayPublicAPI
-intrayProtectedClient :<|> intrayPublicClient = intrayOpenClient
-
-clientAdminStats :: Token -> ClientM AdminStats
-clientAdminStats = intrayAdminClient
-
-((clientShowItem :<|> clientSize) :<|> (clientListItemUuids :<|> clientListItems)) :<|> ((clientAddItem :<|> clientGetItem) :<|> (clientDeleteItem :<|> clientSync :<|> clientGetAccountInfo)) =
-    intrayProtectedClient
-
-clientRegister :<|> clientLogin :<|> clientDocs = intrayPublicClient
-
-clientShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
-clientSize :: Token -> ClientM Int
-clientListItemUuids :: Token -> ClientM [ItemUUID]
-clientListItems :: Token -> ClientM [ItemInfo TypedItem]
-clientAddItem :: Token -> TypedItem -> ClientM ItemUUID
+clientGetShowItem :: Token -> ClientM (Maybe (ItemInfo TypedItem))
+clientGetSize :: Token -> ClientM Int
+clientGetItemUUIDs :: Token -> ClientM [ItemUUID]
+clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
+clientPostAddItem :: Token -> TypedItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientSync :: Token -> SyncRequest -> ClientM SyncResponse
+clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
-clientRegister :: Registration -> ClientM NoContent
-clientLogin ::
+clientDeleteAccount :: Token -> ClientM NoContent
+clientPostRegister :: Registration -> ClientM NoContent
+clientPostLogin ::
        LoginForm
     -> ClientM (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
-clientDocs :: ClientM GetDocsResponse
+clientGetDocs :: ClientM GetDocsResponse
+clientAdminGetStats :: Token -> ClientM AdminStats
+clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
+clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
+clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+    client (flatten intrayAPI)

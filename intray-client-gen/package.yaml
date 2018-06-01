@@ -22,7 +22,7 @@ library:
   - genvalidity
   - genvalidity-containers
   - intray-client
-  - intray-data-gen
+  - intray-api-gen
 
 tests:
   intray-client-test:

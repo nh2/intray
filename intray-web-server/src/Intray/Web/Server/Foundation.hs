@@ -2,6 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -17,7 +18,6 @@ module Intray.Web.Server.Foundation
 
 import Import
 
-import qualified Data.ByteString.Lazy as LB
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
@@ -25,11 +25,9 @@ import qualified Data.Text as T
 import Control.Concurrent
 
 import Control.Monad.Except
-import Control.Monad.Reader
 import Control.Monad.Trans.Maybe
 
 import qualified Network.HTTP.Client as Http
-import qualified Network.HTTP.Media as Http
 import qualified Network.HTTP.Types as Http
 import Web.Cookie
 
@@ -42,26 +40,27 @@ import Yesod.EmbeddedStatic
 import Servant.API
 import Servant.Auth.Client (Token(..))
 import Servant.Client
-import Servant.Common.Req
 
 import Intray.Client
 
 import Intray.Web.Server.Constants
+import Intray.Web.Server.Persistence
 import Intray.Web.Server.Static
 import Intray.Web.Server.Widget
 
 type IntrayWidget = IntrayWidget' ()
 
-type IntrayWidget' = WidgetT App IO
+type IntrayWidget' = WidgetFor App
 
-type IntrayHandler = HandlerT App IO
+type IntrayHandler = HandlerFor App
 
-type IntrayAuthHandler = HandlerT Auth IntrayHandler
+type IntrayAuthHandler a = AuthHandler App a
 
 data App = App
     { appHttpManager :: Http.Manager
     , appStatic :: EmbeddedStatic
     , appAPIBaseUrl :: BaseUrl
+    , appPersistLogins :: Bool
     , appLoginTokens :: MVar (HashMap Username Token)
     }
 
@@ -82,11 +81,11 @@ instance YesodAuth App where
     type AuthId App = Username
     loginDest _ = AddR
     logoutDest _ = HomeR
-    authHttpManager = appHttpManager
+    authHttpManager = getsYesod appHttpManager
     authenticate creds =
         if credsPlugin creds == intrayAuthPluginName
             then case parseUsername $ credsIdent creds of
-                     Nothing -> pure $ UserError Msg.NoIdentifierProvided
+                     Nothing -> pure $ UserError Msg.InvalidLogin
                      Just un -> pure $ Authenticated un
             else pure $
                  ServerError $
@@ -103,6 +102,7 @@ intrayAuthPluginName = "intray-auth-plugin"
 intrayAuthPlugin :: AuthPlugin App
 intrayAuthPlugin = AuthPlugin intrayAuthPluginName dispatch loginWidget
   where
+    dispatch :: Text -> [Text] -> IntrayAuthHandler TypedContent
     dispatch "POST" ["login"] = postLoginR >>= sendResponse
     dispatch "GET" ["register"] = getNewAccountR >>= sendResponse
     dispatch "POST" ["register"] = postNewAccountR >>= sendResponse
@@ -126,7 +126,7 @@ postLoginR = do
     let loginInputForm =
             LoginData <$> ireq textField "userkey" <*>
             ireq passwordField "passphrase"
-    result <- lift $ runInputPostResult loginInputForm
+    result <- runInputPostResult loginInputForm
     muser <-
         case result of
             FormMissing -> invalidArgs ["Form is missing"]
@@ -135,7 +135,7 @@ postLoginR = do
                 case parseUsername ukey of
                     Nothing -> pure $ Left Msg.InvalidUsernamePass
                     Just un -> do
-                        lift $
+                        liftHandler $
                             login
                                 LoginForm
                                 { loginFormUsername = un
@@ -145,7 +145,6 @@ postLoginR = do
     case muser of
         Left err -> loginErrorMessageI LoginR err
         Right un ->
-            lift $
             setCredsRedirect $ Creds intrayAuthPluginName (usernameText un) []
 
 registerR :: AuthRoute
@@ -155,7 +154,7 @@ getNewAccountR :: IntrayAuthHandler Html
 getNewAccountR = do
     token <- genToken
     msgs <- getMessages
-    lift $ defaultLayout $(widgetFile "auth/register")
+    liftHandler $ defaultLayout $(widgetFile "auth/register")
 
 data NewAccount = NewAccount
     { newAccountUsername :: Username
@@ -171,22 +170,29 @@ postNewAccountR = do
                 (checkMMap
                      (\t ->
                           pure $
-                          case parseUsername t of
-                              Nothing -> Left ("Invalid username" :: Text)
-                              Just un -> Right un)
+                          case parseUsernameWithError t of
+                              Left err ->
+                                  Left
+                                      (T.pack $
+                                       unwords
+                                           [ "Invalid username:"
+                                           , show t ++ ";"
+                                           , err
+                                           ])
+                              Right un -> Right un)
                      usernameText
                      textField)
                 "username" <*>
             ireq passwordField "passphrase" <*>
             ireq passwordField "passphrase-confirm"
-    mr <- lift getMessageRender
-    result <- lift $ runInputPostResult newAccountInputForm
+    mr <- liftHandler getMessageRender
+    result <- liftHandler $ runInputPostResult newAccountInputForm
     mdata <-
         case result of
             FormMissing -> invalidArgs ["Form is incomplete"]
-            FormFailure msgs -> invalidArgs msgs
+            FormFailure msgs -> pure $ Left msgs
             FormSuccess d ->
-                return $
+                pure $
                 if newAccountPassword1 d == newAccountPassword2 d
                     then Right
                              Registration
@@ -197,14 +203,14 @@ postNewAccountR = do
     case mdata of
         Left errs -> do
             setMessage $ toHtml $ T.concat errs
-            redirect registerR
+            liftHandler $ redirect $ AuthR registerR
         Right reg -> do
-            errOrOk <- lift $ runClient $ clientRegister reg
+            errOrOk <- liftHandler $ runClient $ clientPostRegister reg
             case errOrOk of
                 Left err -> do
                     case err of
-                        FailureResponse {} ->
-                            case Http.statusCode $ responseStatus err of
+                        FailureResponse resp ->
+                            case Http.statusCode $ responseStatusCode resp of
                                 409 ->
                                     setMessage
                                         "An account with this username already exists"
@@ -213,9 +219,9 @@ postNewAccountR = do
                                         "Failed to register for unknown reasons."
                         _ ->
                             setMessage "Failed to register for unknown reasons."
-                    redirect registerR
+                    liftHandler $ redirect $ AuthR registerR
                 Right NoContent ->
-                    lift $ do
+                    liftHandler $ do
                         login
                             LoginForm
                             { loginFormUsername = registrationUsername reg
@@ -234,7 +240,7 @@ instance PathPiece (UUID a) where
     fromPathPiece = parseUUID
     toPathPiece = uuidText
 
-withNavBar :: WidgetT App IO () -> HandlerT App IO Html
+withNavBar :: WidgetFor App () -> HandlerFor App Html
 withNavBar widget = do
     mauth <- maybeAuthId
     msgs <- getMessages
@@ -251,9 +257,9 @@ genToken = do
 
 runClient :: ClientM a -> Handler (Either ServantError a)
 runClient func = do
-    man <- asks appHttpManager
-    burl <- asks appAPIBaseUrl
-    let cenv = ClientEnv man burl
+    man <- getsYesod appHttpManager
+    burl <- getsYesod appAPIBaseUrl
+    let cenv = ClientEnv man burl Nothing
     liftIO $ runClientM func cenv
 
 runClientOrErr :: ClientM a -> Handler a
@@ -261,47 +267,70 @@ runClientOrErr func = do
     errOrRes <- runClient func
     case errOrRes of
         Left err ->
-            handleStandardServantErrs err $ \u s m r ->
-                error $ show (u, s, m, r) -- TODO deal with error
+            handleStandardServantErrs err $ \resp ->
+                error $ show resp -- TODO deal with error
         Right r -> pure r
 
 handleStandardServantErrs ::
-       ServantError
-    -> (UrlReq -> Http.Status -> Http.MediaType -> LB.ByteString -> Handler a)
-    -> Handler a
+       ServantError -> (Response -> Handler a) -> Handler a
 handleStandardServantErrs err func =
     case err of
-        FailureResponse urlReq status mediaType resp ->
-            func urlReq status mediaType resp
+        FailureResponse resp -> func resp
         ConnectionError e -> redirect $ ErrorAPIDownR $ T.pack $ show e
         e -> error $ unwords ["Error while calling API:", show e]
 
 login :: LoginForm -> Handler ()
 login form = do
-    errOrRes <- runClient $ clientLogin form
+    errOrRes <- runClient $ clientPostLogin form
     case errOrRes of
         Left err ->
-            handleStandardServantErrs err $ \urlReq status mediaType resp ->
-                if status == Http.unauthorized401
+            handleStandardServantErrs err $ \resp ->
+                if responseStatusCode resp == Http.unauthorized401
                     then do
                         addMessage "error" "Unable to login"
                         redirect $ AuthR LoginR
-                    else error $ show (urlReq, status, mediaType, resp)
+                    else error $ show resp
         Right (Headers NoContent (HCons _ (HCons sessionHeader HNil))) ->
             case sessionHeader of
-                Header session -> do
-                    let token = Token $ setCookieValue session
-                    tokenMapVar <- asks appLoginTokens
-                    liftIO $
-                        modifyMVar_ tokenMapVar $
-                        pure . HM.insert (loginFormUsername form) token
+                Header session ->
+                    recordLoginToken (loginFormUsername form) session
                 _ -> undefined -- TODO deal with this error
 
 withLogin :: (Token -> Handler Html) -> Handler Html
 withLogin func = do
     un <- requireAuthId
-    tokenMapVar <- asks appLoginTokens
-    tokenMap <- liftIO $ readMVar tokenMapVar
-    case HM.lookup un tokenMap of
+    mLoginToken <- lookupToginToken un
+    case mLoginToken of
         Nothing -> redirect $ AuthR LoginR
         Just token -> func token
+
+lookupToginToken :: Username -> Handler (Maybe Token)
+lookupToginToken un = do
+    whenPersistLogins loadLogins
+    tokenMapVar <- getsYesod appLoginTokens
+    tokenMap <- liftIO $ readMVar tokenMapVar
+    pure $ HM.lookup un tokenMap
+
+recordLoginToken :: Username -> SetCookie -> Handler ()
+recordLoginToken un session = do
+    let token = Token $ setCookieValue session
+    tokenMapVar <- getsYesod appLoginTokens
+    liftIO $ modifyMVar_ tokenMapVar $ pure . HM.insert un token
+    whenPersistLogins storeLogins
+
+whenPersistLogins :: Handler () -> Handler ()
+whenPersistLogins f = do
+    b <- getsYesod appPersistLogins
+    when b f
+
+loadLogins :: Handler ()
+loadLogins = do
+    tokenMapVar <- getsYesod appLoginTokens
+    liftIO $ modifyMVar_ tokenMapVar $ \m -> fromMaybe m <$> readLogins
+
+storeLogins :: Handler ()
+storeLogins = do
+    tokenMapVar <- getsYesod appLoginTokens
+    liftIO $ do
+        m <- readMVar tokenMapVar
+        writeLogins m

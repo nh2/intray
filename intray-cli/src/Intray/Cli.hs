@@ -26,7 +26,7 @@ dispatch d =
     case d of
         DispatchRegister rs -> register rs
         DispatchLogin ls -> login ls
-        DispatchAddItem t -> addItem t
+        DispatchPostPostAddItem t -> addItem t
         DispatchShowItem -> showItem
         DispatchDoneItem -> doneItem
         DispatchSize -> size

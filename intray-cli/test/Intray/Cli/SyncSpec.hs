@@ -25,7 +25,7 @@ spec =
     it "correctly deletes the local LastSeen after a sync if the item has dissappeared remotely" $ \cenv ->
         forAllValid $ \ti ->
             withValidNewUserAndData cenv $ \un pw _ -> do
-                let (ClientEnv _ burl) = cenv
+                let (ClientEnv _ burl _) = cenv
                 let u = T.unpack $ usernameText un
                 let p = T.unpack pw
                 let d = "/tmp"
@@ -56,7 +56,7 @@ spec =
                                 "Should have a token after logging in"
                             undefined
                         Just t -> pure t
-                uuid <- runClientOrError cenv $ clientAddItem token ti
+                uuid <- runClientOrError cenv $ clientPostAddItem token ti
                 intray ["sync", "--url", showBaseUrl burl, "--intray-dir", d]
                 intray ["show", "--url", showBaseUrl burl, "--intray-dir", d]
                 mLastSeen1 <- runReaderT readLastSeen sets

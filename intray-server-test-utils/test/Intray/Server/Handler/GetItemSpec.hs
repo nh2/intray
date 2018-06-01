@@ -18,12 +18,12 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "get item" $
+    describe "GetItem" $
     it "gets the same item that was just added" $ \cenv ->
         forAllValid $ \t ->
             withValidNewUser cenv $ \token -> do
                 i <-
                     runClientOrError cenv $ do
-                        uuid <- clientAddItem token t
+                        uuid <- clientPostAddItem token t
                         clientGetItem token uuid
                 itemInfoContents i `shouldBe` t

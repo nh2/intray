@@ -7,6 +7,7 @@
 module Intray.Data.Username
     ( Username()
     , parseUsername
+    , parseUsernameWithError
     , usernameText
     , validUsernameChar
     ) where
@@ -25,14 +26,22 @@ newtype Username = Username
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity Username where
-    isValid (Username "") = False
-    isValid (Username t) = T.all validUsernameChar t
-
-validUsernameChar :: Char -> Bool
-validUsernameChar '-' = True
-validUsernameChar '_' = True
-validUsernameChar c =
-    not (Char.isControl c) && Char.isAlphaNum c && Char.isLatin1 c
+    validate (Username t) =
+        mconcat
+            [ check (not (T.null t)) "The username is not empty."
+            , check
+                  (T.length t >= 3)
+                  "The username is at least three characters long."
+            , mconcat $
+              flip map (zip [1 ..] $ map UsernameChar $ T.unpack t) $ \(ix, uc@(UsernameChar c)) ->
+                  annotate uc $
+                  unwords
+                      [ "character number"
+                      , show (ix :: Int)
+                      , "of the username:"
+                      , show c
+                      ]
+            ]
 
 instance Hashable Username
 
@@ -55,12 +64,40 @@ instance FromJSON Username where
 
 parseUsername :: MonadFail m => Text -> m Username
 parseUsername t =
-    case constructValid $ Username t of
-        Nothing -> fail "Invalid username in JSON"
-        Just un -> pure un
+    case parseUsernameWithError t of
+        Left err -> fail err
+        Right un -> pure un
+
+parseUsernameWithError :: Text -> Either String Username
+parseUsernameWithError t =
+    case checkValidity $ Username t of
+        Right un -> Right un
+        Left chains -> Left $ unlines $ map go chains
+  where
+    go :: ValidationChain -> String
+    go (Violated invariant) = "Violated: " ++ show invariant
+    go (Location loc rest) = go rest ++ " in " ++ loc
 
 instance ToJSON Username where
     toJSON = toJSON . usernameText
 
 instance ToJSONKey Username where
     toJSONKey = toJSONKeyText usernameText
+
+newtype UsernameChar =
+    UsernameChar Char
+
+instance Validity UsernameChar where
+    validate (UsernameChar '-') = mempty
+    validate (UsernameChar '_') = mempty
+    validate (UsernameChar c) =
+        mconcat
+            [ check
+                  (not (Char.isControl c))
+                  "The character is not a control character."
+            , check (Char.isAlphaNum c) "The character is alphanumeric."
+            , check (Char.isLatin1 c) "The character is part of Latin1."
+            ]
+
+validUsernameChar :: Char -> Bool
+validUsernameChar = isValid . UsernameChar

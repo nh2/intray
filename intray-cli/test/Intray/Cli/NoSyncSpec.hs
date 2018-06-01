@@ -21,7 +21,7 @@ spec = do
                 , setSyncStrategy = NeverSync
                 }
         let intray d = runReaderT (dispatch d) sets
-        intray $ DispatchAddItem "hello world"
+        intray $ DispatchPostPostAddItem "hello world"
         intray DispatchShowItem
         intray DispatchDoneItem
         intray DispatchSize

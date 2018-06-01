@@ -1,11 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.ListEntireIntray where
+module Intray.Server.Handler.GetShowItem where
 
 import Import
 
@@ -18,18 +17,18 @@ import Servant.Auth.Server.SetCookieOrphan ()
 import Intray.API
 import Intray.Data
 
-import Intray.Server.Item
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
+import Intray.Server.Item
 
-serveListEntireIntray ::
-       AuthResult AuthCookie -> IntrayHandler [ItemInfo TypedItem]
-serveListEntireIntray (Authenticated AuthCookie {..}) = do
-    itemsEnts <-
+serveGetShowItem ::
+       AuthResult AuthCookie -> IntrayHandler (Maybe (ItemInfo TypedItem))
+serveGetShowItem (Authenticated AuthCookie {..}) = do
+    itemsEnt <-
         runDb $
-        selectList
-            [IntrayItemUserId ==. authCookieUserUuid]
+        selectFirst
+            [IntrayItemUserId ==. authCookieUserUUID]
             [Asc IntrayItemTimestamp]
-    pure $ map (makeItemInfo . entityVal) itemsEnts
-serveListEntireIntray _ = throwAll err401
+    pure $ makeItemInfo . entityVal <$> itemsEnt
+serveGetShowItem _ = throwAll err401

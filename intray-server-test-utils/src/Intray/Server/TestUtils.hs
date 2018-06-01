@@ -16,6 +16,8 @@ module Intray.Server.TestUtils
     , withAdmin
     , withValidNewUser
     , withValidNewUserAndData
+    , requiresAdmin
+    , module Servant.Client
     ) where
 
 import Import
@@ -26,6 +28,7 @@ import qualified Data.Text as T
 import Data.UUID.Typed
 import Lens.Micro
 import qualified Network.HTTP.Client as HTTP
+import qualified Network.HTTP.Types as HTTP
 import Web.Cookie
 
 import Servant
@@ -93,7 +96,7 @@ withIntrayApp ::
        (ClientEnv -> IO ()) -> (HTTP.Manager, Wai.Application) -> IO ()
 withIntrayApp func (man, app) =
     testWithApplication (pure app) $ \port ->
-        func $ ClientEnv man (BaseUrl Http "127.0.0.1" port "")
+        func $ ClientEnv man (BaseUrl Http "127.0.0.1" port "") Nothing
 
 cleanupIntrayTestServer :: IO ()
 cleanupIntrayTestServer = do
@@ -137,8 +140,8 @@ withValidNewUserAndData cenv func = do
 
 withNewUser :: ClientEnv -> Registration -> (Token -> IO ()) -> Expectation
 withNewUser cenv r func = do
-    errOrUuid <- runClient cenv $ clientRegister r
-    case errOrUuid of
+    errOrUUID <- runClient cenv $ clientPostRegister r
+    case errOrUUID of
         Left err ->
             expectationFailure $
             "Registration should not fail with error: " <> show err
@@ -149,7 +152,7 @@ withNewUser cenv r func = do
                     , loginFormPassword = registrationPassword r
                     }
             Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
-                runClientOrError cenv $ clientLogin lf
+                runClientOrError cenv $ clientPostLogin lf
             case sessionHeader of
                 MissingHeader ->
                     expectationFailure "Login should return a session header"
@@ -157,3 +160,17 @@ withNewUser cenv r func = do
                     expectationFailure
                         "Login should return a decodable session header"
                 Header session -> func $ Token $ setCookieValue session
+
+requiresAdmin :: ClientEnv -> (Token -> ClientM a) -> Expectation
+requiresAdmin cenv func =
+    withValidNewUser cenv $ \token -> do
+        errOrStats <- runClient cenv $ func token
+        case errOrStats of
+            Left err ->
+                case err of
+                    FailureResponse resp ->
+                        HTTP.statusCode (Servant.Client.responseStatusCode resp) `shouldBe`
+                        401
+                    _ ->
+                        expectationFailure "Should have got a failure response."
+            Right _ -> expectationFailure "Should not have been allowed."

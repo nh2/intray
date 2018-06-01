@@ -29,7 +29,7 @@ withToken func = do
 loadToken :: CliM (Maybe Token)
 loadToken = do
     mCookie <- loadSession
-    pure $ (Token . setCookieValue) <$> mCookie
+    pure $ Token . setCookieValue <$> mCookie
 
 loadSession :: CliM (Maybe SetCookie)
 loadSession = do

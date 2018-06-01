@@ -4,7 +4,7 @@ synopsis: Generators for intray-data
 category: Intray
 author: Tom Sydney Kerckhove
 maintainer: syd.kerckhove@gmail.com
-copyright: ! 'Copyright: (c) 2017 Tom Sydney Kerckhove'
+copyright: ! 'Copyright: (c) 2017-2018 Tom Sydney Kerckhove'
 license: AllRightsReserved
 github: NorfairKing/intray-server
 default-extensions:
@@ -17,15 +17,14 @@ library:
   - Intray.Data.Gen
 
   dependencies:
-  - QuickCheck >=2.9
+  - QuickCheck
   - base >=4.7 && <5
   - bytestring
-  - genvalidity >=0.4 && <0.5
-  - genvalidity-bytestring >=0.1 && <0.2
-  - genvalidity-text >=0.4 && <0.5
-  - genvalidity-time >=0.1 && <0.2
-  - genvalidity-uuid >=0.0 && <0.1
-  - intray-api
+  - genvalidity
+  - genvalidity-bytestring
+  - genvalidity-text
+  - genvalidity-time
+  - genvalidity-uuid
   - intray-data
   - text
   - validity
@@ -48,7 +47,6 @@ tests:
     - genvalidity-hspec-aeson
     - genvalidity-text
     - hspec
-    - intray-api
     - intray-data
     - intray-data-gen
     - QuickCheck

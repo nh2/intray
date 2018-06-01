@@ -1,0 +1,58 @@
+name: intray-api-gen
+version: '0.0.0.0'
+synopsis: Generators for intray-api
+category: Intray
+author: Tom Sydney Kerckhove
+maintainer: syd.kerckhove@gmail.com
+copyright: ! 'Copyright: (c) 2018 Tom Sydney Kerckhove'
+license: AllRightsReserved
+github: NorfairKing/intray
+default-extensions:
+- NoImplicitPrelude
+
+library:
+  source-dirs: src
+  ghc-options: -Wall
+  exposed-modules:
+  - Intray.API.Gen
+
+  dependencies:
+  - QuickCheck
+  - base >=4.7 && <5
+  - bytestring
+  - genvalidity
+  - genvalidity-bytestring
+  - genvalidity-text
+  - genvalidity-time
+  - genvalidity-uuid
+  - intray-api
+  - intray-data
+  - intray-data-gen
+  - text
+  - validity
+  - validity-bytestring
+  - validity-text
+  - validity-time
+
+tests:
+  intray-api-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson
+    - genvalidity-text
+    - hspec
+    - intray-api
+    - intray-api-gen
+    - intray-data
+    - intray-data-gen
+    - QuickCheck
+    - text
+    - bytestring

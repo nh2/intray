@@ -27,14 +27,16 @@ import Intray.Server.Handler.Utils
 serveGetAccountInfo :: AuthResult AuthCookie -> IntrayHandler AccountInfo
 serveGetAccountInfo (Authenticated AuthCookie {..}) = do
     admins <- asks envAdmins
-    mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUuid
+    mUser <- runDb $ getBy $ UniqueUserIdentifier authCookieUserUUID
     case mUser of
-        Nothing -> throwError $ err404 {errBody = "User not found."}
+        Nothing -> throwError err404 {errBody = "User not found."}
         Just (Entity _ User {..}) ->
             pure
                 AccountInfo
-                { accountInfoUsername = userUsername
+                { accountInfoUUID = authCookieUserUUID
+                , accountInfoUsername = userUsername
                 , accountInfoCreatedTimestamp = userCreatedTimestamp
+                , accountInfoLastLogin = userLastLogin
                 , accountInfoAdmin = userUsername `elem` admins
                 }
 serveGetAccountInfo _ = throwAll err401

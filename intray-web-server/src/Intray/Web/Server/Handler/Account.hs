@@ -3,11 +3,13 @@
 
 module Intray.Web.Server.Handler.Account
     ( getAccountR
+    , postAccountDeleteR
     ) where
 
 import Import
 
 import Yesod
+import Yesod.Auth
 
 import Intray.Client
 
@@ -19,4 +21,12 @@ getAccountR =
     withLogin $ \t -> do
         AccountInfo {..} <- runClientOrErr $ clientGetAccountInfo t
         timestampWidget <- makeTimestampWidget accountInfoCreatedTimestamp
+        token <- genToken
         withNavBar $(widgetFile "account")
+
+postAccountDeleteR :: Handler Html
+postAccountDeleteR =
+    withLogin $ \t -> do
+        NoContent <- runClientOrErr $ clientDeleteAccount t
+        clearCreds False
+        redirect HomeR

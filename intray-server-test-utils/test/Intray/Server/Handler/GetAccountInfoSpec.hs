@@ -17,7 +17,7 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "get account info" $
+    describe "GetAccountInfo" $
     it "returns valid account info" $ \cenv ->
         withValidNewUser cenv $ \token -> do
             accountInfo <- runClientOrError cenv $ clientGetAccountInfo token

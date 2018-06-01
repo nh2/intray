@@ -133,7 +133,7 @@ parseCommandServe = info parser modifier
                   , help "the port to serve the API on"
                   ]) <*>
          option
-             ((Just . T.pack) <$> str)
+             (Just . T.pack <$> str)
              (mconcat
                   [ long "database"
                   , value Nothing

@@ -1,12 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.AddItem
-    ( serveAddItem
+module Intray.Server.Handler.PostAddItem
+    ( servePostAddItem
     ) where
 
 import Import
@@ -26,10 +25,10 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveAddItem :: AuthResult AuthCookie -> TypedItem -> IntrayHandler ItemUUID
-serveAddItem (Authenticated AuthCookie {..}) typedItem = do
+servePostAddItem :: AuthResult AuthCookie -> TypedItem -> IntrayHandler ItemUUID
+servePostAddItem (Authenticated AuthCookie {..}) typedItem = do
     now <- liftIO getCurrentTime
     uuid <- liftIO nextRandomUUID
-    runDb $ insert_ $ makeIntrayItem authCookieUserUuid uuid now typedItem
+    runDb $ insert_ $ makeIntrayItem authCookieUserUUID uuid now typedItem
     pure uuid
-serveAddItem _ _ = throwAll err401
+servePostAddItem _ _ = throwAll err401

@@ -22,9 +22,11 @@ module Intray.API
     , IntrayAdminAPI
     , IntrayAdminSite(..)
     , AuthCookie(..)
-    , IntrayListItems
-    , ListEntireIntray
-    , AddItem
+    , GetItemUUIDs
+    , GetItems
+    , GetShowItem
+    , GetIntraySize
+    , PostAddItem
     , GetItem
     , DeleteItem
     , ItemType(..)
@@ -36,25 +38,29 @@ module Intray.API
     , SyncRequest(..)
     , NewSyncItem(..)
     , SyncResponse(..)
-    , Sync
+    , PostSync
     , AccountInfo(..)
     , GetAccountInfo
+    , DeleteAccount
     , Registration(..)
-    , Register
+    , PostRegister
     , LoginForm(..)
-    , Login
+    , PostLogin
+    , GetDocs
     , GetDocsResponse(..)
     , AdminStats(..)
-    , GetAdminStats
+    , AdminGetStats
+    , AdminDeleteAccount
+    , AdminGetAccounts
     , HashedPassword
     , passwordHash
     , validatePassword
     , ItemUUID
-    , UserUUID
+    , AccountUUID
     , Username
     , parseUsername
+    , parseUsernameWithError
     , usernameText
-    , validUsernameChar
     , module Data.UUID.Typed
     ) where
 
@@ -65,7 +71,6 @@ import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
 import qualified Data.ByteString.Lazy as LB
 import Data.List (nub)
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
@@ -95,7 +100,7 @@ type IntrayAPI = ToServant (IntraySite AsApi)
 
 data IntraySite route = IntraySite
     { openSite :: route :- ToServant (IntrayOpenSite AsApi)
-    , adminSite :: route :- ToServant (IntrayAdminSite AsApi)
+    , adminSite :: route :- "admin" :> ToServant (IntrayAdminSite AsApi)
     } deriving (Generic)
 
 intrayOpenAPI :: Proxy IntrayOpenAPI
@@ -111,29 +116,30 @@ data IntrayOpenSite route = IntrayOpenSite
 type IntrayProtectedAPI = ToServant (IntrayProtectedSite AsApi)
 
 data IntrayProtectedSite route = IntrayProtectedSite
-    { showItem :: route :- ShowItem
-    , size :: route :- IntraySize
-    , listItems :: route :- IntrayListItems
-    , listEntireIntray :: route :- ListEntireIntray
-    , addItem :: route :- AddItem
+    { getShowItem :: route :- GetShowItem
+    , getIntraySize :: route :- GetIntraySize
+    , getItemUUIDs :: route :- GetItemUUIDs
+    , getItems :: route :- GetItems
+    , postAddItem :: route :- PostAddItem
     , getItem :: route :- GetItem
     , deleteItem :: route :- DeleteItem
-    , sync :: route :- Sync
-    , accountInfo :: route :- GetAccountInfo
+    , postSync :: route :- PostSync
+    , getAccountInfo :: route :- GetAccountInfo
+    , deleteAccount :: route :- DeleteAccount
     } deriving (Generic)
 
 type IntrayPublicAPI = ToServant (IntrayPublicSite AsApi)
 
 data IntrayPublicSite route = IntrayPublicSite
-    { register :: route :- Register
-    , login :: route :- Login
-    , docs :: route :- Docs
+    { postRegister :: route :- PostRegister
+    , postLogin :: route :- PostLogin
+    , getDocs :: route :- GetDocs
     } deriving (Generic)
 
 type ProtectAPI = Auth '[ JWT] AuthCookie
 
 newtype AuthCookie = AuthCookie
-    { authCookieUserUuid :: UserUUID
+    { authCookieUserUUID :: AccountUUID
     } deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 instance FromJWT AuthCookie
@@ -142,26 +148,27 @@ instance ToJWT AuthCookie
 
 type IntrayAdminAPI = ToServant (IntrayAdminSite AsApi)
 
-newtype IntrayAdminSite route = IntrayAdminSite
-    { adminStats :: route :- GetAdminStats
+data IntrayAdminSite route = IntrayAdminSite
+    { adminGetStats :: route :- AdminGetStats
+    , adminDeleteAccount :: route :- AdminDeleteAccount
+    , adminGetAccounts :: route :- AdminGetAccounts
     } deriving (Generic)
 
 -- | The item is not guaranteed to be the same one for every call if there are multiple items available.
-type ShowItem
+type GetShowItem
      = ProtectAPI :> "intray" :> "show-item" :> Get '[ JSON] (Maybe (ItemInfo TypedItem))
 
 -- | Show the number of items in the intray
-type IntraySize = ProtectAPI :> "intray" :> "size" :> Get '[ JSON] Int
+type GetIntraySize = ProtectAPI :> "intray" :> "size" :> Get '[ JSON] Int
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type IntrayListItems
-     = ProtectAPI :> "intray" :> "uuids" :> Get '[ JSON] [ItemUUID]
+type GetItemUUIDs = ProtectAPI :> "intray" :> "uuids" :> Get '[ JSON] [ItemUUID]
 
 -- | The order of the items is not guaranteed to be the same for every call.
-type ListEntireIntray
+type GetItems
      = ProtectAPI :> "intray" :> "items" :> Get '[ JSON] [ItemInfo TypedItem]
 
-type AddItem
+type PostAddItem
      = ProtectAPI :> "intray" :> "item" :> ReqBody '[ JSON] TypedItem :> Post '[ JSON] ItemUUID
 
 type GetItem
@@ -249,7 +256,7 @@ instance ToSample Int where
 type DeleteItem
      = ProtectAPI :> "item" :> Capture "id" ItemUUID :> Delete '[ JSON] NoContent
 
-type Sync
+type PostSync
      = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
 
 data SyncRequest = SyncRequest
@@ -259,17 +266,20 @@ data SyncRequest = SyncRequest
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncRequest where
-    isValid = isValidByValidating
     validate SyncRequest {..} =
         mconcat
-            [ syncRequestUnsyncedItems <?!> "syncRequestUnsyncedItems"
-            , syncRequestSyncedItems <?!> "syncRequestSyncedItems"
-            , syncRequestUndeletedItems <?!> "syncRequestUndeletedItems"
-            , distinct syncRequestUnsyncedItems <?@>
-              "Unsynced items are distinct"
-            , distinct syncRequestSyncedItems <?@> "Synced items are distinct"
-            , distinct syncRequestUndeletedItems <?@>
-              "undeleted items are distinct"
+            [ annotate syncRequestUnsyncedItems "syncRequestUnsyncedItems"
+            , annotate syncRequestSyncedItems "syncRequestSyncedItems"
+            , annotate syncRequestUndeletedItems "syncRequestUndeletedItems"
+            , check
+                  (distinct syncRequestUnsyncedItems)
+                  "Unsynced items are distinct"
+            , check
+                  (distinct syncRequestSyncedItems)
+                  "Synced items are distinct"
+            , check
+                  (distinct syncRequestUndeletedItems)
+                  "undeleted items are distinct"
             ]
 
 instance FromJSON SyncRequest where
@@ -293,13 +303,7 @@ data NewSyncItem = NewSyncItem
     , newSyncItemTimestamp :: Maybe UTCTime
     } deriving (Show, Eq, Ord, Generic)
 
-instance Validity NewSyncItem where
-    isValid = isValidByValidating
-    validate NewSyncItem {..} =
-        mconcat
-            [ newSyncItemContents <?!> "newSyncItemContents"
-            , newSyncItemTimestamp <?!> "newSyncItemTimestamp"
-            ]
+instance Validity NewSyncItem
 
 instance FromJSON NewSyncItem where
     parseJSON v =
@@ -325,17 +329,20 @@ data SyncResponse = SyncResponse
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity SyncResponse where
-    isValid = isValidByValidating
     validate SyncResponse {..} =
         mconcat
-            [ syncResponseAddedItems <?!> "syncResponseAddedItems"
-            , syncResponseNewRemoteItems <?!> "syncResponseNewRemoteItems"
-            , syncResponseItemsToBeDeletedLocally <?!>
-              "syncResponseItemsToBeDeletedLocally"
-            , distinct syncResponseAddedItems <?@> "Added items are distinct"
-            , distinct syncResponseNewRemoteItems <?@> "new items are distinct"
-            , distinct syncResponseItemsToBeDeletedLocally <?@>
-              "deleted items are distinct"
+            [ annotate syncResponseAddedItems "syncResponseAddedItems"
+            , annotate syncResponseNewRemoteItems "syncResponseNewRemoteItems"
+            , annotate
+                  syncResponseItemsToBeDeletedLocally
+                  "syncResponseItemsToBeDeletedLocally"
+            , check (distinct syncResponseAddedItems) "Added items are distinct"
+            , check
+                  (distinct syncResponseNewRemoteItems)
+                  "new items are distinct"
+            , check
+                  (distinct syncResponseItemsToBeDeletedLocally)
+                  "deleted items are distinct"
             ]
 
 instance FromJSON SyncResponse where
@@ -353,26 +360,43 @@ instance ToJSON SyncResponse where
 
 instance ToSample SyncResponse
 
-type GetAccountInfo = ProtectAPI :> Get '[ JSON] AccountInfo
+type GetAccountInfo = ProtectAPI :> "account" :> Get '[ JSON] AccountInfo
 
 data AccountInfo = AccountInfo
-    { accountInfoUsername :: Username
+    { accountInfoUUID :: AccountUUID
+    , accountInfoUsername :: Username
     , accountInfoCreatedTimestamp :: UTCTime
+    , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AccountInfo
 
-instance FromJSON AccountInfo
+instance FromJSON AccountInfo where
+    parseJSON =
+        withObject "AccountInfo" $ \o ->
+            AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*>
+            o .: "last-login" <*>
+            o .: "admin"
 
-instance ToJSON AccountInfo
+instance ToJSON AccountInfo where
+    toJSON AccountInfo {..} =
+        object
+            [ "uuid" .= accountInfoUUID
+            , "username" .= accountInfoUsername
+            , "created" .= accountInfoCreatedTimestamp
+            , "last-login" .= accountInfoLastLogin
+            , "admin" .= accountInfoAdmin
+            ]
 
 instance ToSample AccountInfo
+
+type DeleteAccount = ProtectAPI :> "account" :> Delete '[ JSON] NoContent
 
 data Registration = Registration
     { registrationUsername :: Username
     , registrationPassword :: Text
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity Registration
 
@@ -388,13 +412,13 @@ instance FromJSON Registration where
 
 instance ToSample Registration
 
-type Register
+type PostRegister
      = "item" :> ReqBody '[ JSON] Registration :> Post '[ JSON] NoContent
 
 data LoginForm = LoginForm
     { loginFormUsername :: Username
     , loginFormPassword :: Text
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity LoginForm
 
@@ -415,21 +439,22 @@ instance ToSample Username
 instance ToSample SetCookie where
     toSamples Proxy = singleSample def
 
-type Login
+type PostLogin
      = "login" :> ReqBody '[ JSON] LoginForm :> PostNoContent '[ JSON] (Headers '[ Header "Set-Cookie" SetCookie, Header "Set-Cookie" SetCookie] NoContent)
 
-type Docs = Get '[ HTML] GetDocsResponse
+type GetDocs = Get '[ HTML] GetDocsResponse
 
 newtype GetDocsResponse = GetDocsResponse
     { unGetDocsResponse :: HTML.Html
     } deriving (Generic)
 
 instance MimeUnrender HTML GetDocsResponse where
-    mimeUnrender Proxy bs = do
-        pandoc <-
-            left show $
-            Pandoc.readHtml def $ T.unpack $ TE.decodeUtf8 $ LB.toStrict bs
-        pure $ GetDocsResponse $ Pandoc.writeHtml def pandoc
+    mimeUnrender Proxy bs =
+        left show $
+        runPure $ do
+            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
+            html <- Pandoc.writeHtml5 def pandoc
+            pure $ GetDocsResponse html
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."
@@ -440,17 +465,27 @@ instance ToMarkup GetDocsResponse where
 distinct :: Eq a => [a] -> Bool
 distinct ls = length ls == length (nub ls)
 
-type GetAdminStats = ProtectAPI :> "admin" :> "stats" :> Get '[ JSON] AdminStats
+type AdminGetStats = ProtectAPI :> "stats" :> Get '[ JSON] AdminStats
 
 data AdminStats = AdminStats
     { adminStatsNbUsers :: Int
     , adminStatsNbItems :: Int
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AdminStats
 
-instance FromJSON AdminStats
+instance FromJSON AdminStats where
+    parseJSON =
+        withObject "AdminStats" $ \o ->
+            AdminStats <$> o .: "users" <*> o .: "items"
 
-instance ToJSON AdminStats
+instance ToJSON AdminStats where
+    toJSON AdminStats {..} =
+        object ["users" .= adminStatsNbUsers, "items" .= adminStatsNbItems]
 
 instance ToSample AdminStats
+
+type AdminDeleteAccount
+     = ProtectAPI :> "account" :> Capture "id" AccountUUID :> Delete '[ JSON] NoContent
+
+type AdminGetAccounts = ProtectAPI :> "accounts" :> Get '[ JSON] [AccountInfo]

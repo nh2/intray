@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Intray.Server.Handler.Sync
-    ( serveSync
+module Intray.Server.Handler.PostSync
+    ( servePostSync
     ) where
 
 import Import
@@ -21,8 +21,9 @@ import Intray.Server.Handler.Utils
 import Intray.Server.Item
 import Intray.Server.Types
 
-serveSync :: AuthResult AuthCookie -> SyncRequest -> IntrayHandler SyncResponse
-serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
+servePostSync ::
+       AuthResult AuthCookie -> SyncRequest -> IntrayHandler SyncResponse
+servePostSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     deleteUndeleted
     -- First we delete the items that were deleted locally but not yet remotely.
     -- Then we find the items that have been deleted remotely but not locally
@@ -42,7 +43,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
     deleteUndeleted =
         runDb $
         deleteWhere
-            [ IntrayItemUserId ==. authCookieUserUuid
+            [ IntrayItemUserId ==. authCookieUserUUID
             , IntrayItemIdentifier <-. syncRequestUndeletedItems
             ]
     syncItemsToBeDeletedLocally :: IntrayHandler [ItemUUID]
@@ -50,7 +51,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
         foundItems <-
             runDb $
             selectList
-                [ IntrayItemUserId ==. authCookieUserUuid
+                [ IntrayItemUserId ==. authCookieUserUUID
                 , IntrayItemIdentifier <-. syncRequestSyncedItems
                 ]
                 []
@@ -65,7 +66,7 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
         map (makeItemInfo . entityVal) <$>
         runDb
             (selectList
-                 [ IntrayItemUserId ==. authCookieUserUuid
+                 [ IntrayItemUserId ==. authCookieUserUUID
                  , IntrayItemIdentifier /<-. syncRequestSyncedItems
                  ]
                  [])
@@ -77,11 +78,11 @@ serveSync (Authenticated AuthCookie {..}) SyncRequest {..} = do
             uuid <- liftIO nextRandomUUID
             runDb $
                 insert_ $
-                makeIntrayItem authCookieUserUuid uuid now newSyncItemContents
+                makeIntrayItem authCookieUserUUID uuid now newSyncItemContents
             pure
                 ItemInfo
                 { itemInfoIdentifier = uuid
                 , itemInfoTimestamp = ts
                 , itemInfoContents = newSyncItemContents
                 }
-serveSync _ _ = throwAll err401
+servePostSync _ _ = throwAll err401

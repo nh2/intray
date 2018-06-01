@@ -26,6 +26,8 @@ import Intray.API
 
 {-# ANN module ("HLint: ignore Use &&" :: Text) #-}
 
+{-# ANN module ("HLint: ignore Use lambda-case" :: Text) #-}
+
 newtype Store = Store
     { storeItems :: Set StoreItem
     } deriving (Show, Eq, Generic)

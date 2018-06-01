@@ -5,8 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.Register
-    ( serveRegister
+module Intray.Server.Handler.Public.PostRegister
+    ( servePostRegister
     ) where
 
 import Import
@@ -28,11 +28,11 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveRegister :: Registration -> IntrayHandler NoContent
-serveRegister Registration {..} = do
+servePostRegister :: Registration -> IntrayHandler NoContent
+servePostRegister Registration {..} = do
     maybeHashedPassword <- liftIO $ passwordHash registrationPassword
     case maybeHashedPassword of
-        Nothing -> throwError $ err400 {errBody = "Failed to hash password."}
+        Nothing -> throwError err400 {errBody = "Failed to hash password."}
         Just hashedPassword -> do
             uuid <- liftIO nextRandomUUID
             now <- liftIO getCurrentTime
@@ -42,21 +42,22 @@ serveRegister Registration {..} = do
                     , userUsername = registrationUsername
                     , userHashedPassword = hashedPassword
                     , userCreatedTimestamp = now
+                    , userLastLogin = Nothing
                     }
             maybeUserEntity <-
                 runDb . getBy $ UniqueUsername $ userUsername user
             case maybeUserEntity of
                 Nothing -> runDb $ insert_ user
                 Just _ ->
-                    throwError $
-                    err409
-                    { errBody =
-                          LB.fromStrict $
-                          TE.encodeUtf8 $
-                          T.unwords
-                              [ "Account with the username"
-                              , usernameText registrationUsername
-                              , "already exists."
-                              ]
-                    }
+                    throwError
+                        err409
+                        { errBody =
+                              LB.fromStrict $
+                              TE.encodeUtf8 $
+                              T.unwords
+                                  [ "Account with the username"
+                                  , usernameText registrationUsername
+                                  , "already exists."
+                                  ]
+                        }
     pure NoContent

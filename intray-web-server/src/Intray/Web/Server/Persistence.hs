@@ -2,8 +2,8 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Intray.Web.Server.Persistence
-    ( loadLogins
-    , storeLogins
+    ( readLogins
+    , writeLogins
     ) where
 
 import Import
@@ -12,41 +12,37 @@ import Data.Aeson as JSON
 import Data.Aeson.Encode.Pretty as JSON
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.ByteString.Lazy as LB
+import Data.HashMap.Strict (HashMap)
 import qualified Data.Text.Encoding as TE
-
-import Control.Concurrent
 
 import Servant.Auth.Client (Token(..))
 
-import Intray.Web.Server.Application ()
-import Intray.Web.Server.Foundation
+import Intray.Client
 
 loginsFile :: IO (Path Abs File)
 loginsFile = resolveFile' "logins.json"
 
-loadLogins :: App -> IO ()
-loadLogins app = do
+readLogins :: IO (Maybe (HashMap Username Token))
+readLogins = do
     lf <- loginsFile
     mErrOrLogins <-
         forgivingAbsence $ JSON.eitherDecode <$> LB.readFile (toFilePath lf)
-    modifyMVar_ (appLoginTokens app) $ \m ->
-        case mErrOrLogins of
-            Nothing -> pure m
-            Just (Left err) -> do
-                putStrLn $
-                    unwords
-                        [ "Failed to load logins from"
-                        , fromAbsFile lf
-                        , "with error:"
-                        , err
-                        ]
-                pure m
-            Just (Right r) -> pure r
+    case mErrOrLogins of
+        Nothing -> pure Nothing
+        Just (Left err) -> do
+            putStrLn $
+                unwords
+                    [ "Failed to load logins from"
+                    , fromAbsFile lf
+                    , "with error:"
+                    , err
+                    ]
+            pure Nothing
+        Just (Right r) -> pure $ Just r
 
-storeLogins :: App -> IO ()
-storeLogins app = do
+writeLogins :: HashMap Username Token -> IO ()
+writeLogins m = do
     lf <- loginsFile
-    m <- readMVar (appLoginTokens app)
     LB.writeFile (toFilePath lf) (JSON.encodePretty m)
 
 instance FromJSON Token where

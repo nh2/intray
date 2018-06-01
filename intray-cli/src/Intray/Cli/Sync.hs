@@ -24,7 +24,8 @@ withStoreAndSync func = do
     mErrOrStore <-
         case strat of
             NeverSync -> pure Nothing
-            AlwaysSync -> withToken $ \t -> runSingleClient $ clientSync t req
+            AlwaysSync ->
+                withToken $ \t -> runSingleClient $ clientPostSync t req
     after <-
         case mErrOrStore of
             Nothing -> pure processed
@@ -52,7 +53,8 @@ syncAndGet func = do
     mErrOrStore <-
         case strat of
             NeverSync -> pure Nothing
-            AlwaysSync -> withToken $ \t -> runSingleClient $ clientSync t req
+            AlwaysSync ->
+                withToken $ \t -> runSingleClient $ clientPostSync t req
     case mErrOrStore of
         Nothing -> func before
         Just errOrStore ->

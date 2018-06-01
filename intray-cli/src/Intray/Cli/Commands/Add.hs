@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Intray.Cli.Commands.Add
     ( addItem
@@ -11,7 +10,7 @@ import Import
 
 import Data.Time
 
-import Intray.API hiding (addItem)
+import Intray.API
 
 import Intray.Cli.OptParse
 import Intray.Cli.Store

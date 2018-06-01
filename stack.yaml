@@ -1,7 +1,7 @@
-flags: {}
 extra-package-dbs: []
 packages:
 - intray-api
+- intray-api-gen
 - intray-cli
 - intray-client
 - intray-client-gen
@@ -11,41 +11,41 @@ packages:
 - intray-server-test-utils
 - intray-web-server
 extra-deps:
-- genvalidity-0.4.0.0
-- genvalidity-bytestring-0.1.0.0
-- genvalidity-containers-0.3.0.0
-- genvalidity-hspec-0.5.0.0
-- genvalidity-hspec-aeson-0.1.0.0
-- genvalidity-path-0.2.0.0
-- genvalidity-property-0.1.0.0
-- genvalidity-text-0.4.0.0
-- genvalidity-time-0.1.0.0
-- genvalidity-uuid-0.0.0.0
-- hlint-1.9.41
-- jose-0.5.0.5
-- servant-auth-0.2.7.0
-- servant-auth-client-0.2.7.1
-- servant-auth-docs-0.2.7.0
-- servant-auth-server-0.3.0.0
-- servant-generic-0.1.0.1
+- hlint-2.0.15
+- extra-1.6.5
+- jose-0.6.0.3
+- cookie-0.4.3
+- servant-auth-0.3.1.0
+- servant-auth-client-0.3.2.0
+- servant-auth-docs-0.2.9.0
+- servant-auth-server-0.3.2.0
+- servant-flatten-0.2
 - servant-options-0.1.0.0
-- validity-0.4.0.0
-- validity-bytestring-0.2.0.0
-- validity-containers-0.2.0.0
-- validity-path-0.2.0.0
-- validity-text-0.2.0.0
-- validity-time-0.1.0.0
-- validity-uuid-0.0.0.0
-- zifter-0.0.1.5
+- git: git@github.com:NorfairKing/validity.git
+  commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
+  subdirs:
+    - validity
+    - validity-bytestring
+    - validity-containers
+    - validity-path
+    - validity-text
+    - validity-time
+    - validity-uuid
+    - genvalidity
+    - genvalidity-bytestring
+    - genvalidity-containers
+    - genvalidity-hspec
+    - genvalidity-hspec-aeson
+    - genvalidity-path
+    - genvalidity-property
+    - genvalidity-text
+    - genvalidity-time
+    - genvalidity-uuid
 - git: https://github.com/NorfairKing/typed-uuid.git
-  commit: a7baf4999c901ccdeb66dba0221431de692963f1
+  commit: 155c9ec880ca1c12f7dd8a8468b3626de8164823
   subdirs:
     - typed-uuid
     - genvalidity-typed-uuid
-- git: https://github.com/NorfairKing/yesod
-  commit: f4919a0f7f69940b865eba6e8138c76d7b1ad10b
-  subdirs:
-    - yesod-test
 - git: git@github.com:NorfairKing/pretty-relative-time.git
-  commit: 659a84718bb5056c93cb72bedc3f57c7ba912427
-resolver: lts-9.6
+  commit: 9a670db25ac68974045c75da364486c10970824f
+resolver: lts-11.9

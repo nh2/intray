@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Intray.Server.Handler.ListItemUuidsSpec
+module Intray.Server.Handler.ListItemUUIDsSpec
     ( spec
     ) where
 
@@ -16,19 +16,20 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "list items" $ do
+    describe "ListItemUUIDs" $ do
         it "it lists item uuids of items that were just added" $ \cenv ->
             forAllValid $ \items ->
                 withValidNewUser cenv $ \token -> do
                     uuids <-
-                        runClientOrError cenv $ mapM (clientAddItem token) items
-                    itemUuids' <-
-                        runClientOrError cenv $ clientListItemUuids token
-                    itemUuids' `shouldContain` uuids
+                        runClientOrError cenv $
+                        mapM (clientPostAddItem token) items
+                    itemUUIDs' <-
+                        runClientOrError cenv $ clientGetItemUUIDs token
+                    itemUUIDs' `shouldContain` uuids
         it "it always lists valid item uuids" $ \cenv ->
             withValidNewUser cenv $ \token -> do
-                itemUuids <- runClientOrError cenv $ clientListItemUuids token
-                shouldBeValid itemUuids
+                itemUUIDs <- runClientOrError cenv $ clientGetItemUUIDs token
+                shouldBeValid itemUUIDs
         it "does not list others' item uuids" $ \cenv ->
             forAllValid $ \items1 ->
                 forAllValid $ \items2 ->
@@ -36,13 +37,13 @@ spec =
                         withValidNewUser cenv $ \token2 -> do
                             uuids1 <-
                                 runClientOrError cenv $
-                                mapM (clientAddItem token1) items1
+                                mapM (clientPostAddItem token1) items1
                             uuids2 <-
                                 runClientOrError cenv $
-                                mapM (clientAddItem token2) items2
-                            itemUuids' <-
+                                mapM (clientPostAddItem token2) items2
+                            itemUUIDs' <-
                                 runClientOrError cenv $
-                                clientListItemUuids token1
-                            itemUuids' `shouldContain` uuids1
+                                clientGetItemUUIDs token1
+                            itemUUIDs' `shouldContain` uuids1
                             forM_ (uuids2 :: [ItemUUID]) $ \u ->
-                                u `shouldNotSatisfy` (`elem` itemUuids')
+                                u `shouldNotSatisfy` (`elem` itemUUIDs')

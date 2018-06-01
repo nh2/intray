@@ -1,12 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.ListItems
-    ( serveListItems
+module Intray.Server.Handler.GetIntraySize
+    ( serveGetIntraySize
     ) where
 
 import Import
@@ -24,11 +23,7 @@ import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveListItems :: AuthResult AuthCookie -> IntrayHandler [ItemUUID]
-serveListItems (Authenticated AuthCookie {..}) =
-    fmap (fmap $ intrayItemIdentifier . entityVal) $
-    runDb $
-    selectList
-        [IntrayItemUserId ==. authCookieUserUuid]
-        [Asc IntrayItemTimestamp]
-serveListItems _ = throwAll err401
+serveGetIntraySize :: AuthResult AuthCookie -> IntrayHandler Int
+serveGetIntraySize (Authenticated AuthCookie {..}) =
+    runDb $ count [IntrayItemUserId ==. authCookieUserUUID]
+serveGetIntraySize _ = throwAll err401

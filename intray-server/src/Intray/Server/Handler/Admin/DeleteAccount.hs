@@ -1,30 +1,29 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DataKinds #-}
 
-module Intray.Server.Handler.Size
-    ( serveSize
+module Intray.Server.Handler.Admin.DeleteAccount
+    ( serveAdminDeleteAccount
     ) where
 
 import Import
-
-import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)
 import Servant.Auth.Server as Auth
 import Servant.Auth.Server.SetCookieOrphan ()
 
 import Intray.API
-import Intray.Data
 
 import Intray.Server.Types
 
 import Intray.Server.Handler.Utils
 
-serveSize :: AuthResult AuthCookie -> IntrayHandler Int
-serveSize (Authenticated AuthCookie {..}) =
-    runDb $ count [IntrayItemUserId ==. authCookieUserUuid]
-serveSize _ = throwAll err401
+serveAdminDeleteAccount ::
+       AuthResult AuthCookie -> AccountUUID -> IntrayHandler NoContent
+serveAdminDeleteAccount (Authenticated AuthCookie {..}) uuid =
+    withAdminCreds authCookieUserUUID $ do
+        deleteAccountFully uuid
+        pure NoContent
+serveAdminDeleteAccount _ _ = throwAll err401

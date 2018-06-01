@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Intray.Cli.Commands.Register
@@ -12,7 +11,8 @@ import Import
 
 import Servant.Auth.Server.SetCookieOrphan ()
 
-import Intray.API hiding (register)
+import Intray.API
+
 import Intray.Client
 
 import Intray.Cli.Client
@@ -24,4 +24,4 @@ register RegisterSettings {..} = do
     registration <-
         Registration <$> promptUsername registerSetUsername <*>
         promptPassword registerSetPassword
-    void $ runSingleClientOrErr $ clientRegister registration
+    void $ runSingleClientOrErr $ clientPostRegister registration

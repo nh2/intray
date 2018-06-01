@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Intray.Server.Handler.Docs
-    ( serveDocs
+module Intray.Server.Handler.Public.GetDocs
+    ( serveGetDocs
     ) where
 
 import Import
@@ -21,23 +21,26 @@ import Intray.API
 
 import Intray.Server.Types
 
-serveDocs :: IntrayHandler GetDocsResponse
-serveDocs =
+serveGetDocs :: IntrayHandler GetDocsResponse
+serveGetDocs =
     case intrayHtmlResponse of
         Left _ ->
-            throwError $
-            err500
-            {errBody = "Failed to convert the docs from Markdown to HTML."}
+            throwError
+                err500
+                {errBody = "Failed to convert the docs from Markdown to HTML."}
         Right bs -> pure bs
 
 intrayHtmlResponse :: Either String GetDocsResponse
 intrayHtmlResponse =
-    case Pandoc.readMarkdown def intrayDocs of
-        Left err -> Left $ show err
-        Right pandoc -> pure $ GetDocsResponse $ Pandoc.writeHtml def pandoc
+    left show $
+    Pandoc.runPure $ do
+        md <- Pandoc.readMarkdown def intrayDocs
+        html <- Pandoc.writeHtml5 def md
+        pure $ GetDocsResponse html
 
-intrayDocs :: String
+intrayDocs :: Text
 intrayDocs =
+    T.pack $
     Docs.markdown $ Docs.docsWithIntros [intr] $ Docs.pretty intrayOpenAPI
   where
     intr =

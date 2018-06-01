@@ -28,6 +28,7 @@ library:
   - genvalidity-time
   - hspec
   - http-client
+  - http-types
   - intray-api
   - intray-client
   - intray-client-gen

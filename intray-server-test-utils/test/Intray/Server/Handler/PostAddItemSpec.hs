@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Intray.Server.Handler.AddItemSpec
+module Intray.Server.Handler.PostAddItemSpec
     ( spec
     ) where
 
@@ -17,9 +17,9 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "add item" $
+    describe "PostAddItem" $
     it "adds an item without crashing" $ \cenv ->
         forAllValid $ \t ->
             withValidNewUser cenv $ \token -> do
-                uuid <- runClientOrError cenv $ clientAddItem token t
+                uuid <- runClientOrError cenv $ clientPostAddItem token t
                 shouldBeValid uuid

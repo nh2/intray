@@ -16,20 +16,21 @@ import Intray.Server.TestUtils
 spec :: Spec
 spec =
     withIntrayServer $
-    describe "delete item" $
+    describe "DeleteItem" $
     it "succesfully manages to delete the item that was just added" $ \cenv ->
         forAllValid $ \t ->
             withValidNewUser cenv $ \token -> do
                 errOrItem <-
                     runClient cenv $ do
-                        uuid <- clientAddItem token t
+                        uuid <- clientPostAddItem token t
                         void $ clientDeleteItem token uuid
                         clientGetItem token uuid
                 case errOrItem of
                     Left err ->
                         case err of
-                            FailureResponse {} ->
-                                statusCode (responseStatus err) `shouldBe` 404
+                            FailureResponse resp ->
+                                statusCode (responseStatusCode resp) `shouldBe`
+                                404
                             _ ->
                                 expectationFailure $
                                 unwords ["Unexpected error:", show err]

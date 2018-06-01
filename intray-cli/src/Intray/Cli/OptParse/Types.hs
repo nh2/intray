@@ -25,7 +25,7 @@ data Instructions =
 data Command
     = CommandRegister RegisterArgs
     | CommandLogin LoginArgs
-    | CommandAddItem [String]
+    | CommandPostPostAddItem [String]
     | CommandShowItem
     | CommandDoneItem
     | CommandSize
@@ -93,7 +93,7 @@ instance ToJSON SyncStrategy
 data Dispatch
     = DispatchRegister RegisterSettings
     | DispatchLogin LoginSettings
-    | DispatchAddItem Text
+    | DispatchPostPostAddItem Text
     | DispatchShowItem
     | DispatchDoneItem
     | DispatchSize

@@ -24,29 +24,29 @@ library:
 
   dependencies:
   - base >=4.9 && <5
-  - aeson >=1.0 && <1.2
-  - aeson-pretty >=0.8 && <0.9
-  - bytestring >=0.10 && <0.11
-  - cookie >=0.4 && <0.5
-  - http-client >=0.5 && <0.6
-  - http-client-tls >=0.3 && <0.4
+  - aeson >=1.0
+  - aeson-pretty >=0.8
+  - bytestring >=0.10
+  - cookie >=0.4
+  - http-client >=0.5
+  - http-client-tls >=0.3
   - intray-api
   - intray-client
   - intray-data
-  - optparse-applicative >=0.13 && <0.15
-  - path >=0.4 && <0.6
+  - optparse-applicative >=0.13
+  - path >=0.4
   - pretty-relative-time
-  - mtl >=2.2 && <2.3
-  - path-io >=1.2 && <1.3
-  - servant >=0.9 && <0.12
-  - servant-auth-client >=0.2 && <0.3
-  - servant-auth-server >=0.3 && <0.4
-  - servant-client >=0.9 && <0.12
-  - servant-server >=0.9 && <0.12
+  - mtl >=2.2
+  - path-io >=1.2
+  - servant >=0.9
+  - servant-auth-client >=0.2
+  - servant-auth-server >=0.3
+  - servant-client >=0.9
+  - servant-server >=0.9
   - validity
-  - text >=1.2 && <1.3
+  - text >=1.2
   - time
-  - yaml >=0.8 && <0.9
+  - yaml >=0.8
 
 executables:
   intray:
@@ -74,7 +74,7 @@ tests:
     - base
     - bytestring
     - genvalidity-hspec
-    - genvalidity-hspec-aeson >=0.1 && <0.2
+    - genvalidity-hspec-aeson >=0.1
     - hspec
     - intray-cli
     - intray-client
@@ -85,4 +85,4 @@ tests:
     - path-io
     - servant
     - servant-client
-    - text >=1.2 && <1.3
+    - text >=1.2
