@@ -25,7 +25,7 @@ import Intray.Server.Handler.Utils
 
 serveAdminGetAccounts :: AuthResult AuthCookie -> IntrayHandler [AccountInfo]
 serveAdminGetAccounts (Authenticated AuthCookie {..}) =
-    withAdminCreds authCookieUserUUID $ do
+    withPermission authCookiePermissions PermitAdminGetAccounts $ do
         admins <- asks envAdmins
         users <- runDb $ selectList [] [Asc UserId]
         pure $

@@ -25,6 +25,7 @@ import Intray.Server.Handler.Utils
 
 serveGetItemUUIDs :: AuthResult AuthCookie -> IntrayHandler [ItemUUID]
 serveGetItemUUIDs (Authenticated AuthCookie {..}) =
+    withPermission authCookiePermissions PermitGetItemUUIDs $
     fmap (fmap $ intrayItemIdentifier . entityVal) $
     runDb $
     selectList

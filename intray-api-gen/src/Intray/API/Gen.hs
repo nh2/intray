@@ -1,7 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-dodgy-exports #-}
 
-module Intray.API.Gen where
+module Intray.API.Gen
+    ( module Intray.API.Gen
+    , module Intray.API.Admin.Gen
+    , module Intray.API.Protected.Gen
+    ) where
 
 import Import
 
@@ -14,53 +19,19 @@ import Data.GenValidity.UUID ()
 import Intray.API
 import Intray.Data.Gen ()
 
-instance GenUnchecked TypedItem
+import Intray.API.Admin.Gen ()
+import Intray.API.Protected.Gen ()
 
-instance GenValid TypedItem where
-    genValid = (TypedItem <$> genValid <*> genValid) `suchThat` isValid
+instance GenUnchecked Permission
 
-instance GenUnchecked a => GenUnchecked (ItemInfo a)
-
-instance GenValid a => GenValid (ItemInfo a) where
-    genValid =
-        (ItemInfo <$> genValid <*> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked SyncRequest
-
-instance GenValid SyncRequest where
-    genValid =
-        (SyncRequest <$> genValid <*> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked NewSyncItem
-
-instance GenValid NewSyncItem where
-    genValid = (NewSyncItem <$> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked SyncResponse
-
-instance GenValid SyncResponse where
-    genValid =
-        (SyncResponse <$> genValid <*> genValid <*> genValid) `suchThat` isValid
+instance GenValid Permission
 
 instance GenUnchecked Registration
 
 instance GenValid Registration where
     genValid = (Registration <$> genValid <*> genValid) `suchThat` isValid
 
-instance GenUnchecked AccountInfo
-
-instance GenValid AccountInfo where
-    genValid =
-        (AccountInfo <$> genValid <*> genValid <*> genValid <*> genValid <*>
-         genValid) `suchThat`
-        isValid
-
 instance GenUnchecked LoginForm
 
 instance GenValid LoginForm where
     genValid = (LoginForm <$> genValid <*> genValid) `suchThat` isValid
-
-instance GenUnchecked AdminStats
-
-instance GenValid AdminStats where
-    genValid = (AdminStats <$> genValid <*> genValid) `suchThat` isValid

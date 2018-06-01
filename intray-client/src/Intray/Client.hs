@@ -9,11 +9,16 @@ module Intray.Client
     , clientGetItem
     , clientDeleteItem
     , clientPostSync
-    , clientPostRegister
     , clientPostLogin
     , clientGetDocs
     , clientGetAccountInfo
     , clientDeleteAccount
+    , clientPostAddAccessKey
+    , clientGetAccessKey
+    , clientGetAccessKeys
+    , clientDeleteAccessKey
+    , clientGetPermissions
+    , clientPostRegister
     , clientAdminGetStats
     , clientAdminDeleteAccount
     , clientAdminGetAccounts
@@ -27,6 +32,12 @@ module Intray.Client
     , NewSyncItem(..)
     , SyncResponse(..)
     , AccountInfo(..)
+    , Permission(..)
+    , AddAccessKey(..)
+    , accessKeySecretText
+    , AccessKeyCreated(..)
+    , AccessKeyUUID
+    , AccessKeyInfo(..)
     , Registration(..)
     , LoginForm(..)
     , GetDocsResponse(..)
@@ -44,7 +55,9 @@ module Intray.Client
 
 import Import
 
+import Data.Set (Set)
 import qualified Data.UUID.Typed
+
 import Servant.API
 import Servant.API.Flatten
 import Servant.Auth.Client
@@ -64,6 +77,11 @@ clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
 clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientDeleteAccount :: Token -> ClientM NoContent
+clientPostAddAccessKey :: Token -> AddAccessKey -> ClientM AccessKeyCreated
+clientGetAccessKey :: Token -> AccessKeyUUID -> ClientM AccessKeyInfo
+clientGetAccessKeys :: Token -> ClientM [AccessKeyInfo]
+clientDeleteAccessKey :: Token -> AccessKeyUUID -> ClientM NoContent
+clientGetPermissions :: Token -> ClientM (Set Permission)
 clientPostRegister :: Registration -> ClientM NoContent
 clientPostLogin ::
        LoginForm
@@ -72,5 +90,5 @@ clientGetDocs :: ClientM GetDocsResponse
 clientAdminGetStats :: Token -> ClientM AdminStats
 clientAdminDeleteAccount :: Token -> AccountUUID -> ClientM NoContent
 clientAdminGetAccounts :: Token -> ClientM [AccountInfo]
-clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
+clientGetShowItem :<|> clientGetSize :<|> clientGetItemUUIDs :<|> clientGetItems :<|> clientPostAddItem :<|> clientGetItem :<|> clientDeleteItem :<|> clientPostSync :<|> clientGetAccountInfo :<|> clientDeleteAccount :<|> clientPostAddAccessKey :<|> clientGetAccessKey :<|> clientGetAccessKeys :<|> clientDeleteAccessKey :<|> clientGetPermissions :<|> clientPostRegister :<|> clientPostLogin :<|> clientGetDocs :<|> clientAdminGetStats :<|> clientAdminDeleteAccount :<|> clientAdminGetAccounts =
     client (flatten intrayAPI)

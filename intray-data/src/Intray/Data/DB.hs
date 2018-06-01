@@ -16,10 +16,12 @@ import Data.Time
 import Database.Persist.Sql
 import Database.Persist.TH
 
+import Intray.Data.AccessKeyUUID
 import Intray.Data.AccountUUID
 import Intray.Data.HashedPassword
 import Intray.Data.ItemType
 import Intray.Data.ItemUUID
+import Intray.Data.Permission
 import Intray.Data.Username
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
@@ -31,11 +33,14 @@ User
     hashedPassword HashedPassword
     createdTimestamp UTCTime
     lastLogin UTCTime Maybe
+
     UniqueUserIdentifier identifier
     UniqueUsername username
+
     deriving Show
     deriving Eq
     deriving Generic
+
 
 IntrayItem
     identifier ItemUUID
@@ -43,8 +48,25 @@ IntrayItem
     contents ByteString
     timestamp UTCTime
     userId AccountUUID
+
     UniqueItem identifier type contents timestamp userId
     UniqueIdentifier identifier userId
+
+    deriving Show
+    deriving Eq
+    deriving Generic
+
+
+AccessKey
+    identifier AccessKeyUUID
+    user AccountUUID
+    name Text
+    hashedKey HashedPassword
+    createdTimestamp UTCTime
+    permissions [Permission] -- TODO put this in a set or some such
+
+    UniqueAccessKeyIdentifier identifier
+
     deriving Show
     deriving Eq
     deriving Generic
@@ -53,3 +75,5 @@ IntrayItem
 instance Validity IntrayItem
 
 instance Validity User
+
+instance Validity AccessKey

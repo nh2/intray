@@ -27,9 +27,10 @@ import Intray.Server.Handler.Utils
 
 serveGetItem ::
        AuthResult AuthCookie -> ItemUUID -> IntrayHandler (ItemInfo TypedItem)
-serveGetItem (Authenticated AuthCookie {..}) id_ = do
-    mitem <- runDb $ getBy $ UniqueIdentifier id_ authCookieUserUUID
-    case mitem of
-        Nothing -> throwError err404 {errBody = "Item not found."}
-        Just item -> pure $ makeItemInfo $ entityVal item
+serveGetItem (Authenticated AuthCookie {..}) id_ =
+    withPermission authCookiePermissions PermitGetItem $ do
+        mitem <- runDb $ getBy $ UniqueIdentifier id_ authCookieUserUUID
+        case mitem of
+            Nothing -> throwError err404 {errBody = "Item not found."}
+            Just item -> pure $ makeItemInfo $ entityVal item
 serveGetItem _ _ = throwAll err401

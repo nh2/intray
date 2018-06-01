@@ -15,4 +15,5 @@ instance GenValid StoreItem
 
 instance GenUnchecked Store
 
-instance GenValid Store
+instance GenValid Store where
+    genValid = Store <$> genValid

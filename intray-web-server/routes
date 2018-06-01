@@ -1,11 +1,14 @@
 /                                  HomeR                GET
 
 /process                           ProcessR             GET
-/add                               AddR                 POST GET
+/add                               AddR                 GET POST 
 /done                              DoneR                POST
 
 /account                           AccountR             GET
 /account/delete                    AccountDeleteR       POST
+
+/access-keys                       AccessKeysR          GET POST
+/access-keys/revoke/#AccessKeyUUID AccessKeyRevokeR     POST
 
 /error/api-down/#Text              ErrorAPIDownR        GET
 

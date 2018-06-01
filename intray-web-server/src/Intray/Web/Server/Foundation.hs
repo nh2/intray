@@ -67,6 +67,7 @@ data App = App
 mkYesodData "App" $(parseRoutesFile "routes")
 
 instance Yesod App where
+    approot = ApprootRelative
     defaultLayout widget = do
         pc <- widgetToPageContent $(widgetFile "default-body")
         withUrlRenderer $(hamletFile "templates/default-page.hamlet")
@@ -271,6 +272,17 @@ runClientOrErr func = do
                 error $ show resp -- TODO deal with error
         Right r -> pure r
 
+runClientOrDisallow :: ClientM a -> Handler (Maybe a)
+runClientOrDisallow func = do
+    errOrRes <- runClient func
+    case errOrRes of
+        Left err ->
+            handleStandardServantErrs err $ \resp ->
+                if responseStatusCode resp == Http.unauthorized401
+                    then pure Nothing
+                    else error $ show resp -- TODO deal with error
+        Right r -> pure $ Just r
+
 handleStandardServantErrs ::
        ServantError -> (Response -> Handler a) -> Handler a
 handleStandardServantErrs err func =
@@ -334,3 +346,12 @@ storeLogins = do
     liftIO $ do
         m <- readMVar tokenMapVar
         writeLogins m
+
+addInfoMessage :: Html -> Handler ()
+addInfoMessage = addMessage ""
+
+addNegativeMessage :: Html -> Handler ()
+addNegativeMessage = addMessage "negative"
+
+addPositiveMessage :: Html -> Handler ()
+addPositiveMessage = addMessage "negative"

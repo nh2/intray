@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Intray.Server.TestUtils
     ( withIntrayServer
@@ -17,6 +18,10 @@ module Intray.Server.TestUtils
     , withValidNewUser
     , withValidNewUserAndData
     , requiresAdmin
+    , withNewUser'sAccessKey
+    , login
+    , failsWithOutPermissions
+    , failsWithOutPermission
     , module Servant.Client
     ) where
 
@@ -24,6 +29,8 @@ import Import
 
 import Control.Monad.Logger
 import Control.Monad.Trans.Resource (runResourceT)
+import qualified Data.Set as S
+import Data.Set (Set)
 import qualified Data.Text as T
 import Data.UUID.Typed
 import Lens.Micro
@@ -49,6 +56,8 @@ import Intray.Server.Types
 
 import Intray.Client.Gen ()
 import Intray.Data.Gen ()
+
+{-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 
 withIntrayServer :: SpecWith ClientEnv -> Spec
 withIntrayServer specFunc =
@@ -110,9 +119,7 @@ runClientOrError :: ClientEnv -> ClientM a -> IO a
 runClientOrError cenv func = do
     errOrRes <- runClient cenv func
     case errOrRes of
-        Left err -> do
-            expectationFailure $ show err
-            undefined -- Won't get here anyway ^
+        Left err -> failure $ show err
         Right res -> pure res
 
 withAdmin :: ClientEnv -> (Token -> IO ()) -> Expectation
@@ -143,23 +150,10 @@ withNewUser cenv r func = do
     errOrUUID <- runClient cenv $ clientPostRegister r
     case errOrUUID of
         Left err ->
-            expectationFailure $
-            "Registration should not fail with error: " <> show err
-        Right NoContent -> do
-            let lf =
-                    LoginForm
-                    { loginFormUsername = registrationUsername r
-                    , loginFormPassword = registrationPassword r
-                    }
-            Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
-                runClientOrError cenv $ clientPostLogin lf
-            case sessionHeader of
-                MissingHeader ->
-                    expectationFailure "Login should return a session header"
-                UndecodableHeader _ ->
-                    expectationFailure
-                        "Login should return a decodable session header"
-                Header session -> func $ Token $ setCookieValue session
+            failure $ "Registration should not fail with error: " <> show err
+        Right NoContent ->
+            login cenv (registrationUsername r) (registrationPassword r) >>=
+            func
 
 requiresAdmin :: ClientEnv -> (Token -> ClientM a) -> Expectation
 requiresAdmin cenv func =
@@ -171,6 +165,58 @@ requiresAdmin cenv func =
                     FailureResponse resp ->
                         HTTP.statusCode (Servant.Client.responseStatusCode resp) `shouldBe`
                         401
-                    _ ->
-                        expectationFailure "Should have got a failure response."
-            Right _ -> expectationFailure "Should not have been allowed."
+                    _ -> failure "Should have got a failure response."
+            Right _ -> failure "Should not have been allowed."
+
+withNewUser'sAccessKey ::
+       ClientEnv -> Set Permission -> (Token -> IO ()) -> Expectation
+withNewUser'sAccessKey cenv ps func =
+    withValidNewUserAndData cenv $ \un _ tok -> do
+        uuid <- nextRandomUUID :: IO (UUID AddAccessKey) -- Dummy's that are significantly likely to be random enough
+        let aac =
+                AddAccessKey
+                {addAccessKeyName = uuidText uuid, addAccessKeyPermissions = ps}
+        errOrAkc <- runClient cenv $ clientPostAddAccessKey tok aac
+        case errOrAkc of
+            Left err ->
+                failure $ unwords ["Failed to create access key:", show err]
+            Right AccessKeyCreated {..} -> do
+                t <- login cenv un (accessKeySecretText accessKeyCreatedKey)
+                func t
+
+login :: ClientEnv -> Username -> Text -> IO Token
+login cenv un pw = do
+    let lf = LoginForm {loginFormUsername = un, loginFormPassword = pw}
+    Headers NoContent (HCons _ (HCons sessionHeader HNil)) <-
+        runClientOrError cenv $ clientPostLogin lf
+    case sessionHeader of
+        MissingHeader -> failure "Login should return a session header"
+        UndecodableHeader _ ->
+            failure "Login should return a decodable session header"
+        Header session -> pure $ Token $ setCookieValue session
+
+-- TODO FIXME only user permissions are tried
+failsWithOutPermissions ::
+       ClientEnv -> Set Permission -> (Token -> ClientM a) -> Property
+failsWithOutPermissions cenv ps func =
+    forAll (genValid `suchThat` (\ps' -> null (ps' `S.intersection` ps))) $ \perms ->
+        withNewUser'sAccessKey cenv (perms `S.intersection` userPermissions) $ \t -> do
+            res <- runClient cenv $ func t
+            case res of
+                Left err ->
+                    case err of
+                        FailureResponse resp ->
+                            HTTP.statusCode
+                                (Servant.Client.responseStatusCode resp) `shouldBe`
+                            401
+                        _ -> failure "Should have gotten a failure response."
+                _ -> failure "Should not have been allowed."
+
+failsWithOutPermission ::
+       ClientEnv -> Permission -> (Token -> ClientM a) -> Property
+failsWithOutPermission cenv p = failsWithOutPermissions cenv $ S.singleton p
+
+failure :: String -> IO a
+failure s = do
+    expectationFailure s
+    undefined -- Won't get here anyway

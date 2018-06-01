@@ -28,6 +28,7 @@ library:
   - aeson-pretty
   - base >=4.7 && <5
   - bytestring
+  - containers
   - file-embed
   - intray-api
   - intray-data
