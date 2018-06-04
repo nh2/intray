@@ -25,6 +25,8 @@
         <th>
           Last Login
         <th>
+          Count
+        <th>
           Admin
         <th>
           Delete
@@ -41,6 +43,8 @@
           <td>
             $maybe ll <- accountInfoLastLogin u
               #{prettyTimestamp now ll}
+          <td>
+            #{accountInfoCount u}
           <td>
             #{accountInfoAdmin u}
           <td>

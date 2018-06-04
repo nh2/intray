@@ -51,3 +51,7 @@ instance GenValid Username where
 instance GenUnchecked User
 
 instance GenUnchecked HashedPassword
+
+instance GenUnchecked AccessKeySecret
+
+instance GenValid AccessKeySecret

@@ -22,5 +22,6 @@ instance GenUnchecked AccountInfo
 instance GenValid AccountInfo where
     genValid =
         (AccountInfo <$> genValid <*> genValid <*> genValid <*> genValid <*>
+         genValid <*>
          genValid) `suchThat`
         isValid

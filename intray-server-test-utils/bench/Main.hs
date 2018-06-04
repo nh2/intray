@@ -13,7 +13,7 @@ import System.Exit
 import Web.Cookie
 
 import Intray.Client
-import Intray.Server.TestUtils
+import Intray.Server.TestUtils hiding (login)
 
 smallTextItem :: TypedItem
 smallTextItem = TypedItem {itemType = TextItem, itemData = "Example Data"}

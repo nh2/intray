@@ -34,6 +34,7 @@ data AccountInfo = AccountInfo
     , accountInfoCreatedTimestamp :: UTCTime
     , accountInfoLastLogin :: Maybe UTCTime
     , accountInfoAdmin :: Bool
+    , accountInfoCount :: Int
     } deriving (Show, Eq, Ord, Generic)
 
 instance Validity AccountInfo
@@ -43,7 +44,8 @@ instance FromJSON AccountInfo where
         withObject "AccountInfo" $ \o ->
             AccountInfo <$> o .: "uuid" <*> o .: "username" <*> o .: "created" <*>
             o .: "last-login" <*>
-            o .: "admin"
+            o .: "admin" <*>
+            o .: "count"
 
 instance ToJSON AccountInfo where
     toJSON AccountInfo {..} =
@@ -53,6 +55,7 @@ instance ToJSON AccountInfo where
             , "created" .= accountInfoCreatedTimestamp
             , "last-login" .= accountInfoLastLogin
             , "admin" .= accountInfoAdmin
+            , "count" .= accountInfoCount
             ]
 
 instance ToSample AccountInfo
