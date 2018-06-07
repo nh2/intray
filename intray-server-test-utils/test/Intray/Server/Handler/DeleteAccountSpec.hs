@@ -12,7 +12,6 @@ import qualified Network.HTTP.Types as Http
 
 import Intray.Client
 
-import Intray.Client.Gen ()
 import Intray.Data.Gen ()
 import Intray.Server.TestUtils
 

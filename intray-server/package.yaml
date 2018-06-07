@@ -33,6 +33,7 @@ library:
   - intray-api
   - intray-data
   - jose
+  - mergeless
   - monad-logger
   - mtl >=2.2
   - optparse-applicative >=0.13

@@ -26,5 +26,7 @@ import Data.ByteString as X (ByteString)
 import Data.Text as X (Text)
 
 import Data.GenValidity.ByteString as X ()
+import Data.GenValidity.Containers as X ()
+import Data.GenValidity.Mergeless as X ()
 import Data.GenValidity.Text as X
 import Data.GenValidity.Time as X ()

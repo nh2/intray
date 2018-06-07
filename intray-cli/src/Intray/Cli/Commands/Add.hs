@@ -19,4 +19,5 @@ import Intray.Cli.Sync
 addItem :: Text -> CliM ()
 addItem t = do
     now <- liftIO getCurrentTime
-    modifyStoreAndSync $ addItemToStore (textTypedItem t) now
+    modifyStoreAndSync $
+        addItemToStore Added {addedValue = textTypedItem t, addedCreated = now}

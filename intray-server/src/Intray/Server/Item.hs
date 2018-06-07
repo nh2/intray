@@ -3,7 +3,10 @@
 module Intray.Server.Item
     ( makeIntrayItem
     , makeItemInfo
+    , makeSynced
     ) where
+
+import Import
 
 import Data.Time
 
@@ -16,7 +19,8 @@ makeIntrayItem u i ts TypedItem {..} =
     { intrayItemIdentifier = i
     , intrayItemType = itemType
     , intrayItemContents = itemData
-    , intrayItemTimestamp = ts
+    , intrayItemCreated = ts
+    , intrayItemSynced = ts
     , intrayItemUserId = u
     }
 
@@ -26,5 +30,15 @@ makeItemInfo IntrayItem {..} =
     { itemInfoIdentifier = intrayItemIdentifier
     , itemInfoContents =
           TypedItem {itemType = intrayItemType, itemData = intrayItemContents}
-    , itemInfoTimestamp = intrayItemTimestamp
+    , itemInfoTimestamp = intrayItemCreated
+    }
+
+makeSynced :: IntrayItem -> Synced ItemUUID TypedItem
+makeSynced IntrayItem {..} =
+    Synced
+    { syncedUuid = intrayItemIdentifier
+    , syncedValue =
+          TypedItem {itemType = intrayItemType, itemData = intrayItemContents}
+    , syncedCreated = intrayItemCreated
+    , syncedSynced = intrayItemSynced
     }

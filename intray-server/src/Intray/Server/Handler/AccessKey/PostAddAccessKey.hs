@@ -48,7 +48,7 @@ servePostAddAccessKey (Authenticated AuthCookie {..}) AddAccessKey {..} =
                         , accessKeyName = addAccessKeyName
                         , accessKeyHashedKey = hp
                         , accessKeyCreatedTimestamp = now
-                        , accessKeyPermissions = S.toList perms
+                        , accessKeyPermissions = perms
                         }
                 pure
                     AccessKeyCreated

@@ -10,7 +10,6 @@ import TestImport
 
 import Intray.Client
 
-import Intray.Client.Gen ()
 import Intray.Data.Gen ()
 import Intray.Server.TestUtils
 

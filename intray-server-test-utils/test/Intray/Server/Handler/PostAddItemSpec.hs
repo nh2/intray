@@ -10,8 +10,7 @@ import TestImport
 
 import Intray.Client
 
-import Intray.Client.Gen ()
-import Intray.Data.Gen ()
+import Intray.API.Gen ()
 import Intray.Server.TestUtils
 
 spec :: Spec
@@ -21,7 +20,7 @@ spec =
         it "fails without PermitAdd" $ \cenv ->
             forAllValid $ \item ->
                 failsWithOutPermission cenv PermitAdd $ \t ->
-                    clientPostSync t item
+                    clientPostAddItem t item
         it "adds an item without crashing" $ \cenv ->
             forAllValid $ \t ->
                 withValidNewUser cenv $ \token -> do

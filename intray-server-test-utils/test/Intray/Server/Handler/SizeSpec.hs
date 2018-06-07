@@ -6,8 +6,7 @@ import TestImport
 
 import Intray.Client
 
-import Intray.Client.Gen ()
-import Intray.Data.Gen ()
+import Intray.API.Gen ()
 import Intray.Server.TestUtils
 
 spec :: Spec

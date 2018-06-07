@@ -11,7 +11,6 @@ module Intray.Server.Handler.Public.PostLogin
 import Import
 
 import Control.Monad.Except
-import qualified Data.Set as S
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Database.Persist
@@ -55,7 +54,7 @@ servePostLogin LoginForm {..} = do
                                        accessKeyHashedKey
                                        (TE.encodeUtf8 $
                                         accessKeySecretText submittedKey)
-                                    then Just $ S.fromList accessKeyPermissions
+                                    then Just accessKeyPermissions
                                     else Nothing
                     case msum mli of
                         Nothing -> throwError err401

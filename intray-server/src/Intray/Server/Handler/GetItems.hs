@@ -29,6 +29,6 @@ serveGetItems (Authenticated AuthCookie {..}) =
             runDb $
             selectList
                 [IntrayItemUserId ==. authCookieUserUUID]
-                [Asc IntrayItemTimestamp]
+                [Asc IntrayItemCreated]
         pure $ map (makeItemInfo . entityVal) itemsEnts
 serveGetItems _ = throwAll err401

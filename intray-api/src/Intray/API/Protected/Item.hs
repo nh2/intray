@@ -22,8 +22,9 @@ module Intray.API.Protected.Item
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , PostSync
     , HashedPassword
@@ -37,6 +38,8 @@ module Intray.API.Protected.Item
     ) where
 
 import Import
+
+import Data.Mergeless
 
 import Servant.API
 import Servant.Auth.Docs ()
@@ -84,4 +87,4 @@ type DeleteItem
      = ProtectAPI :> "item" :> Capture "uuid" ItemUUID :> Delete '[ JSON] NoContent
 
 type PostSync
-     = ProtectAPI :> "sync" :> ReqBody '[ JSON] SyncRequest :> Post '[ JSON] SyncResponse
+     = ProtectAPI :> "sync" :> ReqBody '[ JSON] (SyncRequest ItemUUID TypedItem) :> Post '[ JSON] (SyncResponse ItemUUID TypedItem)

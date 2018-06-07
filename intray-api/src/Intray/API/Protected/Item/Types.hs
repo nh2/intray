@@ -5,6 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Intray.API.Protected.Item.Types
     ( ItemType(..)
@@ -13,9 +14,6 @@ module Intray.API.Protected.Item.Types
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
-    , SyncRequest(..)
-    , NewSyncItem(..)
-    , SyncResponse(..)
     , ItemUUID
     , module Data.UUID.Typed
     ) where
@@ -25,7 +23,7 @@ import Import
 import Data.Aeson as JSON
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Char8 as SB8
-import Data.List (nub)
+import Data.Mergeless
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import Data.UUID.Typed
@@ -100,106 +98,10 @@ instance FromJSON a => FromJSON (ItemInfo a) where
 
 instance ToSample a => ToSample (ItemInfo a)
 
-data SyncRequest = SyncRequest
-    { syncRequestUnsyncedItems :: [NewSyncItem]
-    , syncRequestSyncedItems :: [ItemUUID]
-    , syncRequestUndeletedItems :: [ItemUUID]
-    } deriving (Show, Eq, Ord, Generic)
+instance ToSample a => ToSample (Added a)
 
-instance Validity SyncRequest where
-    validate SyncRequest {..} =
-        mconcat
-            [ annotate syncRequestUnsyncedItems "syncRequestUnsyncedItems"
-            , annotate syncRequestSyncedItems "syncRequestSyncedItems"
-            , annotate syncRequestUndeletedItems "syncRequestUndeletedItems"
-            , check
-                  (distinct syncRequestUnsyncedItems)
-                  "Unsynced items are distinct"
-            , check
-                  (distinct syncRequestSyncedItems)
-                  "Synced items are distinct"
-            , check
-                  (distinct syncRequestUndeletedItems)
-                  "undeleted items are distinct"
-            ]
+instance (ToSample i, ToSample a) => ToSample (Synced i a)
 
-instance FromJSON SyncRequest where
-    parseJSON =
-        withObject "SyncRequest" $ \o ->
-            SyncRequest <$> o .: "unsynced" <*> o .: "synced" <*>
-            o .: "undeleted"
+instance ToSample (SyncRequest ItemUUID TypedItem)
 
-instance ToJSON SyncRequest where
-    toJSON SyncRequest {..} =
-        object
-            [ "unsynced" .= syncRequestUnsyncedItems
-            , "synced" .= syncRequestSyncedItems
-            , "undeleted" .= syncRequestUndeletedItems
-            ]
-
-instance ToSample SyncRequest
-
-data NewSyncItem = NewSyncItem
-    { newSyncItemContents :: TypedItem
-    , newSyncItemTimestamp :: Maybe UTCTime
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity NewSyncItem
-
-instance FromJSON NewSyncItem where
-    parseJSON v =
-        (NewSyncItem <$> parseJSON v <*> pure Nothing) <|>
-        withObject
-            "NewSyncItem"
-            (\o -> NewSyncItem <$> o .: "contents" <*> o .:? "timestamp")
-            v
-
-instance ToJSON NewSyncItem where
-    toJSON NewSyncItem {..} =
-        case newSyncItemTimestamp of
-            Nothing -> toJSON newSyncItemContents
-            Just ts ->
-                object ["contents" .= newSyncItemContents, "timestamp" .= ts]
-
-instance ToSample NewSyncItem
-
-data SyncResponse = SyncResponse
-    { syncResponseAddedItems :: [ItemInfo TypedItem]
-    , syncResponseNewRemoteItems :: [ItemInfo TypedItem]
-    , syncResponseItemsToBeDeletedLocally :: [ItemUUID]
-    } deriving (Show, Eq, Ord, Generic)
-
-instance Validity SyncResponse where
-    validate SyncResponse {..} =
-        mconcat
-            [ annotate syncResponseAddedItems "syncResponseAddedItems"
-            , annotate syncResponseNewRemoteItems "syncResponseNewRemoteItems"
-            , annotate
-                  syncResponseItemsToBeDeletedLocally
-                  "syncResponseItemsToBeDeletedLocally"
-            , check (distinct syncResponseAddedItems) "Added items are distinct"
-            , check
-                  (distinct syncResponseNewRemoteItems)
-                  "new items are distinct"
-            , check
-                  (distinct syncResponseItemsToBeDeletedLocally)
-                  "deleted items are distinct"
-            ]
-
-instance FromJSON SyncResponse where
-    parseJSON =
-        withObject "SyncResponse" $ \o ->
-            SyncResponse <$> o .: "added" <*> o .: "new" <*> o .: "deleted"
-
-instance ToJSON SyncResponse where
-    toJSON SyncResponse {..} =
-        object
-            [ "added" .= syncResponseAddedItems
-            , "new" .= syncResponseNewRemoteItems
-            , "deleted" .= syncResponseItemsToBeDeletedLocally
-            ]
-
-instance ToSample SyncResponse
-
-distinct :: Eq a => [a] -> Bool
-distinct ls = length ls == length (nub ls)
+instance ToSample (SyncResponse ItemUUID TypedItem)

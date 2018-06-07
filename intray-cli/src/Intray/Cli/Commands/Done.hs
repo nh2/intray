@@ -4,7 +4,6 @@ module Intray.Cli.Commands.Done
 
 import Import
 
-import Intray.Cli.LastSeen
 import Intray.Cli.OptParse
 import Intray.Cli.Store
 import Intray.Cli.Sync

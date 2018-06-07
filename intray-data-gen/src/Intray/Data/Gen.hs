@@ -31,6 +31,7 @@ instance GenUnchecked IntrayItem
 instance GenValid IntrayItem where
     genValid =
         IntrayItem <$> genValid <*> genValid <*> genValid <*> genValid <*>
+        genValid <*>
         genValid
 
 instance GenUnchecked Username
@@ -51,6 +52,10 @@ instance GenValid Username where
 instance GenUnchecked User
 
 instance GenUnchecked HashedPassword
+
+instance GenUnchecked Permission
+
+instance GenValid Permission
 
 instance GenUnchecked AccessKeySecret
 

@@ -54,7 +54,6 @@ import Intray.Data
 import Intray.Server
 import Intray.Server.Types
 
-import Intray.Client.Gen ()
 import Intray.Data.Gen ()
 
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}

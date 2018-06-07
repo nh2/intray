@@ -30,6 +30,6 @@ serveGetShowItem (Authenticated AuthCookie {..}) =
             runDb $
             selectFirst
                 [IntrayItemUserId ==. authCookieUserUUID]
-                [Asc IntrayItemTimestamp]
+                [Asc IntrayItemCreated]
         pure $ makeItemInfo . entityVal <$> itemsEnt
 serveGetShowItem _ = throwAll err401

@@ -28,7 +28,5 @@ serveGetItemUUIDs (Authenticated AuthCookie {..}) =
     withPermission authCookiePermissions PermitGetItemUUIDs $
     fmap (fmap $ intrayItemIdentifier . entityVal) $
     runDb $
-    selectList
-        [IntrayItemUserId ==. authCookieUserUUID]
-        [Asc IntrayItemTimestamp]
+    selectList [IntrayItemUserId ==. authCookieUserUUID] [Asc IntrayItemCreated]
 serveGetItemUUIDs _ = throwAll err401

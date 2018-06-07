@@ -17,6 +17,7 @@ import Data.Text as X (Text)
 
 import Data.Validity as X
 import Data.Validity.ByteString as X ()
+import Data.Validity.Containers as X ()
 import Data.Validity.Text as X ()
 import Data.Validity.Time as X ()
 import Data.Validity.UUID as X ()

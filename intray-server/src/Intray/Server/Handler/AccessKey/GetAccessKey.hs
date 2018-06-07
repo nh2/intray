@@ -42,5 +42,5 @@ makeAccessKeyInfo AccessKey {..} =
     { accessKeyInfoUUID = accessKeyIdentifier
     , accessKeyInfoName = accessKeyName
     , accessKeyInfoCreatedTimestamp = accessKeyCreatedTimestamp
-    , accessKeyInfoPermissions = S.fromList accessKeyPermissions
+    , accessKeyInfoPermissions = accessKeyPermissions
     }

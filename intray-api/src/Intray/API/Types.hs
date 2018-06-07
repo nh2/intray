@@ -34,6 +34,7 @@ import Import
 import Data.Aeson as JSON
 import qualified Data.ByteString.Lazy as LB
 import Data.Set (Set)
+import qualified Data.Set as S
 import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
@@ -159,8 +160,8 @@ instance ToMarkup GetDocsResponse where
 
 instance ToSample Permission
 
-instance ToSample (Set Permission) where
-    toSamples Proxy = singleSample userPermissions
+instance (Ord a, ToSample a) => ToSample (Set a) where
+    toSamples Proxy = second S.fromList <$> toSamples Proxy
 
 instance ToSample AccessKeySecret where
     toSamples Proxy =

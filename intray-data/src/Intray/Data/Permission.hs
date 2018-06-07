@@ -15,6 +15,7 @@ import qualified Data.Text as T
 import Text.Read
 
 import Database.Persist
+import Database.Persist.Sql
 
 data Permission
     = PermitAdd
@@ -50,6 +51,9 @@ instance PersistField Permission where
         case readMaybe $ T.unpack t of
             Nothing -> Left "Unknown Permission value."
             Just p -> pure p
+
+instance PersistFieldSql Permission where
+    sqlType Proxy = SqlString
 
 userPermissions :: Set Permission
 userPermissions =

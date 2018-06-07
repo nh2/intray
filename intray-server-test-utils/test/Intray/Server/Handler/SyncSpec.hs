@@ -9,10 +9,8 @@ module Intray.Server.Handler.SyncSpec
 import TestImport
 
 import Intray.Client
-import Intray.Client.Store
 
-import Intray.Client.Gen ()
-import Intray.Data.Gen ()
+import Intray.API.Gen ()
 import Intray.Server.TestUtils
 
 spec :: Spec
@@ -35,9 +33,9 @@ spec =
                     sr1 <-
                         runClientOrError cenv $
                         clientPostSync token $ makeSyncRequest initStore
-                    let firstStore = mergeStore initStore sr1
+                    let firstStore = mergeSyncResponse initStore sr1
                     sr2 <-
                         runClientOrError cenv $
                         clientPostSync token $ makeSyncRequest firstStore
-                    let secondStore = mergeStore firstStore sr2
+                    let secondStore = mergeSyncResponse firstStore sr2
                     secondStore `shouldBe` firstStore

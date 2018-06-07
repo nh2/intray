@@ -26,6 +26,7 @@ library:
   - bytestring
   - genvalidity
   - genvalidity-bytestring
+  - genvalidity-mergeless
   - genvalidity-text
   - genvalidity-time
   - genvalidity-uuid

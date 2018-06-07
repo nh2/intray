@@ -2,7 +2,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Intray.Cli.Commands.Show
     ( showItem
@@ -16,7 +15,6 @@ import Text.Time.Pretty
 
 import Intray.API
 
-import Intray.Cli.LastSeen
 import Intray.Cli.OptParse
 import Intray.Cli.Store
 import Intray.Cli.Sync
@@ -36,8 +34,16 @@ showItem = do
             liftIO $ putStrLn $ prettyItem now li
 
 prettyItem :: UTCTime -> LastItem -> String
-prettyItem now LastItem {..} =
-    let timeStr = prettyTimestamp now lastItemTimestamp
+prettyItem now li =
+    let lastItemTimestamp =
+            case li of
+                LastItemUnsynced a -> addedCreated a
+                LastItemSynced s -> syncedCreated s
+        lastItemData =
+            case li of
+                LastItemUnsynced a -> addedValue a
+                LastItemSynced s -> syncedValue s
+        timeStr = prettyTimestamp now lastItemTimestamp
         timeAgoString = prettyTimeAuto now lastItemTimestamp
     in case typedItemCase lastItemData of
            Left err -> unlines ["Invalid item:", err]

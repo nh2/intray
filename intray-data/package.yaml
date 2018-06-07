@@ -41,6 +41,7 @@ library:
   - uuid
   - validity
   - validity-bytestring
+  - validity-containers
   - validity-text
   - validity-time
   - validity-uuid

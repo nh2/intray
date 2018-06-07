@@ -28,8 +28,9 @@ module Intray.API.Protected
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , PostSync
     , AccountInfo(..)

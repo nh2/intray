@@ -35,6 +35,7 @@ library:
   - containers
   - cookie
   - intray-data
+  - mergeless
   - pandoc
   - servant
   - servant-auth

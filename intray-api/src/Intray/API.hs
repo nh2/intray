@@ -34,8 +34,9 @@ module Intray.API
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
     , AccountInfo(..)
     , AccessKeyInfo(..)

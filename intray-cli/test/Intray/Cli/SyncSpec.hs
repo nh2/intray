@@ -11,12 +11,13 @@ import qualified Data.Text as T
 import Servant.API
 import Servant.Client
 
+import Intray.API.Gen ()
 import Intray.Client
 import Intray.Server.TestUtils
 
-import Intray.Cli.LastSeen (readLastSeen)
 import Intray.Cli.OptParse
 import Intray.Cli.Session (loadToken)
+import Intray.Cli.Store
 import Intray.Cli.TestUtils
 
 spec :: Spec

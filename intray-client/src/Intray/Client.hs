@@ -28,9 +28,14 @@ module Intray.Client
     , TypedItemCase(..)
     , typedItemCase
     , ItemInfo(..)
+    , Added(..)
+    , Synced(..)
     , SyncRequest(..)
-    , NewSyncItem(..)
     , SyncResponse(..)
+    , StoreItem(..)
+    , Store(..)
+    , makeSyncRequest
+    , mergeSyncResponse
     , AccountInfo(..)
     , Permission(..)
     , AddAccessKey(..)
@@ -55,6 +60,7 @@ module Intray.Client
 
 import Import
 
+import Data.Mergeless
 import Data.Set (Set)
 import qualified Data.UUID.Typed
 
@@ -74,7 +80,10 @@ clientGetItems :: Token -> ClientM [ItemInfo TypedItem]
 clientPostAddItem :: Token -> TypedItem -> ClientM ItemUUID
 clientGetItem :: Token -> ItemUUID -> ClientM (ItemInfo TypedItem)
 clientDeleteItem :: Token -> ItemUUID -> ClientM NoContent
-clientPostSync :: Token -> SyncRequest -> ClientM SyncResponse
+clientPostSync ::
+       Token
+    -> SyncRequest ItemUUID TypedItem
+    -> ClientM (SyncResponse ItemUUID TypedItem)
 clientGetAccountInfo :: Token -> ClientM AccountInfo
 clientDeleteAccount :: Token -> ClientM NoContent
 clientPostAddAccessKey :: Token -> AddAccessKey -> ClientM AccessKeyCreated

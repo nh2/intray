@@ -29,7 +29,7 @@ serveGetItem ::
        AuthResult AuthCookie -> ItemUUID -> IntrayHandler (ItemInfo TypedItem)
 serveGetItem (Authenticated AuthCookie {..}) id_ =
     withPermission authCookiePermissions PermitGetItem $ do
-        mitem <- runDb $ getBy $ UniqueIdentifier id_ authCookieUserUUID
+        mitem <- runDb $ getBy $ UniqueItemIdentifier id_
         case mitem of
             Nothing -> throwError err404 {errBody = "Item not found."}
             Just item -> pure $ makeItemInfo $ entityVal item

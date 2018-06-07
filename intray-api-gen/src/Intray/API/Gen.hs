@@ -12,6 +12,7 @@ import Import
 
 import Data.GenValidity
 import Data.GenValidity.ByteString ()
+import Data.GenValidity.Mergeless ()
 import Data.GenValidity.Text ()
 import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
@@ -21,10 +22,6 @@ import Intray.Data.Gen ()
 
 import Intray.API.Admin.Gen ()
 import Intray.API.Protected.Gen ()
-
-instance GenUnchecked Permission
-
-instance GenValid Permission
 
 instance GenUnchecked Registration
 

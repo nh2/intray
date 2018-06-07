@@ -4,12 +4,13 @@ packages:
 - intray-api-gen
 - intray-cli
 - intray-client
-- intray-client-gen
 - intray-data
 - intray-data-gen
 - intray-server
 - intray-server-test-utils
 - intray-web-server
+- /home/syd/mergeless/mergeless
+- /home/syd/mergeless/genvalidity-mergeless
 extra-deps:
 - hlint-2.0.15
 - extra-1.6.5

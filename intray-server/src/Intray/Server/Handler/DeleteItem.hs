@@ -26,6 +26,6 @@ import Intray.Server.Handler.Utils
 serveDeleteItem :: AuthResult AuthCookie -> ItemUUID -> IntrayHandler NoContent
 serveDeleteItem (Authenticated AuthCookie {..}) id_ =
     withPermission authCookiePermissions PermitDelete $ do
-        runDb . deleteBy $ UniqueIdentifier id_ authCookieUserUUID
+        runDb . deleteBy $ UniqueItemIdentifier id_
         pure NoContent
 serveDeleteItem _ _ = throwAll err401

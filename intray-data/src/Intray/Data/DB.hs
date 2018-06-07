@@ -11,6 +11,7 @@ module Intray.Data.DB where
 
 import Import
 
+import Data.Set (Set)
 import Data.Time
 
 import Database.Persist.Sql
@@ -44,13 +45,13 @@ User
 
 IntrayItem
     identifier ItemUUID
+    userId AccountUUID
     type ItemType
     contents ByteString
-    timestamp UTCTime
-    userId AccountUUID
+    created UTCTime
+    synced UTCTime
 
-    UniqueItem identifier type contents timestamp userId
-    UniqueIdentifier identifier userId
+    UniqueItemIdentifier identifier
 
     deriving Show
     deriving Eq
@@ -63,7 +64,7 @@ AccessKey
     name Text
     hashedKey HashedPassword
     createdTimestamp UTCTime
-    permissions [Permission] -- TODO put this in a set or some such
+    permissions (Set Permission)
 
     UniqueAccessKeyIdentifier identifier
 

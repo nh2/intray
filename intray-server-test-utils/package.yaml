@@ -24,7 +24,9 @@ library:
   - cookie >=0.4
   - containers
   - genvalidity-bytestring
+  - genvalidity-containers
   - genvalidity-hspec
+  - genvalidity-mergeless
   - genvalidity-text
   - genvalidity-time
   - hspec
@@ -32,7 +34,6 @@ library:
   - http-types
   - intray-api
   - intray-client
-  - intray-client-gen
   - intray-data
   - intray-data-gen
   - intray-server
@@ -74,8 +75,8 @@ tests:
     - hspec
     - http-types
     - intray-api
+    - intray-api-gen
     - intray-client
-    - intray-client-gen
     - intray-data
     - intray-data-gen
     - intray-server-test-utils
