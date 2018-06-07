@@ -6,8 +6,6 @@ module Intray.Server.Item
     , makeSynced
     ) where
 
-import Import
-
 import Data.Time
 
 import Intray.API

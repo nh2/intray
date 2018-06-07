@@ -11,8 +11,6 @@ module Intray.Server.Handler.AccessKey.GetAccessKey
 
 import Import
 
-import qualified Data.Set as S
-
 import Database.Persist
 
 import Servant hiding (BadPassword, NoSuchUser)
