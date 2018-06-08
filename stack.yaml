@@ -9,8 +9,6 @@ packages:
 - intray-server
 - intray-server-test-utils
 - intray-web-server
-- /home/syd/mergeless/mergeless
-- /home/syd/mergeless/genvalidity-mergeless
 extra-deps:
 - hlint-2.0.15
 - extra-1.6.5
@@ -22,6 +20,11 @@ extra-deps:
 - servant-auth-server-0.3.2.0
 - servant-flatten-0.2
 - servant-options-0.1.0.0
+- git: https://github.com/NorfairKing/mergeless.git
+  commit: f0dc884343a682afdc8f9a39bee419d99d85c4c3
+  subdirs:
+    - mergeless
+    - genvalidity-mergeless
 - git: https://github.com/NorfairKing/validity.git
   commit: a86dd3e4830c14c056a0d5d8712864d395d25b2a
   subdirs:
