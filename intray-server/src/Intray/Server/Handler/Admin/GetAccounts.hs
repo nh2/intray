@@ -28,15 +28,18 @@ serveAdminGetAccounts (Authenticated AuthCookie {..}) =
     withPermission authCookiePermissions PermitAdminGetAccounts $ do
         admins <- asks envAdmins
         users <- runDb $ selectList [] [Asc UserId]
-        c <- runDb $ count ([] :: [Filter IntrayItem])
-        pure $
-            flip map users $ \(Entity _ User {..}) ->
+        forM users $ \(Entity _ User {..}) -> do
+            c <-
+                runDb $
+                count
+                    ([IntrayItemUserId ==. userIdentifier] :: [Filter IntrayItem])
+            pure
                 AccountInfo
-                { accountInfoUUID = userIdentifier
-                , accountInfoUsername = userUsername
-                , accountInfoCreatedTimestamp = userCreatedTimestamp
-                , accountInfoLastLogin = userLastLogin
-                , accountInfoAdmin = userUsername `elem` admins
-                , accountInfoCount = c
-                }
+                    { accountInfoUUID = userIdentifier
+                    , accountInfoUsername = userUsername
+                    , accountInfoCreatedTimestamp = userCreatedTimestamp
+                    , accountInfoLastLogin = userLastLogin
+                    , accountInfoAdmin = userUsername `elem` admins
+                    , accountInfoCount = c
+                    }
 serveAdminGetAccounts _ = throwAll err401
