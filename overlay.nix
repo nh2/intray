@@ -2,7 +2,7 @@ final:
   previous:
     with final.haskell.lib;
     {
-      intray-web-server-static = dontHyperlinkSource (justStaticExecutables final.haskellPackages.intray-web-server);
+      intray-web-server-static = justStaticExecutables final.haskellPackages.intray-web-server;
       myDockerImage = final.dockerTools.buildImage {
         name = "intray-web-server_production";
         tag = "latest";
