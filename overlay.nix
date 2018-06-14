@@ -2,28 +2,6 @@ final:
   previous:
     with final.haskell.lib;
     {
-      intray-web-server-static = justStaticExecutables final.haskellPackages.intray-web-server;
-      myDockerImage = final.dockerTools.buildImage {
-        name = "intray-web-server_production";
-        tag = "latest";
-        contents = "${final.intray-web-server-static}/bin";
-        runAsRoot = ''
-          mkdir -p /www/intray/data
-        '';
-        config = {
-          Cmd = [
-            "${final.intray-web-server-static}/bin/intray-web-server"
-            "serve"
-            "--admin"
-            "syd"
-          ];
-          WorkingDir = "/www/intray/data";
-          Env = [
-            "PORT=8000"
-            "API_PORT=8001"
-          ];
-        };
-      };
       haskellPackages = previous.haskellPackages.override {
         overrides = self:
           super:
