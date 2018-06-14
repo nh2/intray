@@ -33,11 +33,11 @@ library:
   - intray-api
   - intray-data
   - jose
+  - markdown
   - mergeless
   - monad-logger
   - mtl >=2.2
   - optparse-applicative >=0.13
-  - pandoc
   - path
   - path-io
   - persistent >=2.7

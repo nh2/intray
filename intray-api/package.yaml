@@ -36,7 +36,6 @@ library:
   - cookie
   - intray-data
   - mergeless
-  - pandoc
   - servant
   - servant-auth
   - servant-auth-docs

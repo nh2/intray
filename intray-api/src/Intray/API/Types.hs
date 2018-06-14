@@ -43,7 +43,6 @@ import System.IO.Unsafe
 
 import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
-import Text.Pandoc as Pandoc
 
 import Web.Cookie
 
@@ -146,11 +145,7 @@ newtype GetDocsResponse = GetDocsResponse
 
 instance MimeUnrender HTML GetDocsResponse where
     mimeUnrender Proxy bs =
-        left show $
-        runPure $ do
-            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
-            html <- Pandoc.writeHtml5 def pandoc
-            pure $ GetDocsResponse html
+        Right $ GetDocsResponse $ HTML.unsafeLazyByteString bs
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."
