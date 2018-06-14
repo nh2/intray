@@ -32,10 +32,8 @@ module Intray.API.Types
 import Import
 
 import Data.Aeson as JSON
-import qualified Data.ByteString.Lazy as LB
 import Data.Set (Set)
 import qualified Data.Set as S
-import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
 import Data.UUID.Typed
