@@ -27,7 +27,7 @@ intrayHtmlResponse :: GetDocsResponse
 intrayHtmlResponse =
     GetDocsResponse $
     Markdown.markdown
-        (Markdown.defaultMarkdownSettings {Markdown.msXssProtect = False}) $
+        Markdown.defaultMarkdownSettings {Markdown.msXssProtect = False} $
     LT.fromStrict intrayDocs
 
 intrayDocs :: Text

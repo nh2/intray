@@ -32,7 +32,10 @@ serveGetAccountInfo (Authenticated AuthCookie {..}) =
         case mUser of
             Nothing -> throwError err404 {errBody = "User not found."}
             Just (Entity _ User {..}) -> do
-                c <- runDb $ count ([IntrayItemUserId ==. authCookieUserUUID] :: [Filter IntrayItem])
+                c <-
+                    runDb $
+                    count
+                        ([IntrayItemUserId ==. authCookieUserUUID] :: [Filter IntrayItem])
                 pure
                     AccountInfo
                     { accountInfoUUID = authCookieUserUUID
