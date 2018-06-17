@@ -10,17 +10,10 @@ import Data.GenValidity.ByteString ()
 import Data.GenValidity.Text ()
 import Data.GenValidity.Time ()
 import Data.GenValidity.UUID ()
+import Data.GenValidity.UUID.Typed ()
 import qualified Data.Text as T
 
 import Intray.Data
-
-instance GenUnchecked ItemUUID
-
-instance GenValid ItemUUID
-
-instance GenUnchecked AccountUUID
-
-instance GenValid AccountUUID
 
 instance GenUnchecked ItemType
 

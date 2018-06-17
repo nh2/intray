@@ -24,6 +24,7 @@ library:
   - genvalidity-bytestring
   - genvalidity-text
   - genvalidity-time
+  - genvalidity-typed-uuid
   - genvalidity-uuid
   - intray-data
   - text
