@@ -2,8 +2,8 @@ final:
   previous:
     with final.haskell.lib;
     {
-      haskellPackages = previous.haskellPackages.override {
-        overrides = self:
+      haskellPackages = previous.haskellPackages.extend (
+        self:
           super:
             let
               typedUuidRepo = final.fetchFromGitHub {
@@ -88,6 +88,6 @@ final:
               "validity-unordered-containers"
               "validity-uuid"
               "validity-vector"
-            ] validityPkg;
-      };
+            ] validityPkg
+      );
     }
