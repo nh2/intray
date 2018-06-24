@@ -15,11 +15,11 @@ spec = do
     it "Works fine without a server" $ do
         let sets =
                 Settings
-                { setBaseUrl = Nothing
-                , setUsername = Nothing
-                , setIntrayDir = $(mkAbsDir "/tmp")
-                , setSyncStrategy = NeverSync
-                }
+                    { setBaseUrl = Nothing
+                    , setUsername = Nothing
+                    , setIntrayDir = $(mkAbsDir "/tmp")
+                    , setSyncStrategy = NeverSync
+                    }
         let intray d = runReaderT (dispatch d) sets
         intray $ DispatchPostPostAddItem "hello world"
         intray DispatchShowItem
@@ -28,14 +28,14 @@ spec = do
     specify "login fails immediately if no server is configured" $ do
         let sets =
                 Settings
-                { setBaseUrl = Nothing
-                , setUsername = Nothing
-                , setIntrayDir = $(mkAbsDir "/tmp")
-                , setSyncStrategy = NeverSync
-                }
+                    { setBaseUrl = Nothing
+                    , setUsername = Nothing
+                    , setIntrayDir = $(mkAbsDir "/tmp")
+                    , setSyncStrategy = NeverSync
+                    }
         let intray d = runReaderT (dispatch d) sets
         intray
             (DispatchLogin
                  LoginSettings
-                 {loginSetUsername = Nothing, loginSetPassword = Nothing}) `shouldThrow`
+                     {loginSetUsername = Nothing, loginSetPassword = Nothing}) `shouldThrow`
             (== ExitFailure 1)

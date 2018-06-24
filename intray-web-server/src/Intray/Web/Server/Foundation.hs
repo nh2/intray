@@ -139,9 +139,9 @@ postLoginR = do
                         liftHandler $
                             login
                                 LoginForm
-                                { loginFormUsername = un
-                                , loginFormPassword = pwd
-                                }
+                                    { loginFormUsername = un
+                                    , loginFormPassword = pwd
+                                    }
                         pure $ Right un
     case muser of
         Left err -> loginErrorMessageI LoginR err
@@ -197,9 +197,9 @@ postNewAccountR = do
                 if newAccountPassword1 d == newAccountPassword2 d
                     then Right
                              Registration
-                             { registrationUsername = newAccountUsername d
-                             , registrationPassword = newAccountPassword1 d
-                             }
+                                 { registrationUsername = newAccountUsername d
+                                 , registrationPassword = newAccountPassword1 d
+                                 }
                     else Left [mr Msg.PassMismatch]
     case mdata of
         Left errs -> do
@@ -225,9 +225,9 @@ postNewAccountR = do
                     liftHandler $ do
                         login
                             LoginForm
-                            { loginFormUsername = registrationUsername reg
-                            , loginFormPassword = registrationPassword reg
-                            }
+                                { loginFormUsername = registrationUsername reg
+                                , loginFormPassword = registrationPassword reg
+                                }
                         setCredsRedirect $
                             Creds
                                 intrayAuthPluginName

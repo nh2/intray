@@ -32,10 +32,8 @@ module Intray.API.Types
 import Import
 
 import Data.Aeson as JSON
-import qualified Data.ByteString.Lazy as LB
 import Data.Set (Set)
 import qualified Data.Set as S
-import qualified Data.Text.Encoding as TE
 import Data.Time
 import qualified Data.UUID as UUID
 import Data.UUID.Typed
@@ -43,7 +41,6 @@ import System.IO.Unsafe
 
 import Text.Blaze as HTML
 import Text.Blaze.Html as HTML
-import Text.Pandoc as Pandoc
 
 import Web.Cookie
 
@@ -146,11 +143,7 @@ newtype GetDocsResponse = GetDocsResponse
 
 instance MimeUnrender HTML GetDocsResponse where
     mimeUnrender Proxy bs =
-        left show $
-        runPure $ do
-            pandoc <- Pandoc.readHtml def $ TE.decodeUtf8 $ LB.toStrict bs
-            html <- Pandoc.writeHtml5 def pandoc
-            pure $ GetDocsResponse html
+        Right $ GetDocsResponse $ HTML.unsafeLazyByteString bs
 
 instance ToSample GetDocsResponse where
     toSamples Proxy = singleSample $ GetDocsResponse "Documentation (In HTML)."
