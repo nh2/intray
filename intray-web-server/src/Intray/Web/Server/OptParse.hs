@@ -69,7 +69,7 @@ getEnv = do
     let mv k = lookup k env
     pure
         Environment
-            { envPort = mv "PORT" >>= readMaybe
+            { envPort = mv "WEB_PORT" >>= readMaybe
             , envAPIPort = mv "API_PORT" >>= readMaybe
             }
 
