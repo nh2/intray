@@ -21,7 +21,7 @@ extra-deps:
 - servant-flatten-0.2
 - servant-options-0.1.0.0
 - git: https://github.com/NorfairKing/mergeless.git
-  commit: f0dc884343a682afdc8f9a39bee419d99d85c4c3
+  commit: c6d1d91ee661ffb106dda89a3df56175aea0dc2
   subdirs:
     - mergeless
     - genvalidity-mergeless

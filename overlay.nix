@@ -12,12 +12,6 @@ final:
                 rev = "155c9ec880ca1c12f7dd8a8468b3626de8164823";
                 sha256 = "0wvdj07vhd7q93f7sdg4mq8f9nk4w3fjsq3z7nx7zm5dv0j78iwb";
               };
-              validityRepo = final.fetchFromGitHub {
-                owner = "NorfairKing";
-                repo = "validity";
-                rev = "a86dd3e4830c14c056a0d5d8712864d395d25b2a";
-                sha256 = "1sg5bbrqv723c8jlznfnxk6x748082bprw9z2zmm8m0ycskw6ds7";
-              };
               mergelessRepo = final.fetchFromGitHub {
                 owner = "NorfairKing";
                 repo = "mergeless";
