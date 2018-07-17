@@ -2,9 +2,9 @@ final:
   previous:
     with final.haskell.lib;
     {
-      haskellPackages = previous.haskellPackages.extend (
-        self:
-          super:
+      haskellPackages = previous.haskellPackages.override (old: {
+        overrides = final.lib.composeExtensions (old.overrides or (_: _: {})) (
+          self: super:
             let
               typedUuidRepo = final.fetchFromGitHub {
                 owner = "NorfairKing";
@@ -25,15 +25,15 @@ final:
                 sha256 = "125p6m7p8kqcndfa248k3xylmk9n2smchknplx2qqlqyxa909zdn";
               };
               typedUuidPkg = name:
-                super.callCabal2nix name (typedUuidRepo + "/${name}") {};
+                self.callCabal2nix name (typedUuidRepo + "/${name}") {};
               validityPkg = name:
-                super.callCabal2nix name (validityRepo + "/${name}") {};
+                self.callCabal2nix name (validityRepo + "/${name}") {};
               intrayPkg = name:
-                disableLibraryProfiling (super.callCabal2nix name (./. + "/${name}") {});
+                disableLibraryProfiling (self.callCabal2nix name (./. + "/${name}") {});
               mergelessPkg = name:
-                super.callCabal2nix name (mergelessRepo + "/${name}") {};
+                self.callCabal2nix name (mergelessRepo + "/${name}") {};
             in {
-              pretty-relative-time = super.callCabal2nix "pretty-relative-time" prettyRelativeTimeRepo {};
+              pretty-relative-time = self.callCabal2nix "pretty-relative-time" prettyRelativeTimeRepo {};
               servant-auth-server = doJailbreak (super.servant-auth-server);
             } // final.lib.genAttrs [
               "typed-uuid"
@@ -54,5 +54,6 @@ final:
               "intray-server-test-utils"
               "intray-web-server"
             ] intrayPkg
-      );
+        );
+      });
     }
