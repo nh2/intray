@@ -3,7 +3,7 @@ module Intray.Server.Handler.Admin
     , intrayAdminServer
     ) where
 
-import Servant.Generic
+import Servant.Server.Generic
 
 import Intray.API
 

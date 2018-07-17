@@ -24,7 +24,7 @@ import Import
 import Servant.API
 import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
-import Servant.Generic
+import Servant.API.Generic
 
 import Data.UUID.Typed
 
@@ -34,7 +34,7 @@ import Intray.API.Protected.AccessKey.Types
 import Intray.API.Types
 
 type IntrayProtectedAccessKeyAPI
-     = ToServant (IntrayProtectedAccessKeySite AsApi)
+     = ToServantApi IntrayProtectedAccessKeySite
 
 data IntrayProtectedAccessKeySite route = IntrayProtectedAccessKeySite
     { postAddAccessKey :: route :- PostAddAccessKey

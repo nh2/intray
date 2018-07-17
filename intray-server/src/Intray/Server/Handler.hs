@@ -2,7 +2,7 @@ module Intray.Server.Handler
     ( intrayServer
     ) where
 
-import Servant.Generic
+import Servant.Server.Generic
 
 import Intray.API
 
@@ -29,23 +29,23 @@ import Intray.Server.Handler.Public (intrayPublicServer)
 intrayServer :: IntraySite (AsServerT IntrayHandler)
 intrayServer =
     IntraySite
-        { openSite = toServant intrayOpenServer
-        , adminSite = toServant intrayAdminServer
+        { openSite = genericServerT intrayOpenServer
+        , adminSite = genericServerT intrayAdminServer
         }
 
 intrayOpenServer :: IntrayOpenSite (AsServerT IntrayHandler)
 intrayOpenServer =
     IntrayOpenSite
-        { protectedSite = toServant intrayProtectedServer
-        , publicSite = toServant intrayPublicServer
+        { protectedSite = genericServerT intrayProtectedServer
+        , publicSite = genericServerT intrayPublicServer
         }
 
 intrayProtectedServer :: IntrayProtectedSite (AsServerT IntrayHandler)
 intrayProtectedServer =
     IntrayProtectedSite
-        { protectedItemSite = toServant intrayProtectedItemServer
-        , protectedAccountSite = toServant intrayProtectedAccountServer
-        , protectedAccessKeySite = toServant intrayProtectedAccessKeyServer
+        { protectedItemSite = genericServerT intrayProtectedItemServer
+        , protectedAccountSite = genericServerT intrayProtectedAccountServer
+        , protectedAccessKeySite = genericServerT intrayProtectedAccessKeyServer
         , getPermissions = serveGetPermissions
         }
 

@@ -19,12 +19,12 @@ import Import
 import Servant.API
 import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
-import Servant.Generic
+import Servant.API.Generic
 
 import Intray.API.Protected.Account.Types
 import Intray.API.Types
 
-type IntrayProtectedAccountAPI = ToServant (IntrayProtectedAccountSite AsApi)
+type IntrayProtectedAccountAPI = ToServantApi IntrayProtectedAccountSite
 
 data IntrayProtectedAccountSite route = IntrayProtectedAccountSite
     { getAccountInfo :: route :- GetAccountInfo

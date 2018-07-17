@@ -44,14 +44,14 @@ import Data.Mergeless
 import Servant.API
 import Servant.Auth.Docs ()
 import Servant.Auth.Server.SetCookieOrphan ()
-import Servant.Generic
+import Servant.API.Generic
 
 import Intray.Data
 
 import Intray.API.Protected.Item.Types
 import Intray.API.Types
 
-type IntrayProtectedItemAPI = ToServant (IntrayProtectedItemSite AsApi)
+type IntrayProtectedItemAPI = ToServantApi IntrayProtectedItemSite
 
 data IntrayProtectedItemSite route = IntrayProtectedItemSite
     { getShowItem :: route :- GetShowItem
